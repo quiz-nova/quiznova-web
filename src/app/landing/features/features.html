@@ -1,0 +1,21 @@
+<section id="features" class="features">
+  <div class="container">
+    <article class="section-heading">
+      <h2>Everything you need to <span class="gradient-text">assess brilliance</span></h2>
+      <p>
+        A complete platform for creating, managing, and analyzing educational assessments at scale.
+      </p>
+    </article>
+    <div class="cards">
+      @for (feature of sortedCards(); track feature.id) {
+        <article class="card">
+          <div class="icon">
+            <i [class]="feature.icon"></i>
+          </div>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.content }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

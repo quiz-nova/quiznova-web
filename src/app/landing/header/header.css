@@ -1,0 +1,142 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--ff-heading);
+  align-items: center;
+  height: 4rem;
+  position: relative;
+}
+
+app-logo {
+  flex: 1;
+}
+header::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+
+  width: 100vw;
+  height: 1px;
+  background: #e9ebef;
+
+  transform: translateX(-50%);
+
+  @media (width < 768px) {
+    display: none;
+  }
+}
+nav {
+  display: flex;
+  gap: 2rem;
+  @media (width < 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+a {
+  color: var(--clr-gray);
+  @media (width < 768px) {
+    padding-left: 1rem;
+  }
+}
+.header__links__buttons {
+  display: flex;
+  flex: 3;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (width < 768px) {
+    overflow: hidden;
+    transition: max-height 0.15s linear;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    visibility: hidden;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    left: 50%;
+    background-color: white;
+    width: 100vw;
+    gap: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    transform: translateX(-50%);
+  }
+}
+
+.header__links__buttons.menu-open {
+  @media (width < 768px) {
+    max-height: 500px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    visibility: visible;
+  }
+}
+.header__links__buttons::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #e9ebef;
+  transform: none;
+
+  @media (width > 767px) {
+    display: none;
+  }
+}
+header .buttons {
+  display: flex;
+  gap: 0.625rem;
+  @media (width< 768px) {
+    width: 100%;
+    justify-content: space-evenly;
+  }
+}
+header .buttons button {
+  padding: 0.625rem;
+  border-radius: var(--radius-md);
+  transition: 0.3s;
+  @media (width< 768px) {
+    width: 40%;
+  }
+}
+header .buttons button:hover {
+  color: white;
+}
+header .buttons button:first-child {
+  background-color: white;
+}
+header .buttons button:first-child:hover {
+  background-color: var(--clr-violate);
+}
+header .buttons button:last-child {
+  background-image: var(--main-gradient);
+  color: white;
+  padding: 0.625rem;
+  transition: transform 0.3s ease-in-out;
+}
+header .buttons button:last-child:hover {
+  transform: scale(1.05);
+}
+
+.icon {
+  display: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+
+  @media (width < 768px) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: var(--fs-600);
+  }
+}

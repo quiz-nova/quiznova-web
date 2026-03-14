@@ -1,1 +1,230 @@
-/* You can add global styles to this file, and also import other style files */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  /* Don't Allow Browsers To Adjust The Font */
+  html {
+    -moz-text-size-adjust: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+  /* For Accessablity In Safari */
+  [role='list'] {
+    list-style: none;
+  }
+  a {
+    text-decoration: none;
+  }
+  button {
+    outline: none;
+    border: none;
+    background: none;
+  }
+  body {
+    min-block-size: 100vh;
+    font-family: var(--ff-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  img,
+  picture {
+    max-inline-size: 100%;
+    display: block;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+}
+@layer base {
+  :root {
+    --main-gradient: linear-gradient(135deg, rgb(18, 165, 136), rgb(32, 157, 182));
+    --clr-violate: #8254d3;
+    --clr-gray: #6a7181;
+    --clr-dark-blue: #141d2e;
+    --clr-soft-green: #12a588;
+    --radius-md: 10px;
+    --ff-heading: 'Space Grotesk', sans-serif;
+    --ff-body: 'Inter', sans-serif;
+
+    --fs-300: 0.875rem;
+    --fs-400: 1rem;
+    --fs-500: 1.125rem;
+    --fs-600: 1.25rem;
+    --fs-700: 1.5rem;
+    --fs-800: 2rem;
+    --fs-900: 3.75rem;
+    --fs-1000: 3.75rem;
+
+    @media (width > 767px) {
+      --fs-700: 2rem;
+      --fs-800: 3rem;
+      --fs-900: 5rem;
+      --fs-1000: 7.5rem;
+    }
+  }
+  .container {
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto;
+    padding-inline: 15px;
+  }
+  @media (width <= 1399px) {
+    .container {
+      max-width: 1140px;
+    }
+  }
+  @media (width <= 1199px) {
+    .container {
+      max-width: 960px;
+    }
+  }
+  @media (width <= 991px) {
+    .container {
+      max-width: 720px;
+    }
+  }
+  @media (width <= 767px) {
+    .container {
+      max-width: 540px;
+    }
+  }
+  @media (width <= 575px) {
+    .container {
+      max-width: 100%;
+    }
+  }
+}
+@layer utilities {
+  .section-heading > h2,
+  .section-heading > p {
+    text-align: center;
+    margin: 2rem;
+  }
+  .section-heading > h2 {
+    font-size: var(--fs-700);
+  }
+  .section-heading > p {
+    color: var(--clr-gray);
+    font-size: var(--fs-500);
+  }
+
+  .auth-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+    padding: 1.25rem;
+  }
+
+  .auth-logo {
+    font-size: var(--fs-500);
+  }
+
+  .auth-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: flex-start;
+    width: min(100%, 28rem);
+  }
+
+  .auth-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .auth-copy h1 {
+    font-size: var(--fs-700);
+  }
+
+  .auth-copy p {
+    color: var(--clr-gray);
+  }
+
+  .auth-copy a {
+    color: var(--clr-soft-green);
+    text-decoration: none;
+  }
+
+  .auth-copy a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--clr-soft-green);
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .auth-field input {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--clr-gray);
+    height: 2.75rem;
+    width: 100%;
+    padding-left: 1rem;
+    box-sizing: border-box;
+  }
+
+  .btn-primary {
+    background-image: var(--main-gradient);
+    color: white;
+    height: 44px;
+    width: 100%;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform 0.2s linear;
+  }
+
+  .btn-primary:hover {
+    transform: scale(1.05);
+  }
+
+  .gradient-text {
+    background: var(--main-gradient);
+    background-clip: text;
+    color: transparent;
+  }
+
+  .btn-outline-accent {
+    color: var(--clr-soft-green);
+    border: 2px solid var(--clr-soft-green);
+    transition:
+      transform 0.3s ease-in-out,
+      background-color 0.3s ease-in-out,
+      color 0.3s ease-in-out;
+  }
+
+  .btn-outline-accent:hover {
+    background-color: var(--clr-soft-green);
+    color: white;
+  }
+}

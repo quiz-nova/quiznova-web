@@ -1,0 +1,49 @@
+main {
+  margin-block: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+main .content {
+  display: flex;
+  gap: 5px;
+  background-color: #eaf6f3;
+  padding: 0.625rem;
+  border-radius: var(--radius-md);
+  margin-block: 1rem;
+}
+
+main .content p {
+  color: var(--clr-soft-green);
+}
+main .content .icon {
+  color: var(--clr-soft-green);
+}
+main h1 {
+  font-size: var(--fs-800);
+}
+
+main > p {
+  color: var(--clr-gray);
+  margin-block: 2rem;
+  text-align: center;
+  font-size: var(--fs-500);
+}
+
+main > h1 {
+  text-align: center;
+}
+/* Buttons Styling */
+main > .buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  @media (width < 575px) {
+    flex-direction: column;
+  }
+}
+main > .buttons > button {
+  width: auto;
+}

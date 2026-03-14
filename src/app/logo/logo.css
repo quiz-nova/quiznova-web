@@ -1,0 +1,21 @@
+.content {
+  display: flex;
+  flex: 1;
+  gap: 0.625rem;
+  justify-content: flex-start;
+}
+.icon {
+  background-image: var(--main-gradient);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+}
+.content span {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}

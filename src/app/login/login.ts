@@ -2,11 +2,9 @@ import { Component, signal } from '@angular/core';
 import { Logo } from '../logo/logo';
 import { RouterLink } from '@angular/router';
 import { email, form, FormField, required } from '@angular/forms/signals';
-import { single } from 'rxjs';
 enum UserRole {
   student = 'student',
-  doctor = 'doctor',
-  teachingAssistant = 'teachingAssistant',
+  instructor = 'instructor',
   admin = 'admin',
   superAdmin = 'superAdmin',
 }
@@ -24,21 +22,16 @@ export const roles = [
   },
   {
     id: 2,
-    lable: 'Doctor',
-    value: UserRole.doctor,
+    lable: 'Instructor',
+    value: UserRole.instructor,
   },
   {
     id: 3,
-    lable: 'Teaching Assistant',
-    value: UserRole.teachingAssistant,
-  },
-  {
-    id: 4,
     lable: 'Admin',
     value: UserRole.admin,
   },
   {
-    id: 5,
+    id: 4,
     lable: 'Super Admin',
     value: UserRole.superAdmin,
   },

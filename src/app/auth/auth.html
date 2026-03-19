@@ -1,0 +1,22 @@
+<section class="auth-page">
+  <div class="auth-left-side">
+    <div class="side-content">
+      <app-logo></app-logo>
+      <h2>{{ leftTitle() }}</h2>
+      <p>{{ leftDescription() }}</p>
+    </div>
+  </div>
+
+  <div class="auth-right-side">
+    <app-logo class="auth-logo"></app-logo>
+    <div class="auth-header">
+      <h2>{{ heading() }}</h2>
+      <p>
+        {{ promptText() }}
+        <a [routerLink]="promptLink()">{{ promptLinkLabel() }}</a>
+      </p>
+    </div>
+
+    <ng-content></ng-content>
+  </div>
+</section>

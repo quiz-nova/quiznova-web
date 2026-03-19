@@ -1,140 +1,134 @@
-header {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--ff-heading);
-  align-items: center;
-  height: 4rem;
-  position: relative;
+:host {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgb(255 255 255 / 70%);
+  backdrop-filter: blur(14px) saturate(180%);
+  background-color: var(--clr-transparent);
 }
 
-app-logo {
-  flex: 1;
-}
-header::after {
-  content: '';
+:host::after {
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
-
   width: 100vw;
   height: 1px;
-  background: #e9ebef;
-
+  background: var(--clr-gray-200);
   transform: translateX(-50%);
-
+}
+header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  padding-inline: 0.75rem;
+  font-family: var(--ff-heading);
   @media (width < 768px) {
-    display: none;
+    flex-wrap: wrap;
+    height: auto;
+    padding-block: 0.75rem;
   }
 }
+
 nav {
   display: flex;
   gap: 2rem;
-  @media (width < 768px) {
-    flex-direction: column;
-    width: 100%;
-  }
-}
-a {
-  color: var(--clr-gray);
-  @media (width < 768px) {
-    padding-left: 1rem;
-  }
-}
-.header__links__buttons {
-  display: flex;
-  flex: 3;
-  justify-content: space-between;
-  align-items: center;
 
   @media (width < 768px) {
-    overflow: hidden;
-    transition: max-height 0.15s linear;
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    visibility: hidden;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    left: 50%;
-    background-color: white;
-    width: 100vw;
     gap: 1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    transform: translateX(-50%);
+    width: 100%;
+    margin-left: 0;
   }
 }
 
-.header__links__buttons.menu-open {
+a {
+  color: var(--clr-gray-600);
+
+  @media (width < 768px) {
+    padding-left: 1rem;
+  }
+}
+a:hover {
+  color: var(--clr-black-500);
+}
+
+.header__panel {
+  @media (width < 768px) {
+    width: 100%;
+    max-height: 0;
+    padding-inline: 1rem;
+    background-color: var(--clr-transparent);
+    overflow: hidden;
+    visibility: hidden;
+  }
+}
+
+.header__panel.menu-open {
   @media (width < 768px) {
     max-height: 500px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-block: 1rem;
     visibility: visible;
   }
 }
-.header__links__buttons::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: #e9ebef;
-  transform: none;
 
-  @media (width > 767px) {
-    display: none;
-  }
-}
-header .buttons {
+.buttons {
+  position: relative;
   display: flex;
   gap: 0.625rem;
-  @media (width< 768px) {
-    width: 100%;
+
+  @media (width < 768px) {
     justify-content: space-evenly;
+    width: 100%;
   }
 }
-header .buttons button {
+
+.buttons button {
   padding: 0.625rem;
   border-radius: var(--radius-md);
   transition: 0.3s;
+
   @media (width< 768px) {
     width: 40%;
   }
 }
-header .buttons button:hover {
-  color: white;
+
+.buttons button:hover {
+  color: var(--clr-white);
 }
-header .buttons button:first-child {
-  background-color: white;
+
+button:first-child {
+  background-color: var(--clr-white);
 }
-header .buttons button:first-child:hover {
-  background-color: var(--clr-violate);
+
+button:first-child:hover {
+  background-color: var(--clr-violet-500);
 }
-header .buttons button:last-child {
-  background-image: var(--main-gradient);
-  color: white;
+
+button:last-child {
   padding: 0.625rem;
+  color: var(--clr-white);
   transition: transform 0.3s ease-in-out;
+  background-image: var(--gradient-main);
 }
-header .buttons button:last-child:hover {
+
+button:last-child:hover {
   transform: scale(1.05);
 }
 
 .icon {
   display: none;
-  border: 0;
-  background: transparent;
   padding: 0;
+  border: 0;
+  background: var(--clr-transparent);
   cursor: pointer;
 
   @media (width < 768px) {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     width: 1.5rem;
     height: 1.5rem;
     font-size: var(--fs-600);

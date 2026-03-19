@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { Logo } from '../../logo/logo';
+import { Logo } from '../../shared/logo/logo';
 
 export interface ProductLinks {
   id: number;

@@ -1,14 +1,16 @@
-import { Component, computed, signal } from '@angular/core';
-import { FeatureCard, featureCards } from './feature-card/feature-card';
+import { Component, computed, inject } from '@angular/core';
+import { FeatureCardComponent } from './feature-card/feature-card';
+import { FeatureCardsService } from './feature-cards.service';
+import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-features',
-  imports: [],
+  imports: [FadeInOnScrollDirective, FeatureCardComponent],
   templateUrl: './features.html',
   styleUrl: './features.css',
 })
 export class Features {
-  cards = signal<FeatureCard[]>(featureCards);
+  private readonly featureCardsService = inject(FeatureCardsService);
 
-  sortedCards = computed(() => [...this.cards()].sort((a, b) => a.id - b.id));
+  sortedCards = computed(() => [...this.featureCardsService.cards()].sort((a, b) => a.id - b.id));
 }

@@ -1,0 +1,60 @@
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { AuthResponseModel } from './models/auth-response.model';
+import { User } from '../shared/user';
+import { UserRole } from '../shared/user-role';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthService {
+  readonly currentUser = signal<User | null>(new User());
+  readonly accessToken = signal('');
+  private apiUrl = 'http://localhost:7100/api/v1/auth';
+  private tokenKey = 'auth_token';
+  private userKey = 'auth_user';
+  private readonly http = inject(HttpClient);
+
+  login(credentials: {
+    email: string;
+    password: string;
+    role: UserRole;
+  }): Observable<AuthResponseModel> {
+    const payload = {
+      email: credentials.email,
+      password: credentials.password,
+    };
+
+    return this.http
+      .post<AuthResponseModel>(`${this.apiUrl}/login`, payload)
+      .pipe(tap((response) => this.handleAuthResponse(response)));
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+    this.accessToken.set('');
+    this.currentUser.set(new User());
+  }
+
+  private handleAuthResponse(response: AuthResponseModel): void {
+    if (!response.token?.accessToken || !response.user) {
+      return;
+    }
+
+    localStorage.setItem(this.tokenKey, response.token.accessToken);
+    this.accessToken.set(response.token.accessToken);
+
+    const user = new User(
+      response.user.userId,
+      response.user.name,
+      response.user.role,
+      response.user.claims.map((claim) => claim.value),
+      response.token.accessToken,
+    );
+
+    this.currentUser.set(user);
+  }
+}

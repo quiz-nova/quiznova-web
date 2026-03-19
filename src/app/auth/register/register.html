@@ -1,0 +1,39 @@
+<app-auth
+  leftTitle="Get started"
+  leftDescription="Set up your institution in minutes. No credit card required for the free trial."
+  heading="Create account"
+  promptText="Already have an account?"
+  promptLinkLabel="Sign in"
+  promptLink="/login"
+>
+  <form (submit)="onSubmit()" class="auth-form">
+    <div class="auth-field">
+      <label for="register-full-name">Full name</label>
+      <input
+        id="register-full-name"
+        type="text"
+        [formField]="registerForm.fullName"
+      />
+    </div>
+
+    <div class="auth-field">
+      <label for="register-email">Email</label>
+      <input
+        id="register-email"
+        type="email"
+        [formField]="registerForm.email"
+      />
+    </div>
+
+    <div class="auth-field">
+      <label for="register-password">Password</label>
+      <input
+        id="register-password"
+        type="password"
+        [formField]="registerForm.password"
+      />
+    </div>
+
+    <button type="submit" class="auth-button">Create account</button>
+  </form>
+</app-auth>

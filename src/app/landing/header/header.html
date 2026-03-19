@@ -9,21 +9,29 @@
       [attr.aria-label]="menuClicked() ? 'Close menu' : 'Open menu'"
       [attr.aria-expanded]="menuClicked()"
     >
-      <i class="fa-solid" [class.fa-bars]="!menuClicked()" [class.fa-xmark]="menuClicked()"></i>
+      <i
+        class="fa-solid"
+        [class.fa-bars]="!menuClicked()"
+        [class.fa-xmark]="menuClicked()"
+      ></i>
     </button>
-    <div
-      class="header__links__buttons"
+
+    <nav
+      class="links header__panel"
+      role="list"
       [class.menu-open]="activateBurgerIcon() && menuClicked()"
     >
-      <nav class="links" role="list">
-        @for (link of sortedLinks(); track link.id) {
-          <a [attr.href]="'#' + link.name">{{ link.label }}</a>
-        }
-      </nav>
-      <div class="buttons">
-        <button type="button" routerLink="/login">Log in</button>
-        <button type="button" routerLink="/register">Get Started</button>
-      </div>
+      @for (link of sortedLinks(); track link.id) {
+      <a [attr.href]="'#' + link.name">{{ link.label }}</a>
+      }
+    </nav>
+
+    <div
+      class="buttons header__panel"
+      [class.menu-open]="activateBurgerIcon() && menuClicked()"
+    >
+      <button type="button" routerLink="/login">Log in</button>
+      <button type="button" routerLink="/register">Get Started</button>
     </div>
   </header>
 </div>

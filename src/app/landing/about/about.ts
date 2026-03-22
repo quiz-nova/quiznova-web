@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directive';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FadeInOnScrollDirective } from '../../shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-about',

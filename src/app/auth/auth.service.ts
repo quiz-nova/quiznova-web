@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { AuthResponseModel } from './models/auth-response.model';
-import { User } from '../shared/user';
-import { UserRole } from '../shared/user-role';
+import { User } from '../shared/models/user.model';
+import { ROLE_DEFINITIONS, UserRole } from '../shared/models/user-role.model';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +39,10 @@ export class AuthService {
     this.currentUser.set(new User());
   }
 
+  private parseUserRole(role: string): UserRole {
+    return role in ROLE_DEFINITIONS ? (role as UserRole) : UserRole.student;
+  }
+
   private handleAuthResponse(response: AuthResponseModel): void {
     if (!response.token?.accessToken || !response.user) {
       return;
@@ -50,7 +54,7 @@ export class AuthService {
     const user = new User(
       response.user.userId,
       response.user.name,
-      response.user.role,
+      this.parseUserRole(response.user.role),
       response.user.claims.map((claim) => claim.value),
       response.token.accessToken,
     );

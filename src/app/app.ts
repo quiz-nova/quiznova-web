@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { RouterOutlet } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
-import { User } from './shared/user';
+import { User } from './shared/models/user.model';
 
 @Component({
   selector: 'app-root',

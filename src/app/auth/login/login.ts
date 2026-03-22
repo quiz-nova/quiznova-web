@@ -7,7 +7,7 @@ import {
   type FormControl,
   type FormGroup,
 } from '@angular/forms';
-import { ROLES, UserRole } from '../../shared/user-role';
+import { ROLES, UserRole } from '../../shared/models/user-role.model';
 import { AuthService } from '../auth.service';
 import { Auth } from '../auth';
 

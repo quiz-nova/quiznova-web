@@ -2,20 +2,20 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  display: block;
   background: rgb(255 255 255 / 70%);
-  backdrop-filter: blur(14px) saturate(180%);
   background-color: var(--clr-transparent);
+  backdrop-filter: blur(14px) saturate(180%);
 }
 
 :host::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: 50%;
-  width: 100vw;
+  left: 0;
+  width: 100%;
   height: 1px;
   background: var(--clr-gray-200);
-  transform: translateX(-50%);
 }
 header {
   position: relative;

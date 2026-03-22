@@ -53,7 +53,3 @@
 .card:hover .icon {
   transform: scale(1.2);
 }
-
-.icon > :is(i, svg) {
-  color: var(--clr-green-500);
-}

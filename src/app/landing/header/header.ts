@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { HeaderLink, headerLinks } from './header-link/header-link';
 import { RouterLink } from '@angular/router';
-import { Logo } from '../../shared/logo/logo';
-
+import { Logo } from '../../shared/components/logo/logo';
 
 @Component({
   selector: 'app-header',

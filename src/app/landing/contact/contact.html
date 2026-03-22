@@ -1,22 +1,25 @@
 <footer id="contact" class="footer">
   <div class="footer__top">
     <div class="footer__brand">
-      <app-logo></app-logo>
-      <p>The modern multi-tenant quiz platform built for educational institutions.</p>
+      <app-logo />
+      <p>
+        The modern multi-tenant quiz platform built for educational
+        institutions.
+      </p>
     </div>
 
     <div class="footer__columns">
       <div class="footer__column">
         <h4>Product</h4>
         @for (link of sortedProductLinks(); track link.id) {
-          <a [attr.href]="link.name">{{ link.label }}</a>
+        <a [attr.href]="link.name">{{ link.label }}</a>
         }
       </div>
 
       <div class="footer__column">
         <h4>Company</h4>
         @for (link of sortedCompanyLinks(); track link.id) {
-          <a [attr.href]="link.name">{{ link.label }}</a>
+        <a [attr.href]="link.name">{{ link.label }}</a>
         }
       </div>
     </div>

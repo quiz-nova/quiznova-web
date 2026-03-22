@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FeatureCardComponent } from './feature-card/feature-card';
 import { FeatureCardsService } from './feature-cards.service';
-import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directive';
+import { FadeInOnScrollDirective } from '../../shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-features',

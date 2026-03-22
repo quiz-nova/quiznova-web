@@ -1,0 +1,14 @@
+<div class="side-bar">
+  <app-logo />
+
+  <p class="user-role">{{currentUser()?.userRole}}</p>
+
+  <app-tab-group>
+    @for (action of roleActions(); track $index) {
+    <app-tab [tabName]="action">
+      <ng-container *ngComponentOutlet="getComponentForAction(action)">
+      </ng-container>
+    </app-tab>
+    }
+  </app-tab-group>
+</div>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directive';
 
 @Component({
@@ -6,5 +6,6 @@ import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directiv
   imports: [FadeInOnScrollDirective],
   templateUrl: './about.html',
   styleUrl: './about.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class About {}

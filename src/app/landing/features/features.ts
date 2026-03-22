@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { FeatureCardComponent } from './feature-card/feature-card';
 import { FeatureCardsService } from './feature-cards.service';
 import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directive';
@@ -8,6 +8,7 @@ import { FadeInOnScrollDirective } from '../../shared/fade-in-on-scroll.directiv
   imports: [FadeInOnScrollDirective, FeatureCardComponent],
   templateUrl: './features.html',
   styleUrl: './features.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Features {
   private readonly featureCardsService = inject(FeatureCardsService);

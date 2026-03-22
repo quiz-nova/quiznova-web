@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { Logo } from '../../shared/logo/logo';
 
 export interface ProductLinks {
@@ -30,6 +30,7 @@ export const companyLinks: CompanyLinks[] = [
   imports: [Logo],
   templateUrl: './contact.html',
   styleUrl: './contact.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Contact {
   productLinks = signal<ProductLinks[]>(productLinks);

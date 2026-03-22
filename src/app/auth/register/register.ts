@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { form, FormField } from '@angular/forms/signals';
 import { Auth } from '../auth';
 
@@ -13,6 +13,7 @@ interface RegisterData {
   imports: [Auth, FormField],
   templateUrl: './register.html',
   styleUrl: './register.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register {
   registerModel = signal<RegisterData>({

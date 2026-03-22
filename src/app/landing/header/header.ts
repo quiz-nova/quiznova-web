@@ -1,4 +1,4 @@
-import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { HeaderLink, headerLinks } from './header-link/header-link';
 import { RouterLink } from '@angular/router';
 import { Logo } from '../../shared/logo/logo';
@@ -9,6 +9,7 @@ import { Logo } from '../../shared/logo/logo';
   imports: [RouterLink, Logo],
   templateUrl: './header.html',
   styleUrl: './header.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
   media = window.matchMedia('(width <= 767px)');

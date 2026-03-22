@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Logo } from '../shared/logo/logo';
 
@@ -8,6 +8,7 @@ import { Logo } from '../shared/logo/logo';
   templateUrl: './auth.html',
   styleUrl: './auth.css',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Auth {
   readonly leftTitle = input.required<string>();

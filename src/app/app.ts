@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
@@ -9,6 +9,7 @@ import { User } from './shared/user';
   imports: [RouterOutlet],
   templateUrl: './app.html',
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   protected readonly title = signal('quiz-nova-client');

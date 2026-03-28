@@ -63,20 +63,25 @@
     /* Primitive color palette */
     --clr-white: #fff;
     --clr-transparent: transparent;
+    --clr-red-100: #f0bfbf;
+    --clr-red-500: #dc2828;
     --clr-black-100: #2f2f2f;
     --clr-black-300: #1f1f1f;
     --clr-black-500: #121212;
     --clr-black-700: #0a0a0a;
     --clr-black-900: #000;
+    --clr-gray-50: #f9fafb;
     --clr-gray-100: #f2f4f6;
     --clr-gray-200: #e9ebef;
     --clr-gray-300: #e5e8eb;
     --clr-gray-500: #b9c0c4;
     --clr-gray-600: #6a7181;
+    --clr-gray-800: #3d4a5a;
     --clr-blue-400: #152b39;
     --clr-blue-900: #141d2e;
     --clr-violet-500: #8254d3;
     --clr-green-100: #eaf6f3;
+    --clr-green-200: #42b7a0;
     --clr-green-500: #12a588;
     --clr-cyan-500: #209db6;
     --gradient-main: linear-gradient(
@@ -147,26 +152,52 @@
 }
 
 @layer utilities {
+  .mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align {
+    display: none;
+  }
+
   .gradient-text {
     background: var(--gradient-main);
     background-clip: text;
     color: var(--clr-transparent);
   }
 
-  /* ladnding page sections */
-  .section-heading > h2,
-  .section-heading > p {
-    margin: 2rem;
-    text-align: center;
+  .focus-green-ring:focus {
+    outline: none;
+    border: 3px solid var(--clr-green-500);
+    border-radius: var(--radius-md);
   }
 
-  .section-heading > h2 {
-    font-size: var(--fs-700);
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: fit-content;
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out,
+      border-color 0.2s ease-in-out;
   }
 
-  .section-heading > p {
-    color: var(--clr-gray-600);
-    font-size: var(--fs-500);
+  .btn-green {
+    background-color: var(--clr-green-500);
+    color: var(--clr-white);
+  }
+
+  .btn-gray {
+    background-color: var(--clr-gray-50);
+    border-color: var(--clr-gray-500);
+    color: var(--clr-blue-900);
+  }
+
+  .btn-gray:hover:not(:disabled) {
+    background-color: var(--clr-violet-500);
+    color: var(--clr-white);
   }
 
   /* This class used to apply the fade in effect this is the state before the element intersecting the view port */
@@ -183,5 +214,79 @@
 
     /* for some cards we want them to apper one after another so we make delay based on the index */
     transition-delay: calc(0.05s * var(--element-index, 0));
+  }
+
+  .delete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background-color: var(--clr-transparent);
+    color: var(--clr-red-500);
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    flex-shrink: 0;
+  }
+
+  .delete-button:hover {
+    background-color: var(--clr-red-100);
+  }
+  /* Question Title That Existed In All Question Types */
+  .element-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .element-title .element-textarea {
+    width: 100%;
+    min-height: 4rem;
+    padding: 0.5rem;
+    border: 1px solid var(--clr-gray-500);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-400);
+    resize: vertical;
+  }
+  /* Make removed and rendered elements by angular smooth */
+  .element-enter {
+    animation: element-enter 150ms ease-out;
+  }
+
+  .element-leave {
+    pointer-events: none;
+    animation: element-leave 150ms ease-in forwards;
+  }
+
+  @keyframes element-enter {
+    from {
+      transform: translateY(0.5rem) scale(0.98);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes element-leave {
+    from {
+      max-height: 40rem;
+      margin-block: 0;
+      padding-block: 1rem;
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    to {
+      max-height: 0;
+      margin-block: -0.75rem;
+      padding-block: 0;
+      transform: translateY(-0.35rem) scale(0.98);
+      opacity: 0;
+    }
   }
 }

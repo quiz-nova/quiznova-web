@@ -87,5 +87,11 @@
       "overflow",
       "cursor"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.component.ts"],
+      "customSyntax": "postcss-angular-inline"
+    }
+  ]
 }

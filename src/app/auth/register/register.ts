@@ -12,7 +12,7 @@ interface RegisterData {
   selector: 'app-register',
   imports: [Auth, FormField],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrls: ['./register.css', '../shared/auth-shared.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register {

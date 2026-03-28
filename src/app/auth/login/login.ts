@@ -26,7 +26,7 @@ type LoginFormGroup = FormGroup<{
   selector: 'app-login',
   imports: [Auth, ReactiveFormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['./login.css', '../shared/auth-shared.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {

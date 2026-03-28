@@ -11,7 +11,9 @@ import { ROLE_DEFINITIONS, UserRole } from '../shared/models/user-role.model';
   providedIn: 'root',
 })
 export class AuthService {
-  readonly currentUser = signal<User | null>(new User());
+  private _currentUser = signal<User | null>(null);
+  readonly currentUser = this._currentUser.asReadonly();
+
   readonly accessToken = signal('');
   private apiUrl = 'http://localhost:7100/api/v1/auth';
   private tokenKey = 'auth_token';
@@ -36,7 +38,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     this.accessToken.set('');
-    this.currentUser.set(new User());
+    this._currentUser.set(null);
   }
 
   private parseUserRole(role: string): UserRole {
@@ -51,14 +53,15 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, response.token.accessToken);
     this.accessToken.set(response.token.accessToken);
 
-    const user = new User(
-      response.user.userId,
-      response.user.name,
-      this.parseUserRole(response.user.role),
-      response.user.claims.map((claim) => claim.value),
-      response.token.accessToken,
-    );
+    const user: User = {
+      userId: response.user.userId,
+      name: response.user.name,
+      userRole: this.parseUserRole(response.user.role),
+      claims: response.user.claims.map((claim) => claim.value),
+      accessToken: response.token.accessToken,
+    };
+    localStorage.setItem(this.userKey, JSON.stringify(user));
 
-    this.currentUser.set(user);
+    this._currentUser.set(user);
   }
 }

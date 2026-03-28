@@ -38,23 +38,27 @@ import { FeatureCard, featureCards } from './feature-card.model';
         justify-content: center;
         flex-direction: column;
       }
-    }
 
-    .card h3 {
-      font-size: var(--fs-500);
-    }
+      h3 {
+        font-size: var(--fs-500);
+      }
 
-    .card p {
-      color: var(--clr-gray-600);
-      font-size: var(--fs-400);
-      word-spacing: 3px;
-    }
+      p {
+        color: var(--clr-gray-600);
+        font-size: var(--fs-400);
+        word-spacing: 3px;
+      }
 
-    .card:hover {
-      transform: scale(1.01);
-      box-shadow:
-        0 20px 25px -5px rgb(0 0 0 / 10%),
-        0 10px 10px -5px rgb(0 0 0 / 4%);
+      &:hover {
+        transform: scale(1.01);
+        box-shadow:
+          0 20px 25px -5px rgb(0 0 0 / 10%),
+          0 10px 10px -5px rgb(0 0 0 / 4%);
+
+        .icon {
+          transform: scale(1.2);
+        }
+      }
     }
 
     .icon {
@@ -66,10 +70,6 @@ import { FeatureCard, featureCards } from './feature-card.model';
       border-radius: var(--radius-md);
       background: var(--clr-green-100);
       transition: transform 0.3s ease-in-out;
-    }
-
-    .card:hover .icon {
-      transform: scale(1.2);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

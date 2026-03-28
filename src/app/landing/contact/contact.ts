@@ -87,17 +87,17 @@ export const companyLinks: CompanyLinks[] = [
         justify-content: center;
         flex-direction: column;
       }
-    }
 
-    .footer__top::after {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      width: 100vw;
-      height: 1px;
-      background-color: var(--clr-white);
-      transform: translateX(-50%);
-      content: '';
+      &::after {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        width: 100vw;
+        height: 1px;
+        background-color: var(--clr-white);
+        transform: translateX(-50%);
+        content: '';
+      }
     }
 
     .footer__brand {
@@ -109,10 +109,10 @@ export const companyLinks: CompanyLinks[] = [
         align-items: center;
         justify-content: center;
       }
-    }
 
-    .footer__brand p {
-      color: var(--clr-gray-600);
+      p {
+        color: var(--clr-gray-600);
+      }
     }
 
     .footer__columns {
@@ -124,10 +124,10 @@ export const companyLinks: CompanyLinks[] = [
       @media (width < 575px) {
         width: 100%;
       }
-    }
 
-    .footer__columns a {
-      color: var(--clr-gray-600);
+      a {
+        color: var(--clr-gray-600);
+      }
     }
 
     .footer__column {

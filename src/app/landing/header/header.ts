@@ -58,16 +58,16 @@ import { Logo } from '../../shared/components/logo/logo';
       background: rgb(255 255 255 / 70%);
       background-color: var(--clr-transparent);
       backdrop-filter: blur(14px) saturate(180%);
-    }
 
-    :host::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: var(--clr-gray-200);
+      &::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: var(--clr-gray-200);
+      }
     }
 
     header {
@@ -104,10 +104,10 @@ import { Logo } from '../../shared/components/logo/logo';
       @media (width < 768px) {
         padding-left: 1rem;
       }
-    }
 
-    a:hover {
-      color: var(--clr-black-500);
+      &:hover {
+        color: var(--clr-black-500);
+      }
     }
 
     .header__panel {
@@ -119,13 +119,13 @@ import { Logo } from '../../shared/components/logo/logo';
         overflow: hidden;
         visibility: hidden;
       }
-    }
 
-    .header__panel.menu-open {
-      @media (width < 768px) {
-        max-height: 500px;
-        padding-block: 1rem;
-        visibility: visible;
+      &.menu-open {
+        @media (width < 768px) {
+          max-height: 500px;
+          padding-block: 1rem;
+          visibility: visible;
+        }
       }
     }
 
@@ -138,14 +138,14 @@ import { Logo } from '../../shared/components/logo/logo';
         justify-content: space-evenly;
         width: 100%;
       }
-    }
 
-    .buttons button {
-      min-height: auto;
-      padding: 0.625rem 1rem;
+      button {
+        min-height: auto;
+        padding: 0.625rem 1rem;
 
-      @media (width < 768px) {
-        width: 40%;
+        @media (width < 768px) {
+          width: 40%;
+        }
       }
     }
 

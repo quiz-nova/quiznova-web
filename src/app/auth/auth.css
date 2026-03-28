@@ -16,18 +16,19 @@
   @media (width < 767px) {
     display: none;
   }
-}
 
-.auth-left-side .side-content {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-inline: 2rem;
-  color: var(--clr-white);
-}
-.auth-left-side .side-content p {
-  color: var(--clr-gray-500);
+  .side-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-inline: 2rem;
+    color: var(--clr-white);
+
+    p {
+      color: var(--clr-gray-500);
+    }
+  }
 }
 
 .auth-logo {
@@ -51,21 +52,21 @@
   justify-content: flex-start;
   flex-direction: column;
   gap: 0.5rem;
-}
 
-.auth-header h1 {
-  font-size: var(--fs-700);
-}
+  h1 {
+    font-size: var(--fs-700);
+  }
 
-.auth-header p {
-  color: var(--clr-gray-600);
-}
+  p {
+    color: var(--clr-gray-600);
+  }
 
-.auth-header a {
-  color: var(--clr-green-500);
-}
+  a {
+    color: var(--clr-green-500);
 
-.auth-header a:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--clr-green-500);
+    &:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--clr-green-500);
+    }
+  }
 }

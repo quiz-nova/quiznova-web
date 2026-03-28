@@ -16,25 +16,25 @@
     color 0.25s ease,
     border-color 0.25s ease;
   border-color: var(--clr-gray-600);
-}
 
-.role-box input {
-  position: absolute;
-  opacity: 0;
-  visibility: hidden;
-}
+  input {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+  }
 
-.role-box:hover {
-  background-color: var(--clr-violet-500);
-  color: var(--clr-white);
-  border-color: var(--clr-transparent);
-  cursor: pointer;
-}
+  &:hover {
+    background-color: var(--clr-violet-500);
+    color: var(--clr-white);
+    border-color: var(--clr-transparent);
+    cursor: pointer;
+  }
 
-.role-box:has(input:checked) {
-  background-color: var(--clr-violet-500);
-  color: var(--clr-white);
-  border-color: var(--clr-transparent);
+  &:has(input:checked) {
+    background-color: var(--clr-violet-500);
+    color: var(--clr-white);
+    border-color: var(--clr-transparent);
+  }
 }
 
 .auth-error {

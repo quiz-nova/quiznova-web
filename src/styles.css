@@ -162,10 +162,12 @@
     color: var(--clr-transparent);
   }
 
-  .focus-green-ring:focus {
-    outline: none;
-    border: 3px solid var(--clr-green-500);
-    border-radius: var(--radius-md);
+  .focus-green-ring {
+    &:focus {
+      outline: none;
+      border: 3px solid var(--clr-green-500);
+      border-radius: var(--radius-md);
+    }
   }
 
   .btn {
@@ -193,11 +195,11 @@
     background-color: var(--clr-gray-50);
     border-color: var(--clr-gray-500);
     color: var(--clr-blue-900);
-  }
 
-  .btn-gray:hover:not(:disabled) {
-    background-color: var(--clr-violet-500);
-    color: var(--clr-white);
+    &:hover:not(:disabled) {
+      background-color: var(--clr-violet-500);
+      color: var(--clr-white);
+    }
   }
 
   /* This class used to apply the fade in effect this is the state before the element intersecting the view port */
@@ -207,13 +209,14 @@
       transform 0.5s;
     transform: translateY(calc(20px + (var(--element-index, 0) * 5px)));
     opacity: 0;
-  }
-  .fade-in.appear {
-    transform: translateY(0);
-    opacity: 1;
 
-    /* for some cards we want them to apper one after another so we make delay based on the index */
-    transition-delay: calc(0.05s * var(--element-index, 0));
+    &.appear {
+      transform: translateY(0);
+      opacity: 1;
+
+      /* for some cards we want them to apper one after another so we make delay based on the index */
+      transition-delay: calc(0.05s * var(--element-index, 0));
+    }
   }
 
   .delete-button {
@@ -230,26 +233,29 @@
     inline-size: 2.5rem;
     block-size: 2.5rem;
     flex-shrink: 0;
+
+    &:hover {
+      background-color: var(--clr-red-100);
+    }
   }
 
-  .delete-button:hover {
-    background-color: var(--clr-red-100);
-  }
   /* Question Title That Existed In All Question Types */
   .element-title {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+
+    & .element-textarea {
+      width: 100%;
+      min-height: 4rem;
+      padding: 0.5rem;
+      border: 1px solid var(--clr-gray-500);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-400);
+      resize: vertical;
+    }
   }
-  .element-title .element-textarea {
-    width: 100%;
-    min-height: 4rem;
-    padding: 0.5rem;
-    border: 1px solid var(--clr-gray-500);
-    border-radius: var(--radius-sm);
-    font-size: var(--fs-400);
-    resize: vertical;
-  }
+
   /* Make removed and rendered elements by angular smooth */
   .element-enter {
     animation: element-enter 150ms ease-out;

@@ -11,12 +11,12 @@ ng-content in teh auth component */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
 
-.auth-field input {
-  width: 100%;
-  height: 2.75rem;
-  padding-left: 1rem;
-  border: 1px solid var(--clr-gray-600);
-  border-radius: var(--radius-md);
+  input {
+    width: 100%;
+    height: 2.75rem;
+    padding-left: 1rem;
+    border: 1px solid var(--clr-gray-600);
+    border-radius: var(--radius-md);
+  }
 }

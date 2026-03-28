@@ -17,7 +17,7 @@ export const featureCards: FeatureCard[] = [
     id: 2,
     icon: 'fa-solid fa-user-shield',
     title: 'Role-Based Access',
-    content: 'Super Admin, College Admin, Instructor, and Student — each with tailored dashboards.',
+    content: 'Admin, Instructor, and Student — each with tailored dashboards.',
   },
   {
     id: 3,

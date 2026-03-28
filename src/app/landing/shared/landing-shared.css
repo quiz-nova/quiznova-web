@@ -1,0 +1,16 @@
+/* landing shared styles that will be used by all landing components contact features hero .. */
+
+.section-heading > h2,
+.section-heading > p {
+  margin: 2rem;
+  text-align: center;
+}
+
+.section-heading > h2 {
+  font-size: var(--fs-700);
+}
+
+.section-heading > p {
+  color: var(--clr-gray-600);
+  font-size: var(--fs-500);
+}

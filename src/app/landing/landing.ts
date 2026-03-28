@@ -8,8 +8,18 @@ import { Header } from './header/header';
 @Component({
   selector: 'app-landing',
   imports: [Contact, About, Features, Hero, Header],
-  templateUrl: './landing.html',
-  styleUrl: './landing.css',
+  template: `
+    <app-header></app-header>
+    <app-hero></app-hero>
+    <app-features></app-features>
+    <app-about></app-about>
+    <app-contact></app-contact>
+  `,
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Landing {}

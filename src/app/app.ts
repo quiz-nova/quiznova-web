@@ -8,7 +8,13 @@ import { User } from './shared/models/user.model';
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styles: [],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {

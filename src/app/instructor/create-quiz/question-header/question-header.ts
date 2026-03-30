@@ -1,7 +1,7 @@
 import { Component, inject, input, OnInit } from '@angular/core';
 import { Question, QuestionType } from '../../../shared/models/quiz/question.model';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CreateQuizService } from '../create-quiz.service';
+import { CreateQuizService } from '../../../shared/services/quiz.service';
 
 @Component({
   selector: 'app-question-header',
@@ -15,7 +15,7 @@ import { CreateQuizService } from '../create-quiz.service';
 
       <div class="question-header__actions">
         <form [formGroup]="form">
-          <label for="marks" class="visually-hidden">Marks</label>
+          <label for="marks">Marks</label>
           <input
             type="number"
             id="marks"
@@ -24,7 +24,7 @@ import { CreateQuizService } from '../create-quiz.service';
           />
         </form>
         <button type="button" class="delete-button" (click)="onDelete()">
-          <span aria-hidden="true">
+          <span>
             <i class="fa-solid fa-trash-can"></i>
           </span>
         </button>
@@ -104,7 +104,6 @@ export class QuestionHeader implements OnInit {
   }
   ngOnInit(): void {
     this.marksControl.setValue(this.question().marks);
-
     this.marksControl.valueChanges.subscribe((newValue) => {
       this.quizService.updateQuestionMarks(this.question().id, newValue);
     });

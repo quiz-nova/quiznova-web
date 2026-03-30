@@ -28,11 +28,7 @@ import { Logo } from '../../shared/components/logo/logo';
           <i class="fa-solid" [class.fa-bars]="!menuClicked()" [class.fa-xmark]="menuClicked()"></i>
         </button>
 
-        <nav
-          class="links header__panel"
-          role="list"
-          [class.menu-open]="activateBurgerIcon() && menuClicked()"
-        >
+        <nav class="links header__panel" [class.menu-open]="activateBurgerIcon() && menuClicked()">
           @for (link of sortedLinks(); track link.id) {
             <a [attr.href]="'#' + link.name">{{ link.label }}</a>
           }

@@ -7,7 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CreateQuizService } from '../create-quiz.service';
+import { CreateQuizService } from '../../../shared/services/quiz.service';
 import { MultipleChoiceQuestion } from '../../../shared/models/quiz/multiple-choice.model';
 import { QuestionTitle } from '../question-title/question-title';
 
@@ -17,19 +17,21 @@ import { QuestionTitle } from '../question-title/question-title';
   template: `
     <div class="mcq-question-container">
       <form [formGroup]="form" class="mcq-question-form">
-        <!-- Choices FormArray -->
+        <app-question-title [formGroup]="form"></app-question-title>
         <div formArrayName="choices" class="radio-group">
-          <app-question-title [formGroup]="form"></app-question-title>
           @for (choiceControl of choicesArray.controls; track $index) {
             @let choiceData = multipleChoiceQuestion().choices[$index];
-
             <div class="radio-item" animate.enter="element-enter" animate.leave="element-leave">
               <div class="radio-item-input">
-                <input type="radio" id="choice-radio-{{ $index }}" [value]="choiceData.id" />
+                <input
+                  type="radio"
+                  [value]="choiceData.id"
+                  [checked]="form.get('correctChoiceId')?.value === choiceData.id"
+                  (change)="form.get('correctChoiceId')?.setValue(choiceData.id)"
+                />
                 <input
                   type="text"
                   [formControlName]="$index"
-                  [id]="'choice-text-' + $index"
                   class="choice-input"
                   placeholder="Enter choice text..."
                 />

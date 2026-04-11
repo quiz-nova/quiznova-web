@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, switchMap, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { AuthResponseModel } from './models/auth-response.model';
 import { User } from '../../shared/models/user.model';
 import { ROLE_DEFINITIONS, UserRole } from '../../shared/models/user-role.model';
@@ -45,19 +45,5 @@ export class AuthService {
       name: user.name,
       userRole: this.parseUserRole(user.role),
     };
-  }
-
-  register(credentials: { name: string; email: string; password: string }): Observable<User> {
-    return this.http
-      .post<UserResponseModel>(`${this.appSettings.apiBaseUrl}/register`, credentials)
-      .pipe(
-        switchMap((response) =>
-          this.login({
-            email: credentials.email,
-            password: credentials.password,
-            role: this.parseUserRole(response.role),
-          }),
-        ),
-      );
   }
 }

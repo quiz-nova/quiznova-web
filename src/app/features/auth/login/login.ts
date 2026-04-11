@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '../../../shared/models/user-role.model';
 import { AuthService } from '../auth.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Logo } from '../../../shared/components/logo/logo';
 
 interface LoginData {
@@ -24,7 +24,7 @@ type LoginFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, Logo, RouterLink],
+  imports: [ReactiveFormsModule, Logo],
   template: `
     <section class="auth-page">
       <div class="auth-left-side">
@@ -32,8 +32,7 @@ type LoginFormGroup = FormGroup<{
           <app-logo />
           <h2>Welcome back</h2>
           <p>
-            Access your dashboard, manage quizzes, and track student performance - all in one
-            place.
+            Access your dashboard, manage quizzes, and track student performance - all in one place.
           </p>
         </div>
       </div>
@@ -42,10 +41,7 @@ type LoginFormGroup = FormGroup<{
         <app-logo class="auth-logo"></app-logo>
         <div class="auth-header">
           <h2>Sign in</h2>
-          <p>
-            Don't have an account?
-            <a [routerLink]="'/auth/register'">Sign up</a>
-          </p>
+          <p>Don't have an account? Contact Your Admin</p>
         </div>
 
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">

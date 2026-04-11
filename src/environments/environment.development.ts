@@ -1,4 +1,6 @@
 export const environment = {
+  appName: 'QuizNova',
   production: false,
-  apiUrl: 'http://localhost:7100/api/v1',
+  apiUrl: 'http://localhost:7100/',
+  enableDevTools: true,
 };

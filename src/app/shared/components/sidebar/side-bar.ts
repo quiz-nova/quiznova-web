@@ -1,47 +1,55 @@
-import { NgComponentOutlet } from '@angular/common';
-import { Component, computed, inject, Type } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Logo } from '../logo/logo';
 import { ROLE_DEFINITIONS } from '../../models/user-role.model';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../features/auth/auth.service';
 import { User } from '../../models/user.model';
-import { TabGroup } from './tab-group/tab-group';
-import { Tab } from './tab/tab';
+import { TabGroup } from './tab-group';
+import { Tab } from './tab';
 
 @Component({
   selector: 'app-side-bar',
-  imports: [Logo, TabGroup, Tab, NgComponentOutlet],
+  imports: [Logo, TabGroup, Tab],
   template: `
-    <div class="side-bar">
+    <aside class="side-bar">
       <app-logo />
 
       <p class="user-role">{{ currentUser()?.userRole }}</p>
 
       <app-tab-group>
         @for (action of roleActions(); track action) {
-          <app-tab [tabName]="action">
-            <ng-container [ngComponentOutlet]="getComponentForAction(action)"></ng-container>
-          </app-tab>
+          <app-tab [tabName]="action"> </app-tab>
         }
       </app-tab-group>
-    </div>
+    </aside>
   `,
-  styles: [],
+  styles: [
+    `
+      .side-bar {
+        display: grid;
+        align-content: start;
+        gap: 2rem;
+        min-height: 100vh;
+        padding: 1.75rem 1.25rem;
+        background-color: var(--clr-white);
+        border-right: 1px solid var(--clr-gray-200);
+      }
+
+      .user-role {
+        color: var(--clr-gray-600);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+    `,
+  ],
 })
 export class SideBar {
   private readonly authService = inject(AuthService);
 
-  readonly currentUser = computed<User | null>(() => this.authService.currentUser());
-  readonly roleActions = computed<string[]>(() => {
+  protected readonly currentUser = computed<User | null>(() => this.authService.currentUser());
+  protected readonly roleActions = computed<string[]>(() => {
     const role = this.currentUser()?.userRole;
     return role ? [...ROLE_DEFINITIONS[role].actions] : [];
   });
-
-  getComponentForAction(action: string): Type<unknown> | null {
-    const role = this.currentUser()?.userRole;
-    if (!role) {
-      return null;
-    }
-
-    return ROLE_DEFINITIONS[role].actionComponents[action] ?? null;
-  }
 }

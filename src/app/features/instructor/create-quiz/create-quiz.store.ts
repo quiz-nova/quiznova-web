@@ -1,0 +1,204 @@
+import { FormGroup } from '@angular/forms';
+import { computed } from '@angular/core';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { MultipleChoiceQuestion } from '../../../shared/models/quiz/multiple-choice.model';
+import { Question, QuestionType } from '../../../shared/models/quiz/question.model';
+import { Quiz } from '../../../shared/models/quiz/quiz.model';
+
+const createInitialQuiz = (): Quiz => ({
+  id: crypto.randomUUID(),
+  title: '',
+  courseId: '',
+  instructorId: 'this.authService.currentUser().userId',
+  startsAtUtc: new Date(),
+  endsAtUtc: new Date(),
+  questions: [],
+});
+
+export interface CreateQuizState {
+  quiz: Quiz;
+  registeredForms: FormGroup[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: CreateQuizState = {
+  quiz: createInitialQuiz(),
+  registeredForms: [],
+  loading: false,
+  error: null,
+};
+
+export const CreateQuizStore = signalStore(
+  { providedIn: 'root' },
+  withState<CreateQuizState>(initialState),
+  withComputed((store) => ({
+    quizId: computed(() => store.quiz().id),
+    questions: computed(() => store.quiz().questions),
+    numberOfQuestions: computed(() => store.quiz().questions.length),
+    totalMarks: computed(() =>
+      store.quiz().questions.reduce((sum, question) => sum + question.marks, 0),
+    ),
+    isEntireQuizValid: computed(() => store.registeredForms().every((form) => form.valid)),
+  })),
+  withMethods((store) => ({
+    setHeaderMetadata(payload: {
+      title: string;
+      courseId: string;
+      startsAtUtc: Date;
+      endsAtUtc: Date;
+    }): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          title: payload.title,
+          courseId: payload.courseId,
+          startsAtUtc: payload.startsAtUtc,
+          endsAtUtc: payload.endsAtUtc,
+        },
+      });
+    },
+
+    setInstructorId(instructorId: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          instructorId,
+        },
+      });
+    },
+
+    registerForm(form: FormGroup): void {
+      patchState(store, {
+        registeredForms: [...store.registeredForms(), form],
+      });
+    },
+
+    unregisterForm(form: FormGroup): void {
+      patchState(store, {
+        registeredForms: store.registeredForms().filter((existingForm) => existingForm !== form),
+      });
+    },
+
+    addQuestion(question: Question): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: [...store.quiz().questions, question],
+        },
+      });
+    },
+
+    removeQuestion(questionId: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store.quiz().questions.filter((question) => question.id !== questionId),
+        },
+      });
+    },
+
+    updateQuestionMarks(questionId: string, marks: number): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store
+            .quiz()
+            .questions.map((question) =>
+              question.id === questionId ? { ...question, marks } : question,
+            ),
+        },
+      });
+    },
+
+    addChoiceToMcq(questionId: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store.quiz().questions.map((question) => {
+            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+              return question;
+            }
+
+            const multipleChoiceQuestion = question as MultipleChoiceQuestion;
+            const newChoice = {
+              id: crypto.randomUUID(),
+              questionId,
+              text: '',
+              displayOrder: multipleChoiceQuestion.choices.length + 1,
+            };
+
+            return {
+              ...question,
+              choices: [...multipleChoiceQuestion.choices, newChoice],
+              numberOfChoices: multipleChoiceQuestion.numberOfChoices + 1,
+            } as MultipleChoiceQuestion;
+          }),
+        },
+      });
+    },
+
+    deleteChoiceFromMcq(questionId: string, choiceId: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store.quiz().questions.map((question) => {
+            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+              return question;
+            }
+
+            const multipleChoiceQuestion = question as MultipleChoiceQuestion;
+            if (multipleChoiceQuestion.choices.length <= 2) {
+              return question;
+            }
+
+            const updatedChoices = multipleChoiceQuestion.choices.filter(
+              (choice) => choice.id !== choiceId,
+            );
+            return {
+              ...question,
+              choices: updatedChoices,
+              numberOfChoices: updatedChoices.length,
+            } as MultipleChoiceQuestion;
+          }),
+        },
+      });
+    },
+
+    updateNumberOfChoices(questionId: string, numberOfChoices: number): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store.quiz().questions.map((question) => {
+            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+              return question;
+            }
+
+            return {
+              ...question,
+              numberOfChoices,
+            } as MultipleChoiceQuestion;
+          }),
+        },
+      });
+    },
+
+    validateAll(): boolean {
+      store.registeredForms().forEach((form) => {
+        form.markAllAsTouched();
+        form.updateValueAndValidity();
+      });
+
+      return store.isEntireQuizValid();
+    },
+
+    resetDraft(): void {
+      patchState(store, {
+        quiz: createInitialQuiz(),
+        registeredForms: [],
+        loading: false,
+        error: null,
+      });
+    },
+  })),
+);

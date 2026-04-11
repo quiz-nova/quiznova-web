@@ -1,30 +1,47 @@
-import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, effect, inject, input } from '@angular/core';
 
 @Directive({
-  selector: '[appFadeInOnScroll], .fade-in',
+  selector: '[appFadeInOnScroll]',
   standalone: true,
+  host: {
+    class: 'fade-in',
+  },
 })
-export class FadeInOnScrollDirective implements OnInit, OnDestroy {
+export class FadeInOnScrollDirective implements OnDestroy {
   private el = inject(ElementRef).nativeElement;
-  private observer!: IntersectionObserver;
+  private observer: IntersectionObserver | null = null;
+  private timeoutId: number | null = null;
 
   threshold = input<number>(0.2);
+  delay = input<number>(0);
 
-  ngOnInit(): void {
-    this.observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          this.el.classList.add('appear');
-          this.observer.unobserve(this.el);
-        }
-      },
-      { threshold: this.threshold() },
-    );
+  constructor() {
+    effect(() => {
+      this.cleanup();
 
-    this.observer.observe(this.el);
+      this.observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            this.timeoutId = setTimeout(() => {
+              this.el.classList.add('appear');
+            }, this.delay());
+
+            this.observer?.unobserve(this.el);
+          }
+        },
+        { threshold: this.threshold() },
+      );
+
+      this.observer.observe(this.el);
+    });
   }
 
-  ngOnDestroy(): void {
-    this.observer?.disconnect();
+  private cleanup() {
+    if (this.timeoutId) clearTimeout(this.timeoutId);
+    if (this.observer) this.observer.disconnect();
+  }
+
+  ngOnDestroy() {
+    this.cleanup();
   }
 }

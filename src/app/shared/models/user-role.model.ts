@@ -1,23 +1,5 @@
 import { Type } from '@angular/core';
-// import { AdminCourses } from '../../sidebar/role-components/admin/admin-courses';
-// import { AdminDashboard } from '../../sidebar/role-components/admin/admin-dashboard';
-// import { AdminDepartments } from '../../sidebar/role-components/admin/admin-departments';
-// import { AdminInstructors } from '../../sidebar/role-components/admin/admin-instructors';
-// import { AdminQuizzes } from '../../sidebar/role-components/admin/admin-quizzes';
-// import { AdminSettings } from '../../sidebar/role-components/admin/admin-settings';
-// import { AdminStudents } from '../../sidebar/role-components/admin/admin-students';
-// import { InstructorAnalytics } from '../../sidebar/role-components/instructor/instructor-analytics';
-// import { InstructorCourses } from '../../sidebar/role-components/instructor/instructor-courses';
-// import { InstructorCreateQuiz } from '../../sidebar/role-components/instructor/instructor-create-quiz';
-// import { InstructorDashboard } from '../../sidebar/role-components/instructor/instructor-dashboard';
-// import { InstructorProfile } from '../../sidebar/role-components/instructor/instructor-profile';
-// import { StudentCourses } from '../../sidebar/role-components/student/student-courses';
-// import { StudentDashboard } from '../../sidebar/role-components/student/student-dashboard';
-// import { StudentProfile } from '../../sidebar/role-components/student/student-profile';
-// import { StudentQuizzes } from '../../sidebar/role-components/student/student-quizzes';
-// import { StudentResults } from '../../sidebar/role-components/student/student-results';
-
-import { CreateQuiz } from '../../instructor/create-quiz/create-quiz';
+import { CreateQuiz } from '../../features/instructor/create-quiz/create-quiz';
 
 export enum UserRole {
   student = 'student',
@@ -26,13 +8,21 @@ export enum UserRole {
 }
 
 export type ActionComponentMap = Record<string, Type<unknown>>;
+export type DefaultUserRoute = Record<UserRole, string>;
+
+export const DEFAULT_USER_ROUTE: DefaultUserRoute = {
+  [UserRole.student]: '/student/dashboard',
+  [UserRole.instructor]: '/instructor/dashboard',
+  [UserRole.admin]: '/admin/dashboard',
+};
 
 export interface RoleDefinition {
   id: number;
   label: string;
   value: UserRole;
   actions: readonly string[];
-  actionComponents: ActionComponentMap;
+  actionComponents?: ActionComponentMap;
+  actionRouteLinks?: Record<string, string>;
 }
 
 export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
@@ -41,13 +31,7 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
     label: 'Student',
     value: UserRole.student,
     actions: ['Dashboard', 'My Courses', 'Quizzes', 'Results', 'Profile'],
-    actionComponents: {
-      // Dashboard: StudentDashboard,
-      // 'My Courses': StudentCourses,
-      // Quizzes: StudentQuizzes,
-      // Results: StudentResults,
-      // Profile: StudentProfile,
-    },
+    actionComponents: {},
   },
   [UserRole.instructor]: {
     id: 2,
@@ -55,34 +39,25 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
     value: UserRole.instructor,
     actions: ['Dashboard', 'My Courses', 'Create Quiz', 'Analytics', 'Profile'],
     actionComponents: {
-      // Dashboard: InstructorDashboard,
-      // 'My Courses': InstructorCourses,
       'Create Quiz': CreateQuiz,
-      // Analytics: InstructorAnalytics,
-      // Profile: InstructorProfile,
+    },
+    actionRouteLinks: {
+      'Create Quiz': '/instructor/create-quiz',
     },
   },
   [UserRole.admin]: {
     id: 3,
     label: 'Admin',
     value: UserRole.admin,
-    actions: [
-      'Dashboard',
-      'Departments',
-      'Instructors',
-      'Students',
-      'Courses',
-      'Quizzes',
-      'Settings',
-    ],
-    actionComponents: {
-      // Dashboard: AdminDashboard,
-      // Departments: AdminDepartments,
-      // Instructors: AdminInstructors,
-      // Students: AdminStudents,
-      // Courses: AdminCourses,
-      // Quizzes: AdminQuizzes,
-      // Settings: AdminSettings,
+    actions: ['Dashboard', 'Departments', 'Instructors', 'Students', 'Courses', 'Quizzes'],
+    actionComponents: {},
+    actionRouteLinks: {
+      Dashboard: '/admin/dashboard',
+      Departments: '/admin/departments',
+      Instructors: '/admin/instructors',
+      Students: '/admin/students',
+      Courses: '/admin/courses',
+      Quizzes: '/admin/quizzes',
     },
   },
 };

@@ -1,5 +1,5 @@
 import { Question, QuestionType } from './question.model';
 
 export interface EssayQuestion extends Question {
-  type: QuestionType.Essay;
+  type: typeof QuestionType.Essay;
 }

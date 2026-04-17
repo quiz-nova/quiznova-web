@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { Course as InstructorCourse } from '../models/course/course.model';
-import { HttpClient } from '@angular/common/http';
+import { Course } from '../models/course/course.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { APP_SETTINGS } from '../../core/config/app.settings';
-import { Course as CollegeCourse } from '../models/admin/course.model';
+import { CourseCount } from '../models/course/course-count.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,13 +11,26 @@ import { Course as CollegeCourse } from '../models/admin/course.model';
 export class CoursesService {
   private readonly http = inject(HttpClient);
   private readonly appSettings = inject(APP_SETTINGS);
-  getInstructorCourses(instructorId: string): Observable<InstructorCourse[]> {
-    return this.http.get<InstructorCourse[]>(
-      `${this.appSettings.apiBaseUrl}/courses?instructorId=${instructorId}`,
+
+  getInstructorCourses(instructorId: string): Observable<Course[]> {
+    return this.http.get<Course[]>(
+      `${this.appSettings.apiBaseUrl}/instructor-courses/${instructorId}`,
     );
   }
 
-  getAllCourses(): Observable<CollegeCourse[]> {
-    return this.http.get<CollegeCourse[]>(`${this.appSettings.apiBaseUrl}/colleges/courses`);
+  getAllCourses(): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.appSettings.apiBaseUrl}/courses`);
+  }
+
+  getInstructorCoursesCount(instructorId: string): Observable<CourseCount> {
+    const params = new HttpParams().set('instructorId', instructorId);
+
+    return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });
+  }
+
+  getStudentCoursesCount(studentId: string): Observable<CourseCount> {
+    const params = new HttpParams().set('studentId', studentId);
+
+    return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });
   }
 }

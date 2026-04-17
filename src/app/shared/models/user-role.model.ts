@@ -1,13 +1,9 @@
-import { Type } from '@angular/core';
-import { CreateQuiz } from '../../features/instructor/create-quiz/create-quiz';
-
 export enum UserRole {
   student = 'student',
   instructor = 'instructor',
   admin = 'admin',
 }
 
-export type ActionComponentMap = Record<string, Type<unknown>>;
 export type DefaultUserRoute = Record<UserRole, string>;
 
 export const DEFAULT_USER_ROUTE: DefaultUserRoute = {
@@ -21,7 +17,6 @@ export interface RoleDefinition {
   label: string;
   value: UserRole;
   actions: readonly string[];
-  actionComponents?: ActionComponentMap;
   actionRouteLinks?: Record<string, string>;
 }
 
@@ -30,18 +25,22 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
     id: 1,
     label: 'Student',
     value: UserRole.student,
-    actions: ['Dashboard', 'My Courses', 'Quizzes', 'Results', 'Profile'],
-    actionComponents: {},
+    actions: ['Dashboard', 'My Courses', 'Quizzes', 'Results'],
+    actionRouteLinks: {
+      Dashboard: '/student/dashboard',
+      'My Courses': '/student/my-courses',
+      Quizzes: '/student/quizzes',
+      Results: '/student/results',
+    },
   },
   [UserRole.instructor]: {
     id: 2,
     label: 'Instructor',
     value: UserRole.instructor,
-    actions: ['Dashboard', 'My Courses', 'Create Quiz', 'Analytics', 'Profile'],
-    actionComponents: {
-      'Create Quiz': CreateQuiz,
-    },
+    actions: ['Dashboard', 'My Courses', 'Create Quiz'],
     actionRouteLinks: {
+      Dashboard: '/instructor/dashboard',
+      'My Courses': '/instructor/my-courses',
       'Create Quiz': '/instructor/create-quiz',
     },
   },
@@ -49,11 +48,9 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
     id: 3,
     label: 'Admin',
     value: UserRole.admin,
-    actions: ['Dashboard', 'Departments', 'Instructors', 'Students', 'Courses', 'Quizzes'],
-    actionComponents: {},
+    actions: ['Dashboard', 'Instructors', 'Students', 'Courses', 'Quizzes'],
     actionRouteLinks: {
       Dashboard: '/admin/dashboard',
-      Departments: '/admin/departments',
       Instructors: '/admin/instructors',
       Students: '/admin/students',
       Courses: '/admin/courses',

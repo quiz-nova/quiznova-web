@@ -8,15 +8,11 @@ import { SideBar } from '../../shared/components/sidebar/side-bar';
   template: `
     <section class="instructor-dashboard">
       <app-side-bar></app-side-bar>
-      <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
     </section> `,
   styles: `
     .instructor-dashboard {
       display: flex;
-    }
-
-    app-side-bar {
-      flex: 1;
     }
   `,
 })

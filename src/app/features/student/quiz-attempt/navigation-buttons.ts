@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
   selector: 'app-navigation-buttons',
   imports: [],
   template: `
     <nav class="nav-actions" aria-label="Question navigation">
-      <button type="button" class="btn btn-gray">Previous</button>
-      <button type="button" class="btn btn-green">Next</button>
+      <button type="button" class="btn btn-gray" [disabled]="!quizAttemptStore.canGoPrevious()">
+        Previous
+      </button>
+      <button type="button" class="btn btn-green" [disabled]="!quizAttemptStore.canGoNext()">
+        Next
+      </button>
     </nav>
   `,
   styles: `
@@ -24,6 +29,14 @@ import { Component } from '@angular/core';
       gap: 0.75rem;
       flex-wrap: wrap;
     }
+
+    button:disabled {
+      cursor: not-allowed;
+      pointer-events: none;
+      opacity: 0.5;
+    }
   `,
 })
-export class NavigationButtons {}
+export class NavigationButtons {
+  protected readonly quizAttemptStore = inject(QuizAttemptStore);
+}

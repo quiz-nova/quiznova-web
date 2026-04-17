@@ -1,7 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { QuestionType } from '../../../shared/models/quiz/question.model';
-import { NgComponentOutlet } from '../../../../../node_modules/@angular/common/types/_common_module-chunk';
 import { QuizService } from '../../../shared/services/quiz.service';
+import { NgComponentOutlet } from '@angular/common';
+import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
   selector: 'app-question-attempt-header',
@@ -12,10 +13,20 @@ import { QuizService } from '../../../shared/services/quiz.service';
         [ngComponentOutlet]="quizService.getSuitableQuestionTag(questionType())"
       ></ng-container>
 
-      <span class="flag" role="status" aria-label="Flag question">
-        <i class="fa-regular fa-circle-exclamation" aria-hidden="true"></i>
-        <span>Flag</span>
-      </span>
+      <button
+        type="button"
+        class="flag btn"
+        [class.flagged]="quizAttemptStore.isCurrentQuestionFlagged()"
+        aria-label="Flag question"
+        (click)="onClickFlag()"
+      >
+        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+        @if (quizAttemptStore.isCurrentQuestionFlagged()) {
+          <span>Unflag</span>
+        } @else {
+          <span>Flag</span>
+        }
+      </button>
     </header>
   `,
   styles: `
@@ -34,14 +45,24 @@ import { QuizService } from '../../../shared/services/quiz.service';
       border: 1px solid var(--clr-gray-300);
       border-radius: var(--radius-lg);
       background-color: var(--clr-gray-100);
-      color: var(--clr-gray-500);
+      color: var(--clr-gray-600);
       font-size: var(--fs-600);
       font-weight: 500;
       line-height: 1;
+    }
+
+    .flagged {
+      border-color: var(--clr-yellow-500);
+      background-color: var(--clr-yellow-500);
+      color: var(--clr-red-500);
     }
   `,
 })
 export class QuestionAttemptHeader {
   protected readonly quizService = inject(QuizService);
+  protected quizAttemptStore = inject(QuizAttemptStore);
   readonly questionType = input.required<QuestionType>();
+  onClickFlag(): void {
+    this.quizAttemptStore.changeFlagStatusForTheCurrentQuestion();
+  }
 }

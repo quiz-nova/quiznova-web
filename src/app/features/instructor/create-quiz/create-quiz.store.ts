@@ -1,15 +1,23 @@
-import { FormGroup } from '@angular/forms';
-import { computed } from '@angular/core';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import { MultipleChoiceQuestion } from '../../../shared/models/quiz/multiple-choice.model';
-import { Question, QuestionType } from '../../../shared/models/quiz/question.model';
-import { Quiz } from '../../../shared/models/quiz/quiz.model';
+import {FormGroup} from '@angular/forms';
+import {computed, inject} from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+import {Choice, MCQ} from '../../../shared/models/quiz/mcq.model';
+import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
+import {Quiz} from '../../../shared/models/quiz/quiz.model';
+import {AuthService} from '../../auth/auth.service';
 
 const createInitialQuiz = (): Quiz => ({
   id: crypto.randomUUID(),
   title: '',
   courseId: '',
-  instructorId: 'this.authService.currentUser().userId',
+  instructorId: '',
   startsAtUtc: new Date(),
   endsAtUtc: new Date(),
   questions: [],
@@ -30,7 +38,7 @@ const initialState: CreateQuizState = {
 };
 
 export const CreateQuizStore = signalStore(
-  { providedIn: 'root' },
+  {providedIn: 'root'},
   withState<CreateQuizState>(initialState),
   withComputed((store) => ({
     quizId: computed(() => store.quiz().id),
@@ -105,7 +113,7 @@ export const CreateQuizStore = signalStore(
           questions: store
             .quiz()
             .questions.map((question) =>
-              question.id === questionId ? { ...question, marks } : question,
+              question.id === questionId ? {...question, marks} : question,
             ),
         },
       });
@@ -120,7 +128,7 @@ export const CreateQuizStore = signalStore(
               return question;
             }
 
-            const multipleChoiceQuestion = question as MultipleChoiceQuestion;
+            const multipleChoiceQuestion = question as MCQ;
             const newChoice = {
               id: crypto.randomUUID(),
               questionId,
@@ -132,7 +140,7 @@ export const CreateQuizStore = signalStore(
               ...question,
               choices: [...multipleChoiceQuestion.choices, newChoice],
               numberOfChoices: multipleChoiceQuestion.numberOfChoices + 1,
-            } as MultipleChoiceQuestion;
+            } as MCQ;
           }),
         },
       });
@@ -147,19 +155,19 @@ export const CreateQuizStore = signalStore(
               return question;
             }
 
-            const multipleChoiceQuestion = question as MultipleChoiceQuestion;
+            const multipleChoiceQuestion = question as MCQ;
             if (multipleChoiceQuestion.choices.length <= 2) {
               return question;
             }
 
             const updatedChoices = multipleChoiceQuestion.choices.filter(
-              (choice) => choice.id !== choiceId,
+              (choice: Choice) => choice.id !== choiceId,
             );
             return {
               ...question,
               choices: updatedChoices,
               numberOfChoices: updatedChoices.length,
-            } as MultipleChoiceQuestion;
+            } as MCQ;
           }),
         },
       });
@@ -177,7 +185,7 @@ export const CreateQuizStore = signalStore(
             return {
               ...question,
               numberOfChoices,
-            } as MultipleChoiceQuestion;
+            } as MCQ;
           }),
         },
       });
@@ -201,4 +209,13 @@ export const CreateQuizStore = signalStore(
       });
     },
   })),
+  withHooks({
+    onInit(store) {
+      const authService = inject(AuthService);
+      const currentUser = authService.currentUser();
+      if (currentUser) {
+        store.setInstructorId(currentUser.userId);
+      }
+    },
+  }),
 );

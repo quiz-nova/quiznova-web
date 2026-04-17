@@ -1,9 +1,19 @@
 import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
 import { Question } from '../../../shared/models/quiz/question.model';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DeleteButton } from '../../../shared/components/delete-button/delete-button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CreateQuizStore } from './create-quiz.store';
+
+type QuestionHeaderFormGroup = FormGroup<{
+  marks: FormControl<number>;
+}>;
 
 @Component({
   selector: 'app-question-header',
@@ -18,14 +28,28 @@ import { CreateQuizStore } from './create-quiz.store';
       <div class="question-header__actions">
         <form [formGroup]="form">
           <label for="marks">Marks</label>
-          <input
-            type="number"
-            id="marks"
-            class="question-header__marks focus-green-ring"
-            formControlName="marks"
-          />
+          <div class="question-header__marks-field">
+            <input
+              type="number"
+              id="marks"
+              class="question-header__marks focus-green-ring"
+              formControlName="marks"
+              min="1"
+              max="5"
+              step="1"
+            />
+          </div>
         </form>
         <app-delete-button ariaLabel="Delete question" (deleted)="onDelete()" />
+        <div class="question-header__error">
+          @if (marksControl.invalid && marksControl.touched) {
+            @if (marksControl.hasError('required')) {
+              <span>Marks is required.</span>
+            } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
+              <span>Marks must be between 1 and 5.</span>
+            }
+          }
+        </div>
       </div>
     </header>
   `,
@@ -45,13 +69,12 @@ import { CreateQuizStore } from './create-quiz.store';
       .question-header__details {
         display: flex;
         align-items: center;
+        gap: 0.9rem;
         gap: 1rem;
-        height: 100%;
       }
       h3 {
+        font-size: var(--fs-700);
         font-size: var(--fs-600);
-      }
-      .question-header__actions {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -59,18 +82,31 @@ import { CreateQuizStore } from './create-quiz.store';
       form {
         display: flex;
         align-items: center;
+        gap: 0.6rem;
+      }
+
+      .question-header__marks-field {
         gap: 0.5rem;
+        flex-direction: column;
+        gap: 0.25rem;
       }
 
       input[type='number'] {
+        width: 4.5rem;
+        padding: 0.45rem 0.55rem;
         width: 4rem;
         padding: 0.25rem;
-        border: 1px solid var(--clr-gray-500);
         border-radius: var(--radius-sm);
+        font-size: var(--fs-400);
       }
 
       label {
-        color: var(--clr-gray-600);
+      }
+
+      .question-header__error {
+        min-height: 1rem;
+        color: var(--clr-red-500);
+        font-size: var(--fs-300);
       }
     `,
   ],
@@ -81,11 +117,14 @@ export class QuestionHeader implements OnInit {
   private readonly createQuizStore = inject(CreateQuizStore);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly formBuilder = inject(FormBuilder);
-  protected readonly form = this.formBuilder.nonNullable.group({
+  private readonly fb = inject(NonNullableFormBuilder);
+  protected readonly form: QuestionHeaderFormGroup = this.fb.group({
     marks: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
   });
-  private readonly marksControl = this.form.get('marks')!;
+
+  protected get marksControl() {
+    return this.form.controls.marks;
+  }
 
   onDelete(): void {
     this.createQuizStore.removeQuestion(this.question().id);
@@ -96,6 +135,10 @@ export class QuestionHeader implements OnInit {
     this.marksControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((newValue) => {
+        if (this.marksControl.invalid) {
+          return;
+        }
+
         this.createQuizStore.updateQuestionMarks(this.question().id, newValue);
       });
   }

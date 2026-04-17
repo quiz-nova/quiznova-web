@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   template: `
     <div class="no-questions">
       <div class="icon">
-        <i class="fa-regular fa-clipboard" aria-hidden="true"></i>
+        <i class="fa-solid fa-clipboard" aria-hidden="true"></i>
       </div>
       <h6 class="no-questions-title">No questions yet</h6>
       <p class="no-questions-sub-title">

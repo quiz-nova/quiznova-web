@@ -8,7 +8,7 @@ import { CreateQuizStore } from './create-quiz.store';
   template: `
     <div class="quiz-header-stats" aria-label="Quiz summary">
       <div class="stat-pill">
-        <i class="fa-regular fa-rectangle-list stat-icon" aria-hidden="true"></i>
+        <i class="fa-solid fa-rectangle-list stat-icon" aria-hidden="true"></i>
         <span>{{ numberOfQuestions() }} Questions</span>
       </div>
 

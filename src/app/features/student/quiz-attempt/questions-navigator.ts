@@ -1,29 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
   selector: 'app-questions-navigator',
   imports: [],
   template: `
-    <section class="navigator-card" aria-label="Question navigator">
-      <h2>Question Navigator</h2>
+      <section class="navigator-card" aria-label="Question navigator">
+          <h2>Question Navigator</h2>
 
-      <div class="navigator-grid">
-        <button type="button" class="active">1</button>
-        <button type="button" class="active">2</button>
-        <button type="button">3</button>
-        <button type="button">4</button>
-        <button type="button">5</button>
-        <button type="button">6</button>
-        <button type="button">7</button>
-        <button type="button">8</button>
-      </div>
+          <div class="navigator-grid">
+              @for (question of quizAttemptStore.quizQuestions(); track $index) {
+                  <button
+                          type="button"
+                          [class.is-current]="$index === quizAttemptStore.currentQuestionIndex()"
+                          [class.is-flagged]="question.isFlagged"
+                          [class.is-solved]="question.isSolved"
+                          (click)="onClick($index)"
+                  >
+                      {{ $index + 1 }}
+                  </button>
+              }
+          </div>
 
-      <ul class="legend" aria-label="Question status legend">
-        <li><span class="dot answered"></span>Answered</li>
-        <li><span class="dot unanswered"></span>Unanswered</li>
-        <li><span class="dot flagged"></span>Flagged</li>
-      </ul>
-    </section>
+          <ul class="legend" aria-label="Question status legend">
+              <li><span class="dot answered"></span>Answered</li>
+              <li><span class="dot unanswered"></span>Unanswered</li>
+              <li><span class="dot flagged"></span>Flagged</li>
+          </ul>
+      </section>
   `,
   styles: `
     :host {
@@ -54,15 +58,30 @@ import { Component } from '@angular/core';
       border: 1px solid var(--clr-gray-300);
       border-radius: 0.625rem;
       min-height: 2rem;
-      background: var(--clr-white);
+      background: var(--clr-gray-100);
       font-weight: 600;
-      color: var(--clr-gray-700);
+      color: var(--clr-gray-500);
     }
 
-    button.active {
+    /* Solved state */
+    button.is-solved {
       background: var(--clr-green-500);
       color: var(--clr-white);
       border-color: var(--clr-green-500);
+    }
+
+    /* Flagged state (overrides solved) */
+    button.is-flagged {
+      background: var(--clr-yellow-500);
+      color: var(--clr-red-500);
+      border-color: var(--clr-yellow-500);
+    }
+
+    /* Current state (overrides all other states) */
+    button.is-current {
+      background: var(--clr-white);
+      color: var(--clr-green-500);
+      border: 2px solid var(--clr-green-500);
     }
 
     .legend {
@@ -72,7 +91,7 @@ import { Component } from '@angular/core';
       display: grid;
       gap: 0.25rem;
       font-size: 0.875rem;
-      color: var(--clr-gray-700);
+      color: var(--clr-gray-600);
     }
 
     .legend li {
@@ -97,8 +116,14 @@ import { Component } from '@angular/core';
     }
 
     .flagged {
-      background: #f8d57e;
+      background: var(--clr-yellow-500);
     }
   `,
 })
-export class QuestionsNavigator {}
+export class QuestionsNavigator {
+  protected readonly quizAttemptStore = inject(QuizAttemptStore);
+
+  onClick(index: number) {
+    this.quizAttemptStore.setCurrentQuestionIndex(index);
+  }
+}

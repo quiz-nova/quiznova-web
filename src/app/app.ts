@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { AuthService } from './features/auth/auth.service';
+import {APP_SETTINGS} from './core/config/app.settings';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,6 @@ import { AuthService } from './features/auth/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly title = signal('quiz-nova-client');
-  private readonly authService = inject(AuthService);
-  protected readonly currentUser = this.authService.currentUser;
+  private readonly appSettings = inject(APP_SETTINGS)
+  protected readonly title = signal(this.appSettings.appName);
 }

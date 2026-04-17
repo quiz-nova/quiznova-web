@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Contact } from './contact/contact';
-import { About } from './about/about';
-import { Features } from './features/features';
-import { Hero } from './hero/hero';
-import { Header } from './header/header';
+import { Contact } from './contact';
+import { About } from './about';
+import { Features } from './features';
+import { Hero } from './hero';
+import { Header } from './header';
 
 @Component({
   selector: 'app-landing',

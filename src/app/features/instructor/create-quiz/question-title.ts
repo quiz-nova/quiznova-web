@@ -1,17 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-question-title',
-  imports: [],
+  imports: [ReactiveFormsModule],
   template: `
     <div class="question-title">
       <label for="questionText">Question Text</label>
       <textarea
         id="questionText"
-        formControlName="text"
+        [formControl]="control()"
         class="question-title__input"
         placeholder="Enter question text..."
       ></textarea>
+
+      <div class="question-title__error">
+        @if (control().invalid && control().touched) {
+          @if (control().hasError('required')) {
+            <span>Question text is required.</span>
+          }
+        }
+      </div>
     </div>
   `,
   styles: `
@@ -32,6 +41,14 @@ import { Component } from '@angular/core';
         border: 3px solid var(--clr-green-500);
       }
     }
+
+    .question-title__error {
+      min-height: 1rem;
+      color: var(--clr-red-500);
+      font-size: var(--fs-300);
+    }
   `,
 })
-export class QuestionTitle {}
+export class QuestionTitle {
+  readonly control = input.required<FormControl<string>>();
+}

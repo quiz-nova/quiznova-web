@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
-import { QuestionTagComponent, QuestionType } from '../../models/quiz/question.model';
+import { QuestionTagComponent } from '../../models/quiz/question-component.contracts';
+import { QuestionType } from '../../models/quiz/question.model';
 
 @Component({
   selector: 'app-true-false-tag',

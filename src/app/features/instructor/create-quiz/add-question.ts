@@ -1,12 +1,19 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
-import { Question, QuestionType } from '../../../shared/models/quiz/question.model';
-import { MultipleChoiceQuestion } from '../../../shared/models/quiz/multiple-choice.model';
-import { TrueFalseQuestion } from '../../../shared/models/quiz/true-false.model';
-import { EssayQuestion } from '../../../shared/models/quiz/essay.model';
+import { QuestionType } from '../../../shared/models/quiz/question.model';
 import { CreateQuizStore } from './create-quiz.store';
+import { mapQuestionTypeToQuestion } from './question-type.mapper';
+
+type AddQuestionFormGroup = FormGroup<{
+  questionType: FormControl<QuestionType>;
+}>;
 
 @Component({
   selector: 'app-add-question',
@@ -25,13 +32,7 @@ import { CreateQuizStore } from './create-quiz.store';
           appendTo="body"
         />
       </div>
-      <button
-        type="button"
-        class="btn btn-green"
-        (click)="addQuestion()"
-      >
-        +Add Question
-      </button>
+      <button type="button" class="btn btn-green" (click)="addQuestion()">+Add Question</button>
     </div>
   `,
   styles: [
@@ -53,70 +54,26 @@ import { CreateQuizStore } from './create-quiz.store';
   ],
 })
 export class AddQuestion {
-  protected readonly questionTypeControl = new FormControl<QuestionType>(
-    QuestionType.MultipleChoice,
-    {
-      nonNullable: true,
-    },
-  );
+  private readonly fb = inject(NonNullableFormBuilder);
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
     { label: 'Multiple Choice', value: QuestionType.MultipleChoice },
     { label: 'True/False', value: QuestionType.TrueFalse },
     { label: 'Essay', value: QuestionType.Essay },
   ];
   private readonly createQuizStore = inject(CreateQuizStore);
+  protected readonly addQuestionForm: AddQuestionFormGroup = this.fb.group({
+    questionType: this.fb.control<QuestionType>(QuestionType.MultipleChoice),
+  });
 
-  private getNewQuestion(questionType: QuestionType): Question {
-    const questionId = crypto.randomUUID();
-
-    switch (questionType) {
-      case QuestionType.MultipleChoice:
-        return {
-          id: questionId,
-          quizId: this.createQuizStore.quizId(),
-          questionText: '',
-          marks: 5,
-          type: QuestionType.MultipleChoice,
-          numberOfChoices: 2,
-          correctChoiceId: '',
-          choices: [
-            {
-              id: crypto.randomUUID(),
-              questionId,
-              text: '',
-              displayOrder: 1,
-            },
-            {
-              id: crypto.randomUUID(),
-              questionId,
-              text: '',
-              displayOrder: 2,
-            },
-          ],
-        } as MultipleChoiceQuestion;
-
-      case QuestionType.TrueFalse:
-        return {
-          id: questionId,
-          quizId: this.createQuizStore.quizId(),
-          questionText: '',
-          marks: 5,
-          type: QuestionType.TrueFalse,
-          correctChoice: true,
-        } as TrueFalseQuestion;
-      case QuestionType.Essay:
-        return {
-          id: questionId,
-          quizId: this.createQuizStore.quizId(),
-          questionText: '',
-          marks: 5,
-          type: QuestionType.Essay,
-        } as EssayQuestion;
-      default:
-        throw new Error(`Unsupported question type: ${questionType}`);
-    }
+  protected get questionTypeControl() {
+    return this.addQuestionForm.controls.questionType;
   }
+
   addQuestion(): void {
-    this.createQuizStore.addQuestion(this.getNewQuestion(this.questionTypeControl.value));
+    this.createQuizStore.addQuestion(
+      mapQuestionTypeToQuestion(this.questionTypeControl.value, {
+        quizId: this.createQuizStore.quizId(),
+      }),
+    );
   }
 }

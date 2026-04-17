@@ -15,6 +15,9 @@ import { Component } from '@angular/core';
       color: #d14343;
       font-weight: 700;
       font-size: 0.95rem;
+      &:hover {
+        background: hsl(0, 72%, 51%, 0.1);
+      }
     }
   `,
 })

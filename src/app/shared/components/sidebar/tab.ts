@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../features/auth/auth.service';
 import { ROLE_DEFINITIONS } from '../../models/user-role.model';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-tab',
@@ -24,11 +25,10 @@ import { ROLE_DEFINITIONS } from '../../models/user-role.model';
         align-items: center;
         gap: 0.875rem;
         min-height: 3.5rem;
-        padding: 0.875rem 1rem;
+        padding: 0.5rem;
         border-radius: 1rem;
         color: var(--clr-gray-600);
         font-size: var(--fs-500);
-        font-weight: 600;
         transition:
           background-color 0.2s ease-in-out,
           color 0.2s ease-in-out;
@@ -49,9 +49,6 @@ import { ROLE_DEFINITIONS } from '../../models/user-role.model';
         text-align: center;
         font-size: 1rem;
       }
-      .tab-banner {
-        padding: 1rem;
-      }
     `,
   ],
 })
@@ -59,32 +56,29 @@ export class Tab {
   readonly tabName = input.required<string>();
   private readonly authService = inject(AuthService);
   private readonly iconMap: Record<string, string> = {
-    Dashboard: 'fa-regular fa-grid-2',
-    'My Courses': 'fa-regular fa-book-open',
-    'Create Quiz': 'fa-regular fa-pen-to-square',
-    'Question Bank': 'fa-regular fa-database',
-    'Assign Quiz': 'fa-regular fa-clipboard-list',
-    'View Results': 'fa-regular fa-eye',
-    Analytics: 'fa-regular fa-chart-column',
-    Profile: 'fa-regular fa-user',
-    Quizzes: 'fa-regular fa-file-lines',
-    Results: 'fa-regular fa-square-poll-vertical',
-    Departments: 'fa-regular fa-building',
-    Instructors: 'fa-regular fa-chalkboard-user',
-    Students: 'fa-regular fa-users',
-    Courses: 'fa-regular fa-book',
-    Settings: 'fa-regular fa-gear',
+    Dashboard: 'fa-solid fa-gauge',
+    'My Courses': 'fa-solid fa-book-open',
+    'Create Quiz': 'fa-solid fa-pen-to-square',
+    'Question Bank': 'fa-solid fa-database',
+    'Assign Quiz': 'fa-solid fa-clipboard-list',
+    'View Results': 'fa-solid fa-eye',
+    Quizzes: 'fa-solid fa-file-lines',
+    Results: 'fa-solid fa-square-poll-vertical',
+    Instructors: 'fa-solid fa-chalkboard-user',
+    Students: 'fa-solid fa-users',
+    Courses: 'fa-solid fa-book',
+    Settings: 'fa-solid fa-gear',
   };
 
   protected readonly routeLink = computed(() => {
-    const user = this.authService.currentUser();
+    const user: User | null = this.authService.currentUser();
     if (!user) return null;
 
-    const roleConfig = ROLE_DEFINITIONS[user.userRole];
+    const roleConfig = ROLE_DEFINITIONS[user.role];
     return roleConfig.actionRouteLinks?.[this.tabName()] ?? null;
   });
 
   protected readonly iconClass = computed(
-    () => this.iconMap[this.tabName()] ?? 'fa-regular fa-circle',
+    () => this.iconMap[this.tabName()] ?? 'fa-solid fa-circle',
   );
 }

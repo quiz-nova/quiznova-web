@@ -1,5 +1,6 @@
-import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
-import { Question, type QuestionComponent } from '../../../shared/models/quiz/question.model';
+import {Component, computed, inject, input, OnDestroy, OnInit} from '@angular/core';
+import {type QuestionComponent} from '../../../shared/models/quiz/question-component.contracts';
+import {Question} from '../../../shared/models/quiz/question.model';
 import {
   FormArray,
   FormControl,
@@ -8,50 +9,54 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MultipleChoiceQuestion } from '../../../shared/models/quiz/multiple-choice.model';
-import { QuestionTitle } from './question-title';
-import { DeleteButton } from '../../../shared/components/delete-button/delete-button';
-import { CreateQuizStore } from './create-quiz.store';
+import {Choice, MCQ} from '../../../shared/models/quiz/mcq.model';
+import {QuestionTitle} from './question-title';
+import {DeleteButton} from '../../../shared/components/delete-button/delete-button';
+import {CreateQuizStore} from './create-quiz.store';
 
 type McqQuestionFormGroup = FormGroup<{
   questionText: FormControl<string>;
   choices: FormArray<FormControl<string>>;
-  correctChoiceId: FormControl<string>;
+  correctChoiceId: FormControl<string | null>;
 }>;
+
 @Component({
   selector: 'app-mcq',
   imports: [ReactiveFormsModule, QuestionTitle, DeleteButton],
   template: `
     <div class="mcq-question-container">
       <form [formGroup]="mcqQuestionForm" class="mcq-question-form">
-        <app-question-title [formGroup]="mcqQuestionForm"></app-question-title>
+        <app-question-title [control]="questionTextControl"></app-question-title>
         <div formArrayName="choices" class="radio-group">
-          @for (choiceControl of choicesArray.controls; track $index) {
-            @let choiceData = mcq().choices[$index];
+          @for (choiceData of mcq().choices; track choiceData.id; let index = $index) {
             <div class="radio-item" animate.enter="element-enter" animate.leave="element-leave">
               <div class="radio-item-input">
                 <input
                   type="radio"
+                  name="correctChoiceGroup"
+                  [formControl]="correctChoiceControl"
                   [value]="choiceData.id"
-                  [checked]="mcqQuestionForm.get('correctChoiceId')?.value === choiceData.id"
-                  (change)="mcqQuestionForm.get('correctChoiceId')?.setValue(choiceData.id)"
+                  [checked]="correctChoiceControl.value === choiceData.id"
+                  (change)="correctChoiceControl.setValue(choiceData.id)"
                 />
                 <input
                   type="text"
-                  [formControlName]="$index"
+                  [formControlName]="index"
                   class="choice-input"
                   placeholder="Enter choice text..."
                 />
               </div>
 
               @if (choicesArray.length > 2) {
-                <app-delete-button ariaLabel="Delete choice" (deleted)="onDeleteChoice($index)" />
+                <app-delete-button ariaLabel="Delete choice" (deleted)="onDeleteChoice(index)" />
               }
             </div>
           }
         </div>
       </form>
-      <button type="button" class="btn btn-gray" (click)="onAddChoice()">+Add Choice</button>
+      @if (choicesArray.length < 5) {
+        <button type="button" class="btn btn-gray" (click)="onAddChoice()">+Add Choice</button>
+      }
     </div>
   `,
   styles: `
@@ -60,22 +65,26 @@ type McqQuestionFormGroup = FormGroup<{
       flex-direction: column;
       gap: 1rem;
     }
+
     .mcq-question-form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
+
     .radio-group {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
     }
+
     .radio-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.5rem;
     }
+
     .radio-item-input {
       display: flex;
       align-items: center;
@@ -103,24 +112,34 @@ type McqQuestionFormGroup = FormGroup<{
   `,
 })
 export class Mcq implements QuestionComponent, OnInit, OnDestroy {
-  private readonly createQuizStore = inject(CreateQuizStore);
   readonly question = input.required<Question>();
-  protected readonly mcq = computed(() => this.question() as MultipleChoiceQuestion);
+  protected readonly mcq = computed(() => this.question() as MCQ);
+  private readonly createQuizStore = inject(CreateQuizStore);
   private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly mcqQuestionForm: McqQuestionFormGroup = this.fb.group({
     questionText: ['', [Validators.required]],
     choices: this.fb.array<FormControl<string>>([]),
-    correctChoiceId: [''],
+    correctChoiceId: [null as string | null],
   });
 
-  get choicesArray(): FormArray {
-    return this.mcqQuestionForm.get('choices') as FormArray;
+  protected get questionTextControl() {
+    return this.mcqQuestionForm.controls.questionText;
+  }
+
+  protected get correctChoiceControl() {
+    return this.mcqQuestionForm.controls.correctChoiceId;
+  }
+
+  get choicesArray(): FormArray<FormControl<string>> {
+    return this.mcqQuestionForm.controls.choices;
   }
 
   ngOnInit() {
+    this.questionTextControl.setValue(this.mcq().questionText);
+
     this.createQuizStore.registerForm(this.mcqQuestionForm);
-    this.mcq().choices.forEach((choice) => {
+    this.mcq().choices.forEach((choice: Choice) => {
       this.choicesArray.push(this.fb.control(choice.text, Validators.required));
     });
   }
@@ -135,8 +154,14 @@ export class Mcq implements QuestionComponent, OnInit, OnDestroy {
   }
 
   protected onDeleteChoice(index: number) {
+    const choiceToDelete = this.mcq().choices[index];
+    if (!choiceToDelete) return;
+    const choiceId = choiceToDelete.id;
+    const currentCorrectId = this.mcqQuestionForm.controls.correctChoiceId.value;
     this.choicesArray.removeAt(index);
-    const choiceId = this.mcq().choices[index].id;
+    if (choiceId === currentCorrectId) {
+      this.mcqQuestionForm.controls.correctChoiceId.setValue(null);
+    }
     this.createQuizStore.deleteChoiceFromMcq(this.question().id, choiceId);
   }
 }

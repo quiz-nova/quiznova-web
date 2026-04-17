@@ -7,5 +7,6 @@ export interface Quiz {
   title: string;
   startsAtUtc: Date;
   endsAtUtc: Date;
+  serverUtc?: Date | string;
   questions: Question[];
 }

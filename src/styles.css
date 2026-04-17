@@ -12,11 +12,6 @@
     text-size-adjust: none;
   }
 
-  /* For Accessibility In Safari */
-  [role="list"] {
-    list-style: none;
-  }
-
   a {
     text-decoration: none;
   }
@@ -32,6 +27,7 @@
     min-block-size: 100vh;
     font-family: var(--ff-body), serif;
   }
+
   h1,
   h2,
   h3,
@@ -132,12 +128,13 @@
     width: 100%;
     max-width: 1320px;
     margin-inline: auto;
-    padding-inline: 15px;
+    padding-inline: clamp(1rem, 2vw, 1.5rem);
   }
 
   @media (width <= 1399px) {
     .container {
       max-width: 1140px;
+      padding-inline: 15px;
     }
   }
 
@@ -167,6 +164,20 @@
 }
 
 @layer utilities {
+  /* PrimeNG RadioButton Styling */
+  .p-radiobutton .p-radiobutton-box.p-highlight {
+    border-color: var(--clr-green-500);
+    background-color: var(--clr-green-500);
+  }
+
+  .p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon {
+    color: var(--clr-white);
+  }
+
+  .p-radiobutton:not(.p-disabled) .p-radiobutton-box:hover {
+    border-color: var(--clr-green-500);
+  }
+
   .p-select {
     display: flex;
     align-items: center;
@@ -223,7 +234,7 @@
   }
 
   .focus-green-ring {
-    &:focus {
+    &:focus-visible {
       outline: none;
       border: 3px solid var(--clr-green-500);
       border-radius: var(--radius-md);
@@ -278,15 +289,12 @@
     transition:
       opacity 0.5s,
       transform 0.5s;
-    transform: translateY(calc(20px + (var(--element-index, 0) * 5px)));
+    transform: translateY(calc(20px));
     opacity: 0;
 
     &.appear {
       transform: translateY(0);
       opacity: 1;
-
-      /* for some cards we want them to apper one after another so we make delay based on the index */
-      transition-delay: calc(0.05s * var(--element-index, 0));
     }
   }
 
@@ -307,14 +315,12 @@
     }
   }
 
-  /* Make removed and rendered elements by angular smooth */
   .element-enter {
     animation: element-enter 150ms ease-out;
   }
 
   .element-leave {
     pointer-events: none;
-    animation: element-leave 150ms ease-in forwards;
   }
 
   @keyframes element-enter {

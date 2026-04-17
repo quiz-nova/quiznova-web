@@ -7,7 +7,7 @@ export interface Choice {
   displayOrder: number;
 }
 
-export interface MultipleChoiceQuestion extends Question {
+export interface MCQ extends Question {
   type: typeof QuestionType.MultipleChoice;
   numberOfChoices: number;
   correctChoiceId: string;

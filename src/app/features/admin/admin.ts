@@ -19,9 +19,6 @@ import { SideBar } from '../../shared/components/sidebar/side-bar';
       display: grid;
       grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top right, rgb(34 197 94 / 8%), transparent 24rem),
-        linear-gradient(180deg, #f8fff9 0%, #f4f6f8 100%);
     }
 
     .admin-content {

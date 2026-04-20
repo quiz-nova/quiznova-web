@@ -23,5 +23,5 @@ import { QuestionType } from '../../models/quiz/question.model';
   `,
 })
 export class McqTag implements QuestionTagComponent {
-  readonly tag = signal(QuestionType.MultipleChoice).asReadonly();
+  readonly tag = signal(QuestionType.Mcq).asReadonly();
 }

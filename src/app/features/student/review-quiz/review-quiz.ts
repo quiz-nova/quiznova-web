@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ReviewQuizDetails } from '../../../shared/models/student/review-quiz.model';
+import { ReviewQuizDetails } from './models/review-quiz.model';
 
 @Component({
   selector: 'app-review-quiz',

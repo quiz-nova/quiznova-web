@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
   input,
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {type QuestionComponent} from '../../../shared/models/quiz/question-component.contracts';
 import {Question} from '../../../shared/models/quiz/question.model';
 import {QuestionTitle} from './question-title';
@@ -20,6 +22,7 @@ import {
 import {TrueFalseQuestion} from '../../../shared/models/quiz/true-false.model';
 import {CreateQuizStore} from './create-quiz.store';
 import {RadioButton} from 'primeng/radiobutton';
+import {startWith} from 'rxjs';
 
 type TrueFalseQuestionFormGroup = FormGroup<{
   text: FormControl<string>;
@@ -33,7 +36,7 @@ type TrueFalseQuestionFormGroup = FormGroup<{
   template: `
     <div class="true-false-container">
       <form [formGroup]="trueFalseQuestionForm">
-        <app-question-title [control]="textControl"></app-question-title>
+        <app-question-title [control]="questionTextControl"></app-question-title>
         <p>Correct Answer:</p>
         <div class="true-false-options">
           <label class="answer-option" for="answerTrue">
@@ -95,6 +98,7 @@ type TrueFalseQuestionFormGroup = FormGroup<{
 })
 export class TrueFalse implements QuestionComponent, OnInit, OnDestroy {
   readonly question = input.required<Question>();
+  private readonly destroyRef = inject(DestroyRef);
   private readonly createQuizStore = inject(CreateQuizStore);
   protected readonly TrueFalseQuestion = computed(() => this.question() as TrueFalseQuestion);
   private readonly fb = inject(NonNullableFormBuilder);
@@ -103,7 +107,7 @@ export class TrueFalse implements QuestionComponent, OnInit, OnDestroy {
     answer: [null as boolean | null, [Validators.required]],
   });
 
-  protected get textControl() {
+  protected get questionTextControl() {
     return this.trueFalseQuestionForm.controls.text;
   }
 
@@ -116,6 +120,12 @@ export class TrueFalse implements QuestionComponent, OnInit, OnDestroy {
       text: this.TrueFalseQuestion().questionText,
       answer: this.TrueFalseQuestion().correctChoice,
     });
+
+    this.questionTextControl.valueChanges
+      .pipe(startWith(this.questionTextControl.getRawValue()), takeUntilDestroyed(this.destroyRef))
+      .subscribe((questionText) => {
+        this.createQuizStore.updateQuestionText(this.question().id, questionText);
+      });
 
     this.createQuizStore.registerForm(this.trueFalseQuestionForm);
   }

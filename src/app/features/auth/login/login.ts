@@ -9,11 +9,11 @@ import {
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '../../../shared/models/user-role.model';
+import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '../../../shared/models/user/user-role.model';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { Logo } from '../../../shared/components/logo/logo';
-import { User } from '../../../shared/models/user.model';
+import { User } from '../../../shared/models/user/user.model';
 
 type LoginFormGroup = FormGroup<{
   email: FormControl<string>;

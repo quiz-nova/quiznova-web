@@ -1,8 +1,8 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../features/auth/auth.service';
-import { ROLE_DEFINITIONS } from '../../models/user-role.model';
-import { User } from '../../models/user.model';
+import { ROLE_DEFINITIONS } from '../../../shared/models/user/user-role.model';
+import { User } from '../../../shared/models/user/user.model';
 
 @Component({
   selector: 'app-tab',

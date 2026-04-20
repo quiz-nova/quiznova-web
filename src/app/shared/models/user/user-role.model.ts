@@ -48,13 +48,14 @@ export const ROLE_DEFINITIONS: Record<UserRole, RoleDefinition> = {
     id: 3,
     label: 'Admin',
     value: UserRole.admin,
-    actions: ['Dashboard', 'Instructors', 'Students', 'Courses', 'Quizzes'],
+    actions: ['Dashboard', 'Instructors', 'Students', 'Courses', 'Quizzes', 'Admins'],
     actionRouteLinks: {
       Dashboard: '/admin/dashboard',
       Instructors: '/admin/instructors',
       Students: '/admin/students',
       Courses: '/admin/courses',
       Quizzes: '/admin/quizzes',
+      Admins: '/admin/admins',
     },
   },
 };

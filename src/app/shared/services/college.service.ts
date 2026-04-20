@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { APP_SETTINGS } from '../../core/config/app.settings';
-import { CollegeSummary } from '../models/admin/college-summary.model';
+import { CollegeSummary } from '../../features/admin/models/college-summary.model';
 
 @Injectable({
   providedIn: 'root',

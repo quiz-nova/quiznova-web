@@ -92,23 +92,21 @@ type QuizHeaderFormGroup = FormGroup<{
   styles: `
     .metadata-form {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
       gap: 1.5rem;
       padding: 1.5rem;
       border: 1px solid var(--clr-gray-200);
       border-radius: 1.25rem;
       background: var(--clr-white);
       box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
-
-      @media (width < 768px) {
-        grid-template-columns: 1fr;
-      }
+      min-width: 0;
     }
 
     .field-group {
       display: flex;
       flex-direction: column;
       gap: 0.65rem;
+      min-width: 0;
     }
 
     .field-error {

@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 import { APP_SETTINGS } from '../../core/config/app.settings';
 import { Quiz } from '../models/quiz/quiz.model';
 import { QuizCount } from '../models/quiz/quiz-count.model';
-import { StudentQuizzesLifecycle } from '../models/student/student-quizzes-lifecycle.model';
+import { StudentQuizzesLifecycle } from '../../features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {

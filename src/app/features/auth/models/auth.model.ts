@@ -1,4 +1,4 @@
-import {User} from '../../../shared/models/user.model';
+import { User } from '../../../shared/models/user/user.model';
 
 export interface Auth {
   token: Token;

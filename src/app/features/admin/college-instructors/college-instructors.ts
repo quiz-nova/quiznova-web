@@ -1,10 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { InstructorService } from '../../shared/services/instructor.service';
+import { InstructorService } from '../../../shared/services/instructor.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { AddInstructorModal } from './add-instructor-modal';
+import { EditInstructorModal } from './edit-instructor-modal';
+import { DeleteInstructorModal } from './delete-instructor-modal';
 
 @Component({
   selector: 'app-admin-instructors',
+  imports: [ProgressSpinner, AddInstructorModal, EditInstructorModal, DeleteInstructorModal],
   template: `
     <section class="page">
       <header class="page-header">
@@ -13,6 +17,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
           <h1>Instructor Directory</h1>
           <p class="description">A quick view of teaching assignments and quiz activity.</p>
         </div>
+        <app-add-instructor-modal (created)="reloadInstructors()"></app-add-instructor-modal>
       </header>
 
       @if (instructorsResource.isLoading()) {
@@ -31,6 +36,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
                 <th>Name</th>
                 <th>Courses</th>
                 <th>Quizzes</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -42,6 +48,18 @@ import { ProgressSpinner } from 'primeng/progressspinner';
                   <td>{{ instructor.name }}</td>
                   <td>{{ instructor.courseCount }}</td>
                   <td>{{ instructor.quizCount }}</td>
+                  <td>
+                    <div class="actions">
+                      <app-edit-instructor-modal
+                        [instructor]="instructor"
+                        (updated)="reloadInstructors()"
+                      ></app-edit-instructor-modal>
+                      <app-delete-instructor-modal
+                        [instructor]="instructor"
+                        (deleted)="reloadInstructors()"
+                      ></app-delete-instructor-modal>
+                    </div>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -54,6 +72,14 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     .page {
       display: grid;
       gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
     }
 
     .eyebrow {
@@ -104,13 +130,23 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     tbody tr:last-child td {
       border-bottom: 0;
     }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ProgressSpinner],
 })
 export class CollegeInstructors {
   private readonly instructorService = inject(InstructorService);
+
   protected readonly instructorsResource = rxResource({
     stream: () => this.instructorService.getAllInstructors(),
   });
+
+  protected reloadInstructors(): void {
+    this.instructorsResource.reload();
+  }
 }

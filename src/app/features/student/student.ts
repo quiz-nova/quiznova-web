@@ -1,25 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { SideBar } from '../../shared/components/sidebar/side-bar';
+import { BaseLayout } from '../../core/layout/base-layout/base-layout';
 
 @Component({
   selector: 'app-student',
-  imports: [RouterOutlet, SideBar],
+  imports: [BaseLayout],
   template: `
-    <section class="student-dashboard">
-      <app-side-bar></app-side-bar>
-      <router-outlet></router-outlet>
-    </section>
+    <app-base-layout></app-base-layout>
   `,
-  styles: `
-    .student-dashboard {
-      display: flex;
-    }
-
-    app-side-bar {
-      flex: 1;
-    }
-  `,
+  styles: ``,
 })
 export class Student {}
-

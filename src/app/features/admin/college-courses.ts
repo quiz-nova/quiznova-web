@@ -58,6 +58,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     .page {
       display: grid;
       gap: 1.5rem;
+      padding: 2rem;
     }
 
     .eyebrow {

@@ -8,7 +8,7 @@ export interface Choice {
 }
 
 export interface MCQ extends Question {
-  type: typeof QuestionType.MultipleChoice;
+  type: typeof QuestionType.Mcq;
   numberOfChoices: number;
   correctChoiceId: string;
   choices: Choice[];

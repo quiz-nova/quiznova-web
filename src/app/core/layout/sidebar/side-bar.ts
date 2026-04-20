@@ -1,17 +1,17 @@
-import {Component, computed, inject} from '@angular/core';
-import {Logo} from '../logo/logo';
-import {ROLE_DEFINITIONS} from '../../models/user-role.model';
-import {AuthService} from '../../../features/auth/auth.service';
-import {TabGroup} from './tab-group';
-import {Tab} from './tab';
-import {User} from '../../models/user.model';
+import { Component, computed, inject } from '@angular/core';
+import { TabGroup } from './tab-group';
+import { Tab } from './tab';
+import { Logo } from '../../../shared/components/logo/logo';
+import { AuthService } from '../../../features/auth/auth.service';
+import { ROLE_DEFINITIONS } from '../../../shared/models/user/user-role.model';
+import { User } from '../../../shared/models/user/user.model';
 
 @Component({
   selector: 'app-side-bar',
   imports: [Logo, TabGroup, Tab],
   template: `
     <aside class="side-bar">
-      <app-logo/>
+      <app-logo />
 
       <p class="user-role">{{ currentUser()?.role }}</p>
 
@@ -24,15 +24,20 @@ import {User} from '../../models/user.model';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+
       .side-bar {
         display: grid;
         align-content: start;
         gap: 2rem;
-        min-height: 100vh;
+        min-height: 100%;
         padding: 1.75rem 1.25rem;
         background-color: var(--clr-white);
         border-right: 1px solid var(--clr-gray-200);
-        width: 15vw;
+        width: 100%;
       }
 
       .user-role {

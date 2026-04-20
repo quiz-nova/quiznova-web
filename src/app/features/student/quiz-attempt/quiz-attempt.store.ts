@@ -10,6 +10,7 @@ import {
 } from '@ngrx/signals';
 import {AuthService} from '../../auth/auth.service';
 import {QuizService} from '../../../shared/services/quiz.service';
+import {QuizAttemptService} from '../../../shared/services/quiz-attempt.service';
 import {rxMethod} from '@ngrx/signals/rxjs-interop';
 import {
   setError,
@@ -18,6 +19,7 @@ import {
   withRequestStatus
 } from '../../../../store-features/with-request-status.feature';
 import {EMPTY, catchError, exhaustMap, tap} from 'rxjs';
+import {QuestionAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
 
 export interface QuestionWithStatus {
   id: string;
@@ -34,7 +36,7 @@ export interface QuizAttemptState {
   quizId: string;
   studentId: string;
   quizQuestions: QuestionWithStatus[];
-  questionAttempts: QuestionAttempt[];
+  questionAttempts: QuestionAnswer[];
   currentQuestionIndex: number;
 }
 
@@ -43,22 +45,6 @@ export interface QuestionAttempt {
   type: QuestionType;
 }
 
-export interface McqAttemptModel extends QuestionAttempt {
-  type: typeof QuestionType.MultipleChoice;
-  selectedChoiceId: string;
-}
-
-export interface TrueFalseAttemptModel extends QuestionAttempt {
-  type: typeof QuestionType.TrueFalse;
-  selectedValue: boolean;
-}
-
-export interface EssayAttemptModel extends QuestionAttempt {
-  type: typeof QuestionType.Essay;
-  responseText: string;
-}
-
-type AttemptModel = McqAttemptModel | TrueFalseAttemptModel | EssayAttemptModel;
 
 const initialState: QuizAttemptState = {
   quizAttemptId: crypto.randomUUID(),
@@ -69,43 +55,12 @@ const initialState: QuizAttemptState = {
   currentQuestionIndex: 0,
 };
 
-function getBackendErrorMessage(error: unknown): string {
-  if (typeof error === 'object' && error !== null && 'error' in error) {
-    const backendError = (error as { error?: unknown }).error;
-    if (typeof backendError === 'string' && backendError.trim()) {
-      return backendError;
-    }
-
-    if (
-      typeof backendError === 'object' &&
-      backendError !== null &&
-      'message' in backendError &&
-      typeof (backendError as { message?: unknown }).message === 'string'
-    ) {
-      return (backendError as { message: string }).message;
-    }
-  }
-
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    typeof (error as { message?: unknown }).message === 'string'
-  ) {
-    return (error as { message: string }).message;
-  }
-
-  return 'Failed to load quiz.';
-}
-
-function isAnswerSolved(answer: AttemptModel): boolean {
+function isAnswerSolved(answer: QuestionAnswer): boolean {
   switch (answer.type) {
-    case QuestionType.MultipleChoice:
+    case QuestionType.Mcq:
       return answer.selectedChoiceId.trim().length > 0;
     case QuestionType.TrueFalse:
       return true;
-    case QuestionType.Essay:
-      return answer.responseText.trim().length > 0;
     default:
       return false;
   }
@@ -117,6 +72,7 @@ export const QuizAttemptStore = signalStore(
   withRequestStatus(),
   withMethods((store) => {
     const quizService = inject(QuizService);
+    const quizAttemptService = inject(QuizAttemptService);
     const toQuestionWithStatus = (question: Question): QuestionWithStatus => ({
       ...question,
       isFlagged: false,
@@ -141,7 +97,7 @@ export const QuizAttemptStore = signalStore(
               patchState(store, setFulfilled());
             }),
             catchError((error: unknown) => {
-              patchState(store, setError(getBackendErrorMessage(error))); // TODO we well modify this to be alliend with the backend error messages
+              patchState(store, setError("Error Occured When we try to submit yout quiz")); // TODO we well modify this to be alliend with the backend error messages
               return EMPTY;
             }),
           );
@@ -167,7 +123,7 @@ export const QuizAttemptStore = signalStore(
         const currentQuestion = store.quizQuestions()[store.currentQuestionIndex()];
         return currentQuestion ? currentQuestion.isFlagged : false;
       },
-      submitAnswer(answer: AttemptModel): void {
+      submitAnswer(answer: QuestionAnswer): void {
         patchState(store, (state) => {
           const solved = isAnswerSolved(answer);
 
@@ -199,7 +155,7 @@ export const QuizAttemptStore = signalStore(
         });
       },
       SubmitQuiz(): void {
-        // TODO: hook this to the backend submit-quiz-attempt endpoint.
+
       },
     };
   }),

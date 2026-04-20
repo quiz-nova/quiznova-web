@@ -28,6 +28,7 @@ export interface CreateQuizState {
   registeredForms: FormGroup[];
   loading: boolean;
   error: string | null;
+  activeQuestionId: string | null;
 }
 
 const initialState: CreateQuizState = {
@@ -35,6 +36,7 @@ const initialState: CreateQuizState = {
   registeredForms: [],
   loading: false,
   error: null,
+  activeQuestionId: null,
 };
 
 export const CreateQuizStore = signalStore(
@@ -89,20 +91,29 @@ export const CreateQuizStore = signalStore(
     },
 
     addQuestion(question: Question): void {
+      const updatedQuestions = [...store.quiz().questions, question];
       patchState(store, {
         quiz: {
           ...store.quiz(),
-          questions: [...store.quiz().questions, question],
+          questions: updatedQuestions,
         },
+        activeQuestionId: question.id,
       });
     },
 
     removeQuestion(questionId: string): void {
+      const updatedQuestions = store.quiz().questions.filter((question) => question.id !== questionId);
+      const nextActiveQuestionId =
+        store.activeQuestionId() === questionId
+          ? updatedQuestions[0]?.id ?? null
+          : store.activeQuestionId();
+
       patchState(store, {
         quiz: {
           ...store.quiz(),
-          questions: store.quiz().questions.filter((question) => question.id !== questionId),
+          questions: updatedQuestions,
         },
+        activeQuestionId: nextActiveQuestionId,
       });
     },
 
@@ -119,27 +130,40 @@ export const CreateQuizStore = signalStore(
       });
     },
 
+    updateQuestionText(questionId: string, questionText: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store
+            .quiz()
+            .questions.map((question) =>
+              question.id === questionId ? {...question, questionText} : question,
+            ),
+        },
+      });
+    },
+
     addChoiceToMcq(questionId: string): void {
       patchState(store, {
         quiz: {
           ...store.quiz(),
           questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
               return question;
             }
 
-            const multipleChoiceQuestion = question as MCQ;
+            const mcq = question as MCQ;
             const newChoice = {
               id: crypto.randomUUID(),
               questionId,
               text: '',
-              displayOrder: multipleChoiceQuestion.choices.length + 1,
+              displayOrder: mcq.choices.length + 1,
             };
 
             return {
               ...question,
-              choices: [...multipleChoiceQuestion.choices, newChoice],
-              numberOfChoices: multipleChoiceQuestion.numberOfChoices + 1,
+              choices: [...mcq.choices, newChoice],
+              numberOfChoices: mcq.numberOfChoices + 1,
             } as MCQ;
           }),
         },
@@ -151,16 +175,16 @@ export const CreateQuizStore = signalStore(
         quiz: {
           ...store.quiz(),
           questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
               return question;
             }
 
-            const multipleChoiceQuestion = question as MCQ;
-            if (multipleChoiceQuestion.choices.length <= 2) {
+            const mcq = question as MCQ;
+            if (mcq.choices.length <= 2) {
               return question;
             }
 
-            const updatedChoices = multipleChoiceQuestion.choices.filter(
+            const updatedChoices = mcq.choices.filter(
               (choice: Choice) => choice.id !== choiceId,
             );
             return {
@@ -178,7 +202,7 @@ export const CreateQuizStore = signalStore(
         quiz: {
           ...store.quiz(),
           questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.MultipleChoice) {
+            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
               return question;
             }
 
@@ -206,6 +230,13 @@ export const CreateQuizStore = signalStore(
         registeredForms: [],
         loading: false,
         error: null,
+        activeQuestionId: null,
+      });
+    },
+
+    setCurrentQuestionId(questionId: string): void {
+      patchState(store, {
+        activeQuestionId: questionId,
       });
     },
   })),

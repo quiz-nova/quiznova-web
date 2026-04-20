@@ -13,9 +13,9 @@ export class CoursesService {
   private readonly appSettings = inject(APP_SETTINGS);
 
   getInstructorCourses(instructorId: string): Observable<Course[]> {
-    return this.http.get<Course[]>(
-      `${this.appSettings.apiBaseUrl}/instructor-courses/${instructorId}`,
-    );
+    const params = new HttpParams().set('instructorId', instructorId);
+
+    return this.http.get<Course[]>(`${this.appSettings.apiBaseUrl}/courses`, { params });
   }
 
   getAllCourses(): Observable<Course[]> {

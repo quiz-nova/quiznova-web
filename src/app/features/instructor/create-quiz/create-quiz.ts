@@ -1,4 +1,4 @@
-import {Component, inject, Signal} from '@angular/core';
+import {Component, inject, signal, Signal} from '@angular/core';
 import {NgComponentOutlet} from '@angular/common';
 import {AddQuestion} from './add-question';
 import {QuizService} from '../../../shared/services/quiz.service';
@@ -8,69 +8,137 @@ import {NoQuestions} from './no-questions';
 import {CreateQuizStore} from './create-quiz.store';
 import {Quiz} from '../../../shared/models/quiz/quiz.model';
 import {QuizMetadata} from './quiz-metadata';
+import {ObserveVisibilityDirective} from '../../../shared/directives/observe-visibility.directive';
+import {QuestionsOutline} from './questions-outline';
 
 @Component({
   selector: 'app-create-quiz',
-  imports: [AddQuestion, NgComponentOutlet, QuestionHeader, QuizHeader, NoQuestions, QuizMetadata],
+  imports: [
+    AddQuestion,
+    NgComponentOutlet,
+    QuestionHeader,
+    QuizHeader,
+    NoQuestions,
+    QuizMetadata,
+    ObserveVisibilityDirective,
+    QuestionsOutline,
+  ],
   template: `
-    <section class="create-quiz container">
-      <header class="header">
-        <div class="content">
-          <h1 class="title">Create Quiz</h1>
-          <p class="subtitle">Build your quiz by adding questions below</p>
-        </div>
-        <button type="button" class="btn btn-green" (click)="onPublishQuiz()">Publish Quiz</button>
-      </header>
-      <app-quiz-metadata></app-quiz-metadata>
-      <app-quiz-header></app-quiz-header>
-      @if (numberOfQuestions() > 0) {
-        <div class="questions-list">
-          @for (question of quiz().questions; track question.id) {
-            <div
-              #questionElement
-              [id]="question.id"
-              class="question"
-              animate.enter="element-enter"
-              animate.leave="element-leave"
-            >
-              <app-question-header [index]="$index" [question]="question">
-                <ng-container
-                  [ngComponentOutlet]="quizService.getSuitableQuestionTag(question.type)"
+    <section class="create-quiz">
+      <div class="outline">
+        @if (numberOfQuestions() > 0) {
+          <app-questions-outline></app-questions-outline>
+        } @else {
+          <div class="empty-outline-placeholder">
+            <p class="placeholder-text">Your quiz outline will appear here as you add questions.</p>
+          </div>
+        }
+      </div>
+      <main class="main">
+        <header class="header">
+          <div class="content">
+            <h1 class="title">Create Quiz</h1>
+            <p class="subtitle">Build your quiz by adding questions below</p>
+          </div>
+          <button
+            type="button"
+            class="btn btn-green"
+            [disabled]="!createQuizStore.isEntireQuizValid()"
+            (click)="onPublishQuiz()">Publish Quiz
+          </button>
+        </header>
+        <app-quiz-metadata></app-quiz-metadata>
+        <app-quiz-header></app-quiz-header>
+        <div class="questions-workspace">
+          <div class="questions-content">
+            <div class="questions-list">
+              @for (question of quiz().questions; track question.id) {
+                <div
+                  [id]="question.id"
+                  class="question"
+                  appObserveVisibility
+                  [threshold]="0.45"
+                  (visible)="onQuestionVisibilityChanged($event, question.id)"
+                  animate.enter="element-enter"
+                  animate.leave="element-leave"
                 >
-                </ng-container>
-              </app-question-header>
-              <ng-container
-                [ngComponentOutlet]="quizService.getSuitableQuestionComponent(question.type)"
-                [ngComponentOutletInputs]="{ question: question }"
-              ></ng-container>
+                  <app-question-header [index]="$index" [question]="question">
+                    <ng-container
+                      [ngComponentOutlet]="quizService.getSuitableQuestionTag(question.type)"
+                    >
+                    </ng-container>
+                  </app-question-header>
+                  <ng-container
+                    [ngComponentOutlet]="quizService.getSuitableQuestionComponent(question.type)"
+                    [ngComponentOutletInputs]="{ question: question }"
+                  ></ng-container>
+                </div>
+              }
             </div>
-          }
+
+            <div
+              class="add-question-main"
+              appObserveVisibility
+              (visible)="onAddQuestionButtonVisible($event)"
+            >
+              <app-add-question></app-add-question>
+            </div>
+            @if (!isAddQuestionButtonVisible()) {
+              <div class="add-question-sticky-container">
+                <app-add-question
+                  class="pill-style"
+                  animate.leave="float-add-question-button-leave"
+                  animate.enter="float-add-question-button-enter">
+                </app-add-question>
+              </div>
+            }
+            @if (numberOfQuestions() === 0) {
+              <app-no-questions></app-no-questions>
+            }
+          </div>
         </div>
-      }
-      <app-add-question></app-add-question>
-      @if (numberOfQuestions() === 0) {
-        <app-no-questions></app-no-questions>
-      }
+      </main>
+
     </section>
   `,
   styles: `
     :host {
-      display: flex;
-      flex: 5;
+      display: block;
     }
 
     .create-quiz {
       display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
       gap: 1.5rem;
       width: 100%;
       background-color: var(--clr-gray-50);
+      padding: 2rem;
+    }
+
+    .main {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .empty-outline-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 1rem;
+      color: var(--clr-gray-500);
+      border: 1px dashed var(--clr-gray-300);
+      border-radius: 1rem;
+      background-color: var(--clr-white);
     }
 
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1rem;
       padding: 1.5rem;
+      min-width: 0;
 
       .content {
         display: flex;
@@ -88,27 +156,13 @@ import {QuizMetadata} from './quiz-metadata';
           font-size: var(--fs-500);
         }
       }
-    }
 
-    .metadata-form {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
-      gap: 1.5rem;
-      padding: 1.5rem;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: 1.25rem;
-      background: var(--clr-white);
-      box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
-
-      @media (width < 768px) {
-        grid-template-columns: 1fr;
+      @media (width < 640px) {
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
       }
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
     }
 
     input,
@@ -139,15 +193,77 @@ import {QuizMetadata} from './quiz-metadata';
       gap: 1.5rem;
     }
 
+    .questions-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .questions-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      min-width: 0;
+    }
+    .btn.btn-green:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    @media (width >= 1024px) {
+
+      app-questions-outline {
+        position: sticky;
+        top: 1rem;
+        align-self: start;
+      }
+    }
+
     .question {
       padding: 1rem;
-      border-top: 1px solid var(--clr-gray-500);
-      border-bottom: 1px solid var(--clr-gray-500);
-      border-right: 1px solid var(--clr-gray-500);
+      border: 1px solid var(--clr-gray-500);
       border-left: 6px solid var(--clr-green-500);
       border-radius: var(--radius-md);
-      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%),
-      0 10px 10px -5px rgb(0 0 0 / 4%);
+      /*box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%),*/
+      /*0 10px 10px -5px rgb(0 0 0 / 4%);*/
+    }
+
+    .float-add-question-button-enter {
+      animation: float-add-question-button-enter 0.5s;
+    }
+
+    .float-add-question-button-leave {
+      pointer-events: none;
+      animation: float-add-question-button-leave 0.5s;
+    }
+
+    @keyframes float-add-question-button-enter {
+      from {
+        opacity: 0;
+        transform: translateY(0.6rem) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes float-add-question-button-leave {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(0.4rem) scale(0.96);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .float-add-question-button-enter,
+      .float-add-question-button-leave {
+        animation-duration: 1ms;
+      }
     }
   `,
 })
@@ -157,6 +273,7 @@ export class CreateQuiz {
   protected readonly quiz: Signal<Quiz> = this.createQuizStore.quiz as Signal<Quiz>;
   protected readonly numberOfQuestions: Signal<number> = this.createQuizStore
     .numberOfQuestions as Signal<number>;
+  protected readonly isAddQuestionButtonVisible = signal(true);
 
   protected onPublishQuiz() {
     if (this.createQuizStore.validateAll()) {
@@ -170,5 +287,17 @@ export class CreateQuiz {
         },
       });
     }
+  }
+
+  protected onAddQuestionButtonVisible(isVisible: boolean) {
+    this.isAddQuestionButtonVisible.set(isVisible);
+  }
+
+  protected onQuestionVisibilityChanged(isVisible: boolean, questionId: string) {
+    if (!isVisible) {
+      return;
+    }
+
+    this.createQuizStore.setCurrentQuestionId(questionId);
   }
 }

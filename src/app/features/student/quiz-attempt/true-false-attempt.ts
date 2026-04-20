@@ -9,7 +9,8 @@ import {
 } from '@angular/forms';
 import {distinctUntilChanged, startWith} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {QuizAttemptStore, TrueFalseAttemptModel} from './quiz-attempt.store';
+import {TrueFalseQuestionAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
+import {QuizAttemptStore} from './quiz-attempt.store';
 
 export type TrueFalseAttemptForm = FormGroup<{
   selectedOption: FormControl<boolean | null>;
@@ -117,9 +118,12 @@ export class TrueFalseAttempt implements QuestionAttemptComponent, OnInit {
           return;
         }
 
-        const answer: TrueFalseAttemptModel = {
+        const answer: TrueFalseQuestionAnswer = {
+          id: crypto.randomUUID(),
+          studentId: this.quizAttemptStore.studentId(),
           questionId: this.question().id,
-          selectedValue,
+          quizAttemptId: this.quizAttemptStore.quizAttemptId(),
+          studentChoice: selectedValue,
           type: QuestionType.TrueFalse,
         };
 

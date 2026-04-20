@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, input, signal} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {QuizCountdownTag} from '../../../shared/components/quiz-countdown-tag/quiz-countdown-tag';
-import {StudentQuizApiDto} from './student-quizzes.model';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { QuizCountdownTag } from '../../../shared/components/quiz-countdown-tag/quiz-countdown-tag';
+import { StudentQuizApiDto } from './models/student-quizzes.model';
 
 @Component({
   selector: 'app-student-available-quizzes',
@@ -15,14 +15,14 @@ import {StudentQuizApiDto} from './student-quizzes.model';
         <div class="table-shell">
           <table>
             <thead>
-            <tr>
-              <th>Quiz</th>
-              <th>Course</th>
-              <th>Questions</th>
-              <th>Duration</th>
-              <th>Time Remaining</th>
-              <th>Action</th>
-            </tr>
+              <tr>
+                <th>Quiz</th>
+                <th>Course</th>
+                <th>Questions</th>
+                <th>Duration</th>
+                <th>Time Remaining</th>
+                <th>Action</th>
+              </tr>
             </thead>
             <tbody>
               @for (quiz of quizzes(); track quiz.quizId) {
@@ -45,7 +45,7 @@ import {StudentQuizApiDto} from './student-quizzes.model';
                       [class.start-btn--disabled]="isQuizExpired(quiz.quizId)"
                       [attr.aria-disabled]="isQuizExpired(quiz.quizId)"
                       [tabIndex]="isQuizExpired(quiz.quizId) ? -1 : 0"
-                    >Start Quiz</a
+                      >Start Quiz</a
                     >
                   </td>
                 </tr>

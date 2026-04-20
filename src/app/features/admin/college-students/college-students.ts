@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { StudentService } from '../../shared/services/student.service';
+import { StudentService } from '../../../shared/services/student.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { AddStudentModal } from './add-student-modal';
+import { EditStudentModal } from './edit-student-modal';
+import { DeleteStudentModal } from './delete-student-modal';
 
 @Component({
   selector: 'app-college-students',
-  imports: [ProgressSpinner],
+  imports: [ProgressSpinner, AddStudentModal, EditStudentModal, DeleteStudentModal],
   template: `
     <section class="page">
       <header class="page-header">
@@ -14,6 +17,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
           <h1>Student Roster</h1>
           <p class="description">A simple roster view of enrollment load.</p>
         </div>
+        <app-add-student-modal (created)="reloadStudents()"></app-add-student-modal>
       </header>
 
       @if (studentsResource.isLoading()) {
@@ -33,6 +37,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
               <tr>
                 <th>Name</th>
                 <th>Enrolled Courses</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -40,6 +45,18 @@ import { ProgressSpinner } from 'primeng/progressspinner';
                 <tr>
                   <td>{{ student.name }}</td>
                   <td>{{ student.enrolledCourseCount }}</td>
+                  <td>
+                    <div class="actions">
+                      <app-edit-student-modal
+                        [student]="student"
+                        (updated)="reloadStudents()"
+                      ></app-edit-student-modal>
+                      <app-delete-student-modal
+                        [student]="student"
+                        (deleted)="reloadStudents()"
+                      ></app-delete-student-modal>
+                    </div>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -52,6 +69,14 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     .page {
       display: grid;
       gap: 1.5rem;
+      padding: 2rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
     }
 
     .eyebrow {
@@ -110,6 +135,12 @@ import { ProgressSpinner } from 'primeng/progressspinner';
       background-color: var(--clr-white);
       color: var(--clr-gray-600);
     }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -119,4 +150,8 @@ export class CollegeStudents {
   protected readonly studentsResource = rxResource({
     stream: () => this.studentService.getAllStudents(),
   });
+
+  protected reloadStudents(): void {
+    this.studentsResource.reload();
+  }
 }

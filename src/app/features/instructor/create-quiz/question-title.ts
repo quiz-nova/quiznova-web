@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import {Component, DestroyRef, inject, input, OnInit} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -49,6 +49,10 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
     }
   `,
 })
-export class QuestionTitle {
+export class QuestionTitle implements OnInit{
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly control = input.required<FormControl<string>>();
+  ngOnInit(): void {
+  }
 }

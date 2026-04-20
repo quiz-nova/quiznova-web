@@ -65,7 +65,11 @@ type QuestionHeaderFormGroup = FormGroup<{
         gap: 1rem;
         height: 3rem;
       }
-
+      question-header__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
       .question-header__details {
         display: flex;
         align-items: center;
@@ -89,6 +93,7 @@ type QuestionHeaderFormGroup = FormGroup<{
         gap: 0.5rem;
         flex-direction: column;
         gap: 0.25rem;
+        border: none;
       }
 
       input[type='number'] {

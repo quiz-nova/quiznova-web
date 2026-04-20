@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { Landing } from './features/landing/landing';
 import { roleGuard } from './core/guards/role.guard';
-import { UserRole } from './shared/models/user-role.model';
+import { UserRole } from './shared/models/user/user-role.model';
 
 export const routes: Routes = [
   {
@@ -57,17 +57,21 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/admin/admin-dashboard').then((m) => m.AdminDashboard),
+          import('./features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
       },
       {
         path: 'instructors',
         loadComponent: () =>
-          import('./features/admin/college-instructors').then((m) => m.CollegeInstructors),
+          import('./features/admin/college-instructors/college-instructors').then(
+            (m) => m.CollegeInstructors,
+          ),
       },
       {
         path: 'students',
         loadComponent: () =>
-          import('./features/admin/college-students').then((m) => m.CollegeStudents),
+          import('./features/admin/college-students/college-students').then(
+            (m) => m.CollegeStudents,
+          ),
       },
       {
         path: 'courses',
@@ -78,6 +82,11 @@ export const routes: Routes = [
         path: 'quizzes',
         loadComponent: () =>
           import('./features/admin/college-quizzes').then((m) => m.CollegeQuizzes),
+      },
+      {
+        path: 'admins',
+        loadComponent: () =>
+          import('./features/admin/college-admins/college-admins').then((m) => m.CollegeAdmins),
       },
     ],
   },
@@ -108,7 +117,7 @@ export const routes: Routes = [
       {
         path: 'quizzes',
         loadComponent: () =>
-          import('./features/student/student-quizzes/stundet-quizzes').then(
+          import('./features/student/student-quizzes/student-quizzes').then(
             (m) => m.StudentQuizzes,
           ),
       },
@@ -125,7 +134,9 @@ export const routes: Routes = [
       {
         path: 'results',
         loadComponent: () =>
-          import('./features/student/student-results/student-results').then((m) => m.StudentResults),
+          import('./features/student/student-results/student-results').then(
+            (m) => m.StudentResults,
+          ),
       },
     ],
   },

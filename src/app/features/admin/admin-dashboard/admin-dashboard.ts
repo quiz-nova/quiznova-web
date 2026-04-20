@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { FeatureCardComponent } from '../landing/feature-card';
-import { CollegeService } from '../../shared/services/college.service';
+import { FeatureCardComponent } from '../../landing/feature-card';
+import { CollegeService } from '../../../shared/services/college.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AuthService } from '../auth/auth.service';
-import { RoleDashboardHeader } from '../../shared/components/role-dashboard-header/role-dashboard-header';
+import { AuthService } from '../../auth/auth.service';
+import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -46,6 +46,7 @@ import { RoleDashboardHeader } from '../../shared/components/role-dashboard-head
     .page {
       display: grid;
       gap: 1.5rem;
+      padding: 2rem;
     }
 
     .page-header {

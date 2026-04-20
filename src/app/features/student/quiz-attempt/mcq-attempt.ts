@@ -10,7 +10,8 @@ import {
 import {MCQ} from '../../../shared/models/quiz/mcq.model';
 import {distinctUntilChanged, startWith} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {McqAttemptModel, QuizAttemptStore} from './quiz-attempt.store';
+import {McqAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
+import {QuizAttemptStore} from './quiz-attempt.store';
 
 export type McqAttemptForm = FormGroup<{
   selectedChoiceId: FormControl<string | null>;
@@ -25,7 +26,7 @@ export type McqAttemptForm = FormGroup<{
       <h2>Which data structure follows LIFO?</h2>
 
       <div class="choices-grid">
-        @for (choice of mcqQuestion().choices; track choice.id) {
+        @for (choice of mcq().choices; track choice.id) {
           <button
             type="button"
             class="option"
@@ -103,7 +104,7 @@ export class McqAttempt implements QuestionAttemptComponent, OnInit {
 
 
   readonly question = input.required<Question>();
-  protected readonly mcqQuestion = computed(() => {
+  protected readonly mcq = computed(() => {
     return this.question() as MCQ;
   });
   private readonly fb = inject(FormBuilder);
@@ -130,10 +131,13 @@ export class McqAttempt implements QuestionAttemptComponent, OnInit {
 
         if (!choiceId) return;
 
-        const answer: McqAttemptModel = {
+        const answer: McqAnswer = {
+          id: crypto.randomUUID(),
+          studentId: this.quizAttemptStore.studentId(),
           questionId: this.question().id,
+          quizAttemptId: this.quizAttemptStore.quizAttemptId(),
           selectedChoiceId: choiceId,
-          type: QuestionType.MultipleChoice,
+          type: QuestionType.Mcq,
         };
 
         this.quizAttemptStore.submitAnswer(answer);

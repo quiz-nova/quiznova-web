@@ -2,9 +2,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { Auth, Token } from './models/auth.model';
-import { ROLE_DEFINITIONS, UserRole } from '../../shared/models/user-role.model';
+import { ROLE_DEFINITIONS, UserRole } from '../../shared/models/user/user-role.model';
 import { APP_SETTINGS } from '../../core/config/app.settings';
-import { User } from '../../shared/models/user.model';
+import { User } from '../../shared/models/user/user.model';
 
 @Injectable({
   providedIn: 'root',

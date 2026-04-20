@@ -5,21 +5,13 @@ import { map, of } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
 import { QuizService } from '../../../shared/services/quiz.service';
-import {
-  StudentQuizzesApiResponse,
-  StudentQuizStatus,
-} from './student-quizzes.model';
+import { StudentQuizzesApiResponse, StudentQuizStatus } from './models/student-quizzes.model';
 import { StudentAvailableQuizzes } from './student-available-quizzes';
 import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
 
 @Component({
   selector: 'app-student-quizzes',
-  imports: [
-    ProgressSpinner,
-    RoleDashboardHeader,
-    StudentAvailableQuizzes,
-    StudentScheduledQuizzes,
-  ],
+  imports: [ProgressSpinner, RoleDashboardHeader, StudentAvailableQuizzes, StudentScheduledQuizzes],
   template: `
     <section class="quizzes-page">
       <app-role-dashboard-header
@@ -34,15 +26,9 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
       } @else if (quizzesResource.error()) {
         <div class="error" role="alert">Failed to load quizzes.</div>
       } @else {
-        <app-student-available-quizzes
-          [quizzes]="availableQuizzes()"
-          [serverUtc]="serverUtc()"
-        />
+        <app-student-available-quizzes [quizzes]="availableQuizzes()" [serverUtc]="serverUtc()" />
 
-        <app-student-scheduled-quizzes
-          [quizzes]="scheduledQuizzes()"
-          [serverUtc]="serverUtc()"
-        />
+        <app-student-scheduled-quizzes [quizzes]="scheduledQuizzes()" [serverUtc]="serverUtc()" />
       }
     </section>
   `,
@@ -84,9 +70,9 @@ export class StudentQuizzes {
         } satisfies StudentQuizzesApiResponse);
       }
 
-      return this.quizService.getStudentQuizzesLifecycle(studentId).pipe(
-        map((response) => response as unknown as StudentQuizzesApiResponse),
-      );
+      return this.quizService
+        .getStudentQuizzesLifecycle(studentId)
+        .pipe(map((response) => response as unknown as StudentQuizzesApiResponse));
     },
     defaultValue: {
       serverUtc: new Date().toISOString(),

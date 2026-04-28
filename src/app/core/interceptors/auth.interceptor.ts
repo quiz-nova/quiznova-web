@@ -1,7 +1,14 @@
-import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+  HttpRequest,
+} from '@angular/common/http';
 import { inject } from '@angular/core';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from '../../features/auth/auth.service';
+
 
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,

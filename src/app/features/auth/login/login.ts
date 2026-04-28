@@ -6,14 +6,18 @@ import {
   type FormControl,
   type FormGroup,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '../../../shared/models/user/user-role.model';
-import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
-import { Logo } from '../../../shared/components/logo/logo';
-import { User } from '../../../shared/models/user/user.model';
+
+import { FieldError } from '@shared/components/field-error/field-error';
+import { Logo } from '@shared/components/logo/logo';
+import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '@shared/models/user/user-role.model';
+import { User } from '@shared/models/user/user.model';
+
 
 type LoginFormGroup = FormGroup<{
   email: FormControl<string>;
@@ -23,7 +27,7 @@ type LoginFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, Logo, FloatLabel, InputText, Password],
+  imports: [ReactiveFormsModule, Logo, FloatLabel, InputText, Password, FieldError],
   template: `
     <section class="auth-page">
       <div class="auth-left-side">
@@ -50,60 +54,56 @@ type LoginFormGroup = FormGroup<{
           </div>
         }
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="auth-field">
             <p-floatlabel variant="on">
               <input
-                pInputText
                 id="login-email"
+                [fluid]="true"
+                pInputText
                 type="email"
                 formControlName="email"
-                [fluid]="true"
                 autocomplete="username"
               />
               <label for="login-email">Email</label>
             </p-floatlabel>
 
-            <div class="auth-error">
-              @if (emailControl.invalid && emailControl.touched) {
-                @if (emailControl.hasError('required')) {
-                  <span>Email is required.</span>
-                } @else if (emailControl.hasError('email')) {
-                  <span>Please enter a valid email address.</span>
-                }
+            @if (emailControl.invalid && emailControl.touched) {
+              @if (emailControl.hasError('required')) {
+                <app-field-error errorText="Email is required." />
+              } @else if (emailControl.hasError('email')) {
+                <app-field-error errorText="Please enter a valid email address." />
               }
-            </div>
+            }
           </div>
           <div class="auth-field">
             <p-floatlabel variant="on">
               <p-password
-                inputId="login-password"
-                formControlName="password"
                 [feedback]="false"
                 [toggleMask]="true"
                 [fluid]="true"
+                inputId="login-password"
+                formControlName="password"
                 autocomplete="current-password"
               />
               <label for="login-password">Password</label>
             </p-floatlabel>
 
-            <div class="auth-error">
-              @if (passwordControl.invalid && passwordControl.touched) {
-                @if (passwordControl.hasError('required')) {
-                  <span>Password is required.</span>
-                }
+            @if (passwordControl.invalid && passwordControl.touched) {
+              @if (passwordControl.hasError('required')) {
+                <app-field-error errorText="Password is required." />
               }
-            </div>
+            }
           </div>
           <div class="roles">
             @for (role of userRoles; track role.id) {
               <label class="btn btn-gray role-box">
-                <input type="radio" formControlName="role" [value]="role.value" />
+                <input [value]="role.value" type="radio" formControlName="role" />
                 <span>{{ role.label }}</span>
               </label>
             }
           </div>
-          <button type="submit" class="btn btn-green auth-submit">Sign in</button>
+          <button class="btn btn-green auth-submit" type="submit">Sign in</button>
         </form>
       </div>
     </section>

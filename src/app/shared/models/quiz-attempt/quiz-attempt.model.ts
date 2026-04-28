@@ -1,14 +1,18 @@
-import { Quiz } from '../quiz/quiz.model';
-import { Student } from '../student/student.model';
+import { Question } from '@shared/models/quiz/question.model';
+
 import { QuestionAnswer } from './question-answer.model';
 
 export interface QuizAttempt {
-  id: string;
-  studentId: string;
+  quizAttemptId: string;
   quizId: string;
+  quizTitle: string;
   startedAt: Date | string;
   submittedAt: Date | string | null;
-  student?: Student;
-  quiz?: Quiz;
-  studentAnswers: QuestionAnswer[];
+  totalQuestions: number;
+  answeredQuestions: number;
+  correctAnswers: number;
+  score: number;
+  questions: Question[];
+  answers: QuestionAnswer[];
+  isPassed: boolean;
 }

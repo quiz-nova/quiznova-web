@@ -1,10 +1,23 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  input,
+  output,
+  signal, inject,
+} from '@angular/core';
 
 @Component({
   selector: 'app-quiz-countdown-tag',
   imports: [],
   template: `
-    <span class="countdown" [class.countdown--expired]="isExpired()" [attr.aria-label]="ariaLabel()">
+    <span
+      class="countdown"
+      [class.countdown--expired]="isExpired()"
+      [attr.aria-label]="ariaLabel()"
+    >
       <i class="fa-regular fa-clock" aria-hidden="true"></i>
       {{ timeLabel() }}
     </span>
@@ -35,6 +48,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, input
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizCountdownTag {
+  readonly destroyRef = inject(DestroyRef);
   readonly endsAtUtc = input.required<string>();
   readonly serverUtc = input.required<string>();
   readonly expired = output<void>();
@@ -74,7 +88,7 @@ export class QuizCountdownTag {
     return `Time remaining ${this.timeLabel()}`;
   });
 
-  constructor(private readonly destroyRef: DestroyRef) {
+  constructor() {
     effect(() => {
       const initialServerMs = new Date(this.serverUtc()).getTime();
       const startsAt = Number.isFinite(initialServerMs) ? initialServerMs : Date.now();

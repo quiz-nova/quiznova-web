@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-tab-group',
   imports: [],
-  template: ` <div class="tab-group"><ng-content /></div> `,
+  template: `
+    <div class="tab-group">
+      <ng-content/>
+    </div> `,
   styles: [
     `
       .tab-group {
@@ -13,4 +16,5 @@ import { Component } from '@angular/core';
     `,
   ],
 })
-export class TabGroup {}
+export class TabGroup {
+}

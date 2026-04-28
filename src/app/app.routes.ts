@@ -1,8 +1,10 @@
-import { Routes } from '@angular/router';
-import { Login } from './features/auth/login/login';
-import { Landing } from './features/landing/landing';
-import { roleGuard } from './core/guards/role.guard';
-import { UserRole } from './shared/models/user/user-role.model';
+import {Routes} from '@angular/router';
+
+import {roleGuard} from '@Core/guards/role.guard';
+import {Login} from '@Features/auth/login/login';
+import {Landing} from '@Features/landing/landing';
+
+import {UserRole} from '@shared/models/user/user-role.model';
 
 export const routes: Routes = [
   {
@@ -15,7 +17,7 @@ export const routes: Routes = [
   },
   {
     path: 'instructor',
-    loadComponent: () => import('./features/instructor/instructor').then((m) => m.Instructor),
+    loadComponent: () => import('@Features/instructor/instructor').then((m) => m.Instructor),
     canMatch: [roleGuard(UserRole.instructor)],
     children: [
       {
@@ -26,27 +28,27 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/instructor/instructor-dashboard/instructor-dashboard').then(
+          import('@Features/instructor/instructor-dashboard/instructor-dashboard').then(
             (m) => m.InstructorDashboard,
           ),
       },
       {
         path: 'my-courses',
         loadComponent: () =>
-          import('./features/instructor/instructor-courses/instructor-courses').then(
+          import('@Features/instructor/instructor-courses/instructor-courses').then(
             (m) => m.InstructorCourses,
           ),
       },
       {
         path: 'create-quiz',
         loadComponent: () =>
-          import('./features/instructor/create-quiz/create-quiz').then((m) => m.CreateQuiz),
+          import('@Features/instructor/create-quiz/create-quiz').then((m) => m.CreateQuiz),
       },
     ],
   },
   {
     path: 'admin',
-    loadComponent: () => import('./features/admin/admin').then((m) => m.Admin),
+    loadComponent: () => import('@Features/admin/admin').then((m) => m.Admin),
     canMatch: [roleGuard(UserRole.admin)],
     children: [
       {
@@ -57,42 +59,47 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+          import('@Features/admin/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
       },
       {
         path: 'instructors',
         loadComponent: () =>
-          import('./features/admin/college-instructors/college-instructors').then(
+          import('@Features/admin/college-instructors/college-instructors').then(
             (m) => m.CollegeInstructors,
           ),
       },
       {
         path: 'students',
         loadComponent: () =>
-          import('./features/admin/college-students/college-students').then(
+          import('@Features/admin/college-students/college-students').then(
             (m) => m.CollegeStudents,
           ),
       },
       {
         path: 'courses',
         loadComponent: () =>
-          import('./features/admin/college-courses').then((m) => m.CollegeCourses),
+          import('@Features/admin/college-courses').then((m) => m.CollegeCourses),
       },
       {
         path: 'quizzes',
         loadComponent: () =>
-          import('./features/admin/college-quizzes').then((m) => m.CollegeQuizzes),
+          import('@Features/admin/college-quizzes').then((m) => m.CollegeQuizzes),
       },
       {
         path: 'admins',
         loadComponent: () =>
-          import('./features/admin/college-admins/college-admins').then((m) => m.CollegeAdmins),
+          import('@Features/admin/college-admins/college-admins').then((m) => m.CollegeAdmins),
+      },
+      {
+        path: 'quiz-attempts',
+        loadComponent: () =>
+          import('@Features/admin/college-quiz-attempts').then((m) => m.CollegeQuizAttempts),
       },
     ],
   },
   {
     path: 'student',
-    loadComponent: () => import('./features/student/student').then((m) => m.Student),
+    loadComponent: () => import('@Features/student/student').then((m) => m.Student),
     canMatch: [roleGuard(UserRole.student)],
     children: [
       {
@@ -103,38 +110,38 @@ export const routes: Routes = [
       {
         path: 'my-courses',
         loadComponent: () =>
-          import('./features/student/student-courses/student-courses').then(
+          import('@Features/student/student-courses/student-courses').then(
             (m) => m.StudentCourses,
           ),
       },
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/student/student-dashboard/student-dashboard').then(
+          import('@Features/student/student-dashboard/student-dashboard').then(
             (m) => m.StudentDashboard,
           ),
       },
       {
         path: 'quizzes',
         loadComponent: () =>
-          import('./features/student/student-quizzes/student-quizzes').then(
+          import('@Features/student/student-quizzes/student-quizzes').then(
             (m) => m.StudentQuizzes,
           ),
       },
       {
         path: 'quiz-attempt/:quizId',
         loadComponent: () =>
-          import('./features/student/quiz-attempt/quiz-attempt').then((m) => m.QuizAttempt),
+          import('@Features/student/quiz-attempt/quiz-attempt').then((m) => m.QuizAttempt),
       },
       {
         path: 'review-quiz/:attemptId',
         loadComponent: () =>
-          import('./features/student/review-quiz/review-quiz').then((m) => m.ReviewQuiz),
+          import('@Features/student/review-quiz/review-quiz').then((m) => m.ReviewQuiz),
       },
       {
         path: 'results',
         loadComponent: () =>
-          import('./features/student/student-results/student-results').then(
+          import('@Features/student/student-results/student-results').then(
             (m) => m.StudentResults,
           ),
       },

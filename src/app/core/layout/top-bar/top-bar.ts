@@ -6,17 +6,17 @@ import { Component, output } from '@angular/core';
   template: `
     <header class="dashboard-top-bar">
       <button
-        type="button"
         class="dashboard-top-bar__menu-btn focus-green-ring"
         (click)="toggleMenu.emit()"
+        type="button"
         aria-label="Toggle sidebar"
       >
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
 
       <button
-        type="button"
         class="dashboard-top-bar__logout btn btn-gray focus-green-ring"
+        type="button"
         aria-label="Logout"
       >
         <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
@@ -27,7 +27,7 @@ import { Component, output } from '@angular/core';
   styles: `
     :host {
       display: block;
-      font-family: var(--ff-heading);
+      font-family: var(--ff-heading), serif;
     }
   `,
 })

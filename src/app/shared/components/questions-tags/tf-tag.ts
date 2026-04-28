@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { QuestionTagComponent } from '../../models/quiz/question-component.contracts';
-import { QuestionType } from '../../models/quiz/question.model';
+
+import { QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
+import { QuestionType } from '@shared/models/quiz/question.model';
 
 @Component({
-  selector: 'app-true-false-tag',
+  selector: 'app-tf-tag',
   imports: [],
   template: ` <p class="question-tag">{{ tag() }}</p> `,
   styles: `
@@ -21,6 +22,6 @@ import { QuestionType } from '../../models/quiz/question.model';
     }
   `,
 })
-export class TrueFalseTag implements QuestionTagComponent {
-  readonly tag = signal(QuestionType.TrueFalse).asReadonly();
+export class TfTag implements QuestionTagContract {
+  readonly tag = signal(QuestionType.Tf).asReadonly();
 }

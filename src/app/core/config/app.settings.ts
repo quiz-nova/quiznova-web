@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core';
-import { environment } from '../../../environments/environment';
+
+import { environment } from '@Environments/environment';
 
 export interface AppSettings {
   appName: string;

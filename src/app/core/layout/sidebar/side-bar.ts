@@ -1,10 +1,13 @@
 import { Component, computed, inject } from '@angular/core';
-import { TabGroup } from './tab-group';
-import { Tab } from './tab';
-import { Logo } from '../../../shared/components/logo/logo';
-import { AuthService } from '../../../features/auth/auth.service';
-import { ROLE_DEFINITIONS } from '../../../shared/models/user/user-role.model';
-import { User } from '../../../shared/models/user/user.model';
+
+import { Tab } from '@Core/layout/sidebar/tab';
+import { TabGroup } from '@Core/layout/sidebar/tab-group';
+import { AuthService } from '@Features/auth/auth.service';
+
+import { Logo } from '@shared/components/logo/logo';
+import { ROLE_DEFINITIONS } from '@shared/models/user/user-role.model';
+import { User } from '@shared/models/user/user.model';
+
 
 @Component({
   selector: 'app-side-bar',

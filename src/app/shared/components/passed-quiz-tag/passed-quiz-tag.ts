@@ -3,9 +3,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-passed-quiz-tag',
   imports: [],
-  template: `
-    <span class="quiz-tag">{{ label() }}</span>
-  `,
+  template: ` <span class="quiz-tag">{{ label() }}</span> `,
   styles: `
     .quiz-tag {
       display: inline-flex;

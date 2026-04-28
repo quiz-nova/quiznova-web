@@ -2,10 +2,12 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterOutlet } from '@angular/router';
+
+import { SideBar } from '@Core/layout/sidebar/side-bar';
+import { TopBar } from '@Core/layout/top-bar/top-bar';
 import { distinctUntilChanged } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SideBar } from '../sidebar/side-bar';
-import { TopBar } from '../top-bar/top-bar';
+
 
 @Component({
   selector: 'app-base-layout',
@@ -17,9 +19,9 @@ import { TopBar } from '../top-bar/top-bar';
       <div class="base-layout__body">
         @if (isMobile() && isSidebarOpen()) {
           <button
-            type="button"
             class="base-layout__backdrop"
             (click)="toggleSidebar()"
+            type="button"
             aria-label="Close sidebar"
           ></button>
         }
@@ -99,20 +101,20 @@ export class BaseLayout {
   private readonly breakpointObserver = inject(BreakpointObserver);
 
   protected readonly isMobile = toSignal(
-    this.breakpointObserver
-      .observe(['(max-width: 767px)'])
-      .pipe(
-        map((result) => result.matches),
-        distinctUntilChanged(),
-      ),
+    this.breakpointObserver.observe(['(max-width: 767px)']).pipe(
+      map((result) => result.matches),
+      distinctUntilChanged(),
+    ),
     { initialValue: false },
   );
 
   protected readonly isSidebarOpen = signal(true);
-
-  private readonly syncSidebarState = effect(() => {
-    this.isSidebarOpen.set(!this.isMobile());
-  });
+  
+  constructor() {
+    effect(() => {
+      this.isSidebarOpen.set(!this.isMobile());
+    });
+  }
 
   protected toggleSidebar() {
     this.isSidebarOpen.update((state) => !state);

@@ -5,11 +5,11 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   imports: [],
   template: `
     <button
-      type="button"
       class="delete-button"
       [attr.aria-label]="ariaLabel()"
       [disabled]="disabled()"
-      (click)="deleted.emit()"
+      (click)="deleteButtonClicked.emit()"
+      type="button"
     >
       <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
     </button>
@@ -53,5 +53,5 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 export class DeleteButton {
   readonly ariaLabel = input('Delete item');
   readonly disabled = input(false);
-  readonly deleted = output<void>();
+  readonly deleteButtonClicked = output<void>();
 }

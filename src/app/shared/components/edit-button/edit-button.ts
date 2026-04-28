@@ -5,11 +5,11 @@ import { Component, input, output } from '@angular/core';
   imports: [],
   template: `
     <button
-      type="button"
       class="edit-button"
       [attr.aria-label]="ariaLabel()"
       [disabled]="disabled()"
-      (click)="edited.emit()"
+      (click)="editButtonClicked.emit()"
+      type="button"
     >
       <i class="fa-regular fa-pen-to-square"></i>
     </button>
@@ -45,5 +45,5 @@ import { Component, input, output } from '@angular/core';
 export class EditButton {
   readonly ariaLabel = input('edit item');
   readonly disabled = input(false);
-  readonly edited = output<void>();
+  readonly editButtonClicked = output<void>();
 }

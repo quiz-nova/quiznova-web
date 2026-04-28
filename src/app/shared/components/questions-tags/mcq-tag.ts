@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
-import { QuestionTagComponent } from '../../models/quiz/question-component.contracts';
-import { QuestionType } from '../../models/quiz/question.model';
+
+import { QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
+import { QuestionType } from '@shared/models/quiz/question.model';
 
 @Component({
   selector: 'app-mcq-tag',
@@ -22,6 +23,6 @@ import { QuestionType } from '../../models/quiz/question.model';
     }
   `,
 })
-export class McqTag implements QuestionTagComponent {
+export class McqTag implements QuestionTagContract {
   readonly tag = signal(QuestionType.Mcq).asReadonly();
 }

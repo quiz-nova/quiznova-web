@@ -1,8 +1,11 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../features/auth/auth.service';
-import { ROLE_DEFINITIONS } from '../../../shared/models/user/user-role.model';
-import { User } from '../../../shared/models/user/user.model';
+
+import { AuthService } from '@Features/auth/auth.service';
+
+import { ROLE_DEFINITIONS } from '@shared/models/user/user-role.model';
+import { User } from '@shared/models/user/user.model';
+
 
 @Component({
   selector: 'app-tab',
@@ -11,8 +14,8 @@ import { User } from '../../../shared/models/user/user.model';
     <a
       class="tab"
       [routerLink]="routeLink()"
-      routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="active"
     >
       <i class="tab-icon" [class]="iconClass()" aria-hidden="true"></i>
       <span class="tab-label">{{ tabName() }}</span>
@@ -63,6 +66,7 @@ export class Tab {
     'Assign Quiz': 'fa-solid fa-clipboard-list',
     'View Results': 'fa-solid fa-eye',
     Quizzes: 'fa-solid fa-file-lines',
+    'Quiz Attempts': 'fa-solid fa-list-check',
     Results: 'fa-solid fa-square-poll-vertical',
     Instructors: 'fa-solid fa-chalkboard-user',
     Students: 'fa-solid fa-users',

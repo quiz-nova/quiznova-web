@@ -1,27 +1,29 @@
-import { Mcq } from '../../../features/instructor/create-quiz/mcq';
-import { TrueFalse } from '../../../features/instructor/create-quiz/true-false';
-import { McqAttempt } from '../../../features/student/quiz-attempt/mcq-attempt';
-import { TrueFalseAttempt } from '../../../features/student/quiz-attempt/true-false-attempt';
-import { McqTag } from '../../components/questions-tags/mcq-tag';
-import { TrueFalseTag } from '../../components/questions-tags/true-false-tag';
-import {
-  QuestionAttemptComponentMap,
-  QuestionComponentMap,
-  QuestionTagMap,
-} from './question-component.contracts';
-import { QuestionType } from './question.model';
+import { CreateMcq } from '@Features/instructor/create-quiz/create-mcq';
+import { CreateTf } from '@Features/instructor/create-quiz/create-tf';
+import { McqAttempt } from '@Features/student/quiz-attempt/mcq-attempt';
+import { TfAttempt } from '@Features/student/quiz-attempt/tf-attempt';
 
-export const QUESTION_ATTEMPT_COMPONENT_MAP: QuestionAttemptComponentMap = {
+import { McqTag } from '@shared/components/questions-tags/mcq-tag';
+import { TfTag } from '@shared/components/questions-tags/tf-tag';
+
+import {
+  CreateQuestionMap,
+  QuestionAttemptMap,
+  QuestionTagMap,
+} from '@shared/models/quiz/question-component.contracts';
+import { QuestionType } from '@shared/models/quiz/question.model';
+
+export const QUESTION_ATTEMPT_COMPONENT_MAP: QuestionAttemptMap = {
   [QuestionType.Mcq]: McqAttempt,
-  [QuestionType.TrueFalse]: TrueFalseAttempt,
+  [QuestionType.Tf]: TfAttempt,
 };
 
-export const QUESTION_COMPONENT_MAP: QuestionComponentMap = {
-  [QuestionType.Mcq]: Mcq,
-  [QuestionType.TrueFalse]: TrueFalse,
+export const CREATE_QUESTION_COMPONENT_MAP: CreateQuestionMap = {
+  [QuestionType.Mcq]: CreateMcq,
+  [QuestionType.Tf]: CreateTf,
 };
 
 export const QUESTION_TAG_MAP: QuestionTagMap = {
   [QuestionType.Mcq]: McqTag,
-  [QuestionType.TrueFalse]: TrueFalseTag,
+  [QuestionType.Tf]: TfTag,
 };

@@ -1,6 +1,6 @@
 export const QuestionType = {
   Mcq: 'mcq',
-  TrueFalse: 'true-false',
+  Tf: 'tf',
 } as const;
 
 export type QuestionType = (typeof QuestionType)[keyof typeof QuestionType];

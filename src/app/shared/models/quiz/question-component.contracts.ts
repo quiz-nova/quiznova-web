@@ -1,18 +1,20 @@
 import { InputSignal, Signal, Type } from '@angular/core';
-import { Question, QuestionType } from './question.model';
 
-export interface QuestionComponent {
-  readonly question: InputSignal<Question>;
+import {Question, QuestionType} from '@shared/models/quiz/question.model';
+
+
+export interface CreateQuestionContract {
+  readonly index: InputSignal<number>;
 }
 
-export interface QuestionTagComponent {
+export interface QuestionTagContract {
   readonly tag: Signal<string>;
 }
 
-export interface QuestionAttemptComponent {
+export interface QuestionAttemptContract {
   readonly question: InputSignal<Question>;
 }
 
-export type QuestionComponentMap = Record<QuestionType, Type<QuestionComponent>>;
-export type QuestionTagMap = Record<QuestionType, Type<QuestionTagComponent>>;
-export type QuestionAttemptComponentMap = Record<QuestionType, Type<QuestionAttemptComponent>>;
+export type CreateQuestionMap = Record<QuestionType, Type<CreateQuestionContract>>;
+export type QuestionTagMap = Record<QuestionType, Type<QuestionTagContract>>;
+export type QuestionAttemptMap = Record<QuestionType, Type<QuestionAttemptContract>>;

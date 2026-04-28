@@ -1,3 +1,3 @@
 export interface QuizCount {
-  quizCount: number;
+  quizzesCount: number;
 }

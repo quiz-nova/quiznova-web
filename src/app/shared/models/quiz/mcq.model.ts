@@ -1,4 +1,4 @@
-import { Question, QuestionType } from './question.model';
+import {Question, QuestionType} from '@shared/models/quiz/question.model';
 
 export interface Choice {
   id: string;

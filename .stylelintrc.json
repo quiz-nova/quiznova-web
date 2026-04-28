@@ -3,19 +3,7 @@
   "plugins": ["stylelint-order"],
   "rules": {
     "color-named": null,
-    "unit-allowed-list": [
-      "px",
-      "rem",
-      "%",
-      "vh",
-      "vw",
-      "em",
-      "s",
-      "ms",
-      "deg",
-      "fr",
-      "dvh"
-    ],
+    "unit-allowed-list": ["px", "rem", "%", "vh", "vw", "em", "s", "ms", "deg", "fr", "dvh"],
     "property-no-vendor-prefix": null,
     "selector-class-pattern": null,
     "no-descending-specificity": null,

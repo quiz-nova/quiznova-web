@@ -1,8 +1,14 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
-/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["src/app/shared/*"],
+      "@Core/*": ["src/app/core/*"],
+      "@Features/*": ["src/app/features/*"],
+      "@Environments/*": ["src/environments/*"],
+      "@StoreFeatures/*": ["src/store-features/*"]
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -12,6 +18,11 @@
     "isolatedModules": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "noUncheckedSideEffectImports": true,
+    "allowUnreachableCode": false,
     "target": "ES2022",
     "module": "preserve"
   },

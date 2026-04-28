@@ -1,3 +1,3 @@
 export interface CourseCount {
-  courseCount: number;
+  coursesCount: number;
 }

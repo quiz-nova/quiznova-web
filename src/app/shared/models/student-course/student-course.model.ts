@@ -1,7 +1,7 @@
-export interface Course {
+export interface StudentCourse {
   courseId: string;
   courseName: string;
   instructorName: string;
-  enrolledStudentsCount: number;
   quizzesCount: number;
+  enrolledOnUtc: string;
 }

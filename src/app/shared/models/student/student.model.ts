@@ -4,5 +4,5 @@ export interface Student {
   email: string;
   password: string;
   phoneNumber: string;
-  enrolledCourseCount: number;
+  enrolledCoursesCount: number;
 }

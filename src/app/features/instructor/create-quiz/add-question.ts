@@ -1,15 +1,18 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
-import {ButtonModule} from 'primeng/button';
-import {SelectModule} from 'primeng/select';
-import {QuestionType} from '../../../shared/models/quiz/question.model';
-import {CreateQuizStore} from './create-quiz.store';
-import {mapQuestionTypeToQuestion} from './question-type.mapper';
+
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
+
+import { QuestionType } from '@shared/models/quiz/question.model';
+
+import { CreateQuizStore } from './create-quiz.store';
+import { mapQuestionTypeToQuestion } from './question-type.mapper';
 
 type AddQuestionFormGroup = FormGroup<{
   questionType: FormControl<QuestionType>;
@@ -23,16 +26,16 @@ type AddQuestionFormGroup = FormGroup<{
       <div class="question-type-group">
         <label class="dropdown-label" for="questionType">Question Type</label>
         <p-select
-          inputId="questionType"
           class="dropdown-field dropdown-field--wide"
           [formControl]="questionTypeControl"
           [options]="questionTypeOptions"
+          inputId="questionType"
           optionLabel="label"
           optionValue="value"
           appendTo="body"
         />
       </div>
-      <button type="button" class="btn btn-green" (click)="addQuestion()">+Add Question</button>
+      <button class="btn btn-green" (click)="addQuestion()" type="button">+Add Question</button>
     </div>
   `,
   styles: [
@@ -56,7 +59,7 @@ type AddQuestionFormGroup = FormGroup<{
         gap: 0.5rem;
       }
 
-      :host(.pill-style)  .add-question{
+      :host(.pill-style) .add-question {
         align-items: center;
         flex-wrap: nowrap;
         margin-top: 0;
@@ -74,7 +77,6 @@ type AddQuestionFormGroup = FormGroup<{
       :host(.pill-style) .dropdown-field {
         min-width: 12rem;
         border-radius: 100vh;
-
       }
 
       :host(.pill-style) .btn {
@@ -82,15 +84,14 @@ type AddQuestionFormGroup = FormGroup<{
         border-radius: 999px;
         padding-inline: 1.25rem;
       }
-
     `,
   ],
 })
 export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
-    {label: 'Multiple Choice', value: QuestionType.Mcq},
-    {label: 'True/False', value: QuestionType.TrueFalse},
+    { label: 'Multiple Choice', value: QuestionType.Mcq },
+    { label: 'True/False', value: QuestionType.Tf },
   ];
   private readonly createQuizStore = inject(CreateQuizStore);
   protected readonly addQuestionForm: AddQuestionFormGroup = this.fb.group({

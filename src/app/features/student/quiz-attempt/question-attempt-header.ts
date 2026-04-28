@@ -1,7 +1,9 @@
-import { Component, inject, input } from '@angular/core';
-import { QuestionType } from '../../../shared/models/quiz/question.model';
-import { QuizService } from '../../../shared/services/quiz.service';
 import { NgComponentOutlet } from '@angular/common';
+import { Component, inject, input } from '@angular/core';
+
+import { QuestionType } from '@shared/models/quiz/question.model';
+import { QuizService } from '@shared/services/quiz.service';
+
 import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
@@ -14,11 +16,11 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       ></ng-container>
 
       <button
-        type="button"
         class="flag btn"
         [class.flagged]="quizAttemptStore.isCurrentQuestionFlagged()"
-        aria-label="Flag question"
         (click)="onClickFlag()"
+        type="button"
+        aria-label="Flag question"
       >
         <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
         @if (quizAttemptStore.isCurrentQuestionFlagged()) {

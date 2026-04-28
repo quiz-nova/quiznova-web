@@ -1,4 +1,5 @@
-import {Component, DestroyRef, inject, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -6,12 +7,15 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {takeUntilDestroyed, toObservable, toSignal} from '@angular/core/rxjs-interop';
-import {SelectModule} from 'primeng/select';
-import {of, startWith, switchMap} from 'rxjs';
-import {AuthService} from '../../auth/auth.service';
-import {CoursesService} from '../../../shared/services/courses.service';
-import {CreateQuizStore} from './create-quiz.store';
+
+import { AuthService } from '@Features/auth/auth.service';
+import { SelectModule } from 'primeng/select';
+import { of, startWith, switchMap } from 'rxjs';
+
+import { FieldError } from '@shared/components/field-error/field-error';
+import { CoursesService } from '@shared/services/courses.service';
+
+import { CreateQuizStore } from './create-quiz.store';
 
 type QuizHeaderFormGroup = FormGroup<{
   title: FormControl<string>;
@@ -22,66 +26,62 @@ type QuizHeaderFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-quiz-metadata',
-  imports: [ReactiveFormsModule, SelectModule],
+  imports: [ReactiveFormsModule, SelectModule, FieldError],
   template: `
     <form class="metadata-form" [formGroup]="quizHeaderForm">
       <div class="field-group">
         <label class="dropdown-label" for="quiz-title">Quiz Title</label>
         <input
-          id="quiz-title"
           class="focus-green-ring"
+          id="quiz-title"
+          [formControl]="titleControl"
           type="text"
           placeholder="e.g. Week 8 Assessment"
-          [formControl]="titleControl"
         />
 
-        <div class="field-error">
-          @if (titleControl.invalid && titleControl.touched) {
-            @if (titleControl.hasError('required')) {
-              <span>Quiz title is required.</span>
-            }
+        @if (titleControl.invalid && titleControl.touched) {
+          @if (titleControl.hasError('required')) {
+            <app-field-error errorText="Quiz title is required." />
           }
-        </div>
+        }
       </div>
 
       <div class="field-group">
         <label class="dropdown-label" for="quiz-course">Course</label>
         <p-select
-          inputId="quiz-course"
           class="focus-green-ring dropdown-field"
           [formControl]="courseIdControl"
           [options]="instructorCourses()"
+          inputId="quiz-course"
           optionLabel="courseName"
           optionValue="courseId"
           placeholder="Select course"
           appendTo="body"
         />
 
-        <div class="field-error">
-          @if (courseIdControl.invalid && courseIdControl.touched) {
-            @if (courseIdControl.hasError('required')) {
-              <span>Course is required.</span>
-            }
+        @if (courseIdControl.invalid && courseIdControl.touched) {
+          @if (courseIdControl.hasError('required')) {
+            <app-field-error errorText="Course is required." />
           }
-        </div>
+        }
       </div>
 
       <div class="field-group">
         <label class="dropdown-label" for="quiz-description"> Description (optional) </label>
         <textarea
-          id="quiz-description"
           class="focus-green-ring"
+          id="quiz-description"
+          [formControl]="quizHeaderForm.controls.title"
           rows="3"
           placeholder="Quiz description..."
-          [formControl]="quizHeaderForm.controls.title"
         ></textarea>
       </div>
 
       <div class="field-group">
         <label class="dropdown-label" for="quiz-time-limit"> Time Limit (minutes) </label>
         <input
-          id="quiz-time-limit"
           class="focus-green-ring"
+          id="quiz-time-limit"
           type="number"
           placeholder="30"
           value="30"
@@ -148,7 +148,7 @@ export class QuizMetadata implements OnInit, OnDestroy {
     toObservable(this.authService.currentUser).pipe(
       switchMap((user) => (user ? this.coursesService.getInstructorCourses(user.userId) : of([]))),
     ),
-    {initialValue: []},
+    { initialValue: [] },
   );
 
   protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group({

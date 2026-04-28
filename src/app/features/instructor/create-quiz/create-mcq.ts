@@ -1,7 +1,14 @@
-import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {type QuestionComponent} from '../../../shared/models/quiz/create-question-component.contracts';
-import {Question} from '../../../shared/models/quiz/question.model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormControl,
@@ -10,12 +17,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import {Choice, MCQ} from '../../../shared/models/quiz/mcq.model';
-import {QuestionTitle} from './question-title';
-import {DeleteButton} from '../../../shared/components/delete-button/delete-button';
-import {CreateQuizStore} from './create-quiz.store';
-import {RadioButton} from 'primeng/radiobutton';
-import {startWith} from 'rxjs';
+
+import { RadioButton } from 'primeng/radiobutton';
+import { startWith } from 'rxjs';
+
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { FieldError } from '@shared/components/field-error/field-error';
+import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
+import { type CreateQuestionContract } from '@shared/models/quiz/question-component.contracts';
+
+import { CreateQuizStore } from './create-quiz.store';
+import { QuestionTitle } from './question-title';
 
 type McqFormGroup = FormGroup<{
   questionText: FormControl<string>;
@@ -25,38 +37,54 @@ type McqFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-create-mcq',
-  imports: [ReactiveFormsModule, QuestionTitle, DeleteButton, RadioButton],
+  imports: [ReactiveFormsModule, QuestionTitle, DeleteButton, RadioButton, FieldError],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mcq-question-container">
-      <form [formGroup]="mcqForm" class="mcq-question-form">
+      <form class="mcq-question-form" [formGroup]="mcqForm">
         <app-question-title [control]="questionTextControl"></app-question-title>
-        <div formArrayName="choices" class="radio-group">
+        <div class="radio-group" formArrayName="choices">
           @for (choiceData of mcq().choices; track choiceData.id; let index = $index) {
             <div class="radio-item" animate.enter="element-enter" animate.leave="element-leave">
               <div class="radio-item-input">
                 <p-radiobutton
                   [inputId]="'choice-' + choiceData.id"
-                  name="correctChoiceGroup"
                   [formControl]="correctChoiceControl"
-                  [value]="choiceData.id"></p-radiobutton>
+                  [value]="choiceData.id"
+                  name="correctChoiceGroup"
+                ></p-radiobutton>
                 <input
-                  type="text"
-                  [formControlName]="index"
                   class="choice-input"
+                  [formControlName]="index"
+                  type="text"
                   placeholder="Enter choice text..."
                 />
               </div>
 
               @if (choicesArray.length > 2) {
-                <app-delete-button ariaLabel="Delete choice" (deleted)="onDeleteChoice(index)"/>
+                <app-delete-button
+                  (deleteButtonClicked)="onDeleteChoice(index)"
+                  ariaLabel="Delete choice"
+                />
               }
             </div>
+
+            @if (choiceControl(index).invalid && choiceControl(index).touched) {
+              @if (choiceControl(index).hasError('required')) {
+                <app-field-error errorText="Choice text is required." />
+              }
+            }
           }
         </div>
+
+        @if (correctChoiceControl.invalid && correctChoiceControl.touched) {
+          @if (correctChoiceControl.hasError('required')) {
+            <app-field-error errorText="Please select the correct answer." />
+          }
+        }
       </form>
       @if (choicesArray.length < 5) {
-        <button type="button" class="btn btn-gray" (click)="onAddChoice()">+Add Choice</button>
+        <button class="btn btn-gray" (click)="onAddChoice()" type="button">+Add Choice</button>
       }
     </div>
   `,
@@ -112,17 +140,18 @@ type McqFormGroup = FormGroup<{
     }
   `,
 })
-export class CreateMcq implements QuestionComponent, OnInit, OnDestroy {
+export class CreateMcq implements CreateQuestionContract, OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
-  readonly question = input.required<Question>();
-  protected readonly mcq = computed(() => this.question() as MCQ);
   private readonly createQuizStore = inject(CreateQuizStore);
+  readonly index = input.required<number>();
+  protected readonly question = computed(() => this.createQuizStore.getQuestionByIndex(this.index()));
+  protected readonly mcq = computed(() => this.question() as MCQ);
   private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly mcqForm: McqFormGroup = this.fb.group({
     questionText: ['', [Validators.required]],
     choices: this.fb.array<FormControl<string>>([]),
-    correctChoiceId: [null as string | null],
+    correctChoiceId: [null as string | null, [Validators.required]],
   });
 
   protected get questionTextControl() {
@@ -137,8 +166,11 @@ export class CreateMcq implements QuestionComponent, OnInit, OnDestroy {
     return this.mcqForm.controls.choices;
   }
 
-  ngOnInit() {
+  protected choiceControl(index: number): FormControl<string> {
+    return this.choicesArray.at(index);
+  }
 
+  ngOnInit() {
     this.questionTextControl.valueChanges
       .pipe(startWith(this.questionTextControl.getRawValue()), takeUntilDestroyed(this.destroyRef))
       .subscribe((questionText) => {
@@ -149,7 +181,6 @@ export class CreateMcq implements QuestionComponent, OnInit, OnDestroy {
     this.mcq().choices.forEach((choice: Choice) => {
       this.choicesArray.push(this.fb.control(choice.text, Validators.required));
     });
-
   }
 
   ngOnDestroy(): void {

@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { of, forkJoin } from 'rxjs';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AuthService } from '../../auth/auth.service';
-import { CoursesService } from '../../../shared/services/courses.service';
-import { QuizService } from '../../../shared/services/quiz.service';
-import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
+import { of, forkJoin } from 'rxjs';
+
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { CoursesService } from '@shared/services/courses.service';
+import { QuizService } from '@shared/services/quiz.service';
+
 
 @Component({
   selector: 'app-instructor-dashboard',
@@ -14,8 +17,8 @@ import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-h
     <section class="dashboard">
       <header class="dashboard-header">
         <app-role-dashboard-header
-          title="Instructor Dashboard"
           [description]="'Welcome back, ' + welcomeName()"
+          title="Instructor Dashboard"
         />
       </header>
 
@@ -136,7 +139,9 @@ export class InstructorDashboard {
   private readonly coursesService = inject(CoursesService);
   private readonly quizService = inject(QuizService);
 
-  protected readonly welcomeName = computed(() => this.authService.currentUser()?.name || 'Instructor');
+  protected readonly welcomeName = computed(
+    () => this.authService.currentUser()?.name || 'Instructor',
+  );
   protected readonly instructorId = computed(() => this.authService.currentUser()?.userId ?? null);
 
   protected readonly summaryResource = rxResource({
@@ -146,10 +151,10 @@ export class InstructorDashboard {
       if (!instructorId) {
         return of({
           courses: {
-            courseCount: 0,
+            coursesCount: 0,
           },
           quizzes: {
-            quizCount: 0,
+            quizzesCount: 0,
           },
         });
       }
@@ -161,10 +166,10 @@ export class InstructorDashboard {
     },
     defaultValue: {
       courses: {
-        courseCount: 0,
+        coursesCount: 0,
       },
       quizzes: {
-        quizCount: 0,
+        quizzesCount: 0,
       },
     },
   });
@@ -175,12 +180,12 @@ export class InstructorDashboard {
     return [
       {
         title: 'My Courses',
-        value: summary.courses.courseCount,
+        value: summary.courses.coursesCount,
         icon: 'fa-solid fa-book-open',
       },
       {
         title: 'Total Quizzes',
-        value: summary.quizzes.quizCount,
+        value: summary.quizzes.quizzesCount,
         icon: 'fa-regular fa-clipboard',
       },
     ];

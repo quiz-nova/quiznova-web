@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
-import { Question } from '../../../shared/models/quiz/question.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
@@ -7,8 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DeleteButton } from '../../../shared/components/delete-button/delete-button';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { FieldError } from '@shared/components/field-error/field-error';
+import { Question } from '@shared/models/quiz/question.model';
+
 import { CreateQuizStore } from './create-quiz.store';
 
 type QuestionHeaderFormGroup = FormGroup<{
@@ -17,7 +20,7 @@ type QuestionHeaderFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-question-header',
-  imports: [ReactiveFormsModule, DeleteButton],
+  imports: [ReactiveFormsModule, DeleteButton, FieldError],
   template: `
     <header class="question-header">
       <div class="question-header__details">
@@ -30,9 +33,9 @@ type QuestionHeaderFormGroup = FormGroup<{
           <label for="marks">Marks</label>
           <div class="question-header__marks-field">
             <input
-              type="number"
-              id="marks"
               class="question-header__marks focus-green-ring"
+              id="marks"
+              type="number"
               formControlName="marks"
               min="1"
               max="5"
@@ -40,16 +43,14 @@ type QuestionHeaderFormGroup = FormGroup<{
             />
           </div>
         </form>
-        <app-delete-button ariaLabel="Delete question" (deleted)="onDelete()" />
-        <div class="question-header__error">
-          @if (marksControl.invalid && marksControl.touched) {
-            @if (marksControl.hasError('required')) {
-              <span>Marks is required.</span>
-            } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
-              <span>Marks must be between 1 and 5.</span>
-            }
+        <app-delete-button (deleteButtonClicked)="onDelete()" ariaLabel="Delete question" />
+        @if (marksControl.invalid && marksControl.touched) {
+          @if (marksControl.hasError('required')) {
+            <app-field-error errorText="Marks is required." />
+          } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
+            <app-field-error errorText="Marks must be between 1 and 5." />
           }
-        </div>
+        }
       </div>
     </header>
   `,
@@ -106,12 +107,6 @@ type QuestionHeaderFormGroup = FormGroup<{
       }
 
       label {
-      }
-
-      .question-header__error {
-        min-height: 1rem;
-        color: var(--clr-red-500);
-        font-size: var(--fs-300);
       }
     `,
   ],

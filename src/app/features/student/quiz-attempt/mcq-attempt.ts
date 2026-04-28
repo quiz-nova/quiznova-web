@@ -1,21 +1,19 @@
 import {Component, computed, DestroyRef, inject, input, OnInit} from '@angular/core';
-import {QuestionAttemptComponent} from '../../../shared/models/quiz/question-component.contracts';
-import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-import {MCQ} from '../../../shared/models/quiz/mcq.model';
-import {distinctUntilChanged, startWith} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {McqAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+
+import {distinctUntilChanged, startWith} from 'rxjs';
+
+import {MCQ} from '@shared/models/quiz/mcq.model';
+import {QuestionAttemptContract} from '@shared/models/quiz/question-component.contracts';
+import {Question, QuestionType} from '@shared/models/quiz/question.model';
+
+import {SubmitMcqAnswer} from './models/SubmitQuizAttempt.model';
 import {QuizAttemptStore} from './quiz-attempt.store';
 
 export type McqAttemptForm = FormGroup<{
   selectedChoiceId: FormControl<string | null>;
-}>
+}>;
 
 @Component({
   selector: 'app-mcq-attempt',
@@ -23,15 +21,16 @@ export type McqAttemptForm = FormGroup<{
   template: `
     <article class="question-card" aria-label="Multiple choice question">
       <p class="badge">Multiple Choice</p>
-      <h2>Which data structure follows LIFO?</h2>
+      <h2>{{ question().questionText }}</h2>
 
       <div class="choices-grid">
         @for (choice of mcq().choices; track choice.id) {
           <button
-            type="button"
             class="option"
             [class.selected]="selectedChoiceIdControl.value === choice.id"
-            (click)="selectedChoiceIdControl.setValue(choice.id)">
+            (click)="selectedChoiceIdControl.setValue(choice.id)"
+            type="button"
+          >
             {{ choice.text }}
           </button>
         }
@@ -89,6 +88,13 @@ export type McqAttemptForm = FormGroup<{
         border-color: var(--clr-green-500);
         transform: scale(1.01);
       }
+
+      &.selected {
+        border-color: var(--clr-green-600);
+        background-color: var(--clr-green-50);
+        color: var(--clr-green-700);
+        box-shadow: 0 0 0 1px var(--clr-green-600);
+      }
     }
 
     @media (width <= 40rem) {
@@ -98,10 +104,9 @@ export type McqAttemptForm = FormGroup<{
     }
   `,
 })
-export class McqAttempt implements QuestionAttemptComponent, OnInit {
+export class McqAttempt implements QuestionAttemptContract, OnInit {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
   private readonly destroyRef = inject(DestroyRef);
-
 
   readonly question = input.required<Question>();
   protected readonly mcq = computed(() => {
@@ -120,31 +125,23 @@ export class McqAttempt implements QuestionAttemptComponent, OnInit {
   });
 
   ngOnInit(): void {
-
     this.selectedChoiceIdControl.valueChanges
       .pipe(
         startWith(this.selectedChoiceIdControl.value),
         distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(choiceId => {
-
+      .subscribe((choiceId) => {
         if (!choiceId) return;
 
-        const answer: McqAnswer = {
+        const answer: SubmitMcqAnswer = {
           id: crypto.randomUUID(),
-          studentId: this.quizAttemptStore.studentId(),
           questionId: this.question().id,
-          quizAttemptId: this.quizAttemptStore.quizAttemptId(),
           selectedChoiceId: choiceId,
           type: QuestionType.Mcq,
         };
 
         this.quizAttemptStore.submitAnswer(answer);
-
       });
-
   }
 }
-
-``

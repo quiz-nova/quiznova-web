@@ -1,15 +1,17 @@
-import {Component, inject, signal, Signal} from '@angular/core';
-import {NgComponentOutlet} from '@angular/common';
-import {AddQuestion} from './add-question';
-import {QuizService} from '../../../shared/services/quiz.service';
-import {QuestionHeader} from './question-header';
-import {QuizHeader} from './quiz-header';
-import {NoQuestions} from './no-questions';
-import {CreateQuizStore} from './create-quiz.store';
-import {Quiz} from '../../../shared/models/quiz/quiz.model';
-import {QuizMetadata} from './quiz-metadata';
-import {ObserveVisibilityDirective} from '../../../shared/directives/observe-visibility.directive';
-import {QuestionsOutline} from './questions-outline';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, inject, signal, Signal } from '@angular/core';
+
+import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
+import { Quiz } from '@shared/models/quiz/quiz.model';
+import { QuizService } from '@shared/services/quiz.service';
+
+import { AddQuestion } from './add-question';
+import { CreateQuizStore } from './create-quiz.store';
+import { NoQuestions } from './no-questions';
+import { QuestionHeader } from './question-header';
+import { QuestionsOutline } from './questions-outline';
+import { QuizHeader } from './quiz-header';
+import { QuizMetadata } from './quiz-metadata';
 
 @Component({
   selector: 'app-create-quiz',
@@ -41,10 +43,12 @@ import {QuestionsOutline} from './questions-outline';
             <p class="subtitle">Build your quiz by adding questions below</p>
           </div>
           <button
-            type="button"
             class="btn btn-green"
             [disabled]="!createQuizStore.isEntireQuizValid()"
-            (click)="onPublishQuiz()">Publish Quiz
+            (click)="onPublishQuiz()"
+            type="button"
+          >
+            Publish Quiz
           </button>
         </header>
         <app-quiz-metadata></app-quiz-metadata>
@@ -54,11 +58,11 @@ import {QuestionsOutline} from './questions-outline';
             <div class="questions-list">
               @for (question of quiz().questions; track question.id) {
                 <div
-                  [id]="question.id"
                   class="question"
-                  appObserveVisibility
+                  [id]="question.id"
                   [threshold]="0.45"
                   (visible)="onQuestionVisibilityChanged($event, question.id)"
+                  appObserveVisibility
                   animate.enter="element-enter"
                   animate.leave="element-leave"
                 >
@@ -70,7 +74,7 @@ import {QuestionsOutline} from './questions-outline';
                   </app-question-header>
                   <ng-container
                     [ngComponentOutlet]="quizService.getSuitableQuestionComponent(question.type)"
-                    [ngComponentOutletInputs]="{ question: question }"
+                    [ngComponentOutletInputs]="{ index: $index }"
                   ></ng-container>
                 </div>
               }
@@ -78,8 +82,8 @@ import {QuestionsOutline} from './questions-outline';
 
             <div
               class="add-question-main"
-              appObserveVisibility
               (visible)="onAddQuestionButtonVisible($event)"
+              appObserveVisibility
             >
               <app-add-question></app-add-question>
             </div>
@@ -88,7 +92,8 @@ import {QuestionsOutline} from './questions-outline';
                 <app-add-question
                   class="pill-style"
                   animate.leave="float-add-question-button-leave"
-                  animate.enter="float-add-question-button-enter">
+                  animate.enter="float-add-question-button-enter"
+                >
                 </app-add-question>
               </div>
             }
@@ -98,7 +103,6 @@ import {QuestionsOutline} from './questions-outline';
           </div>
         </div>
       </main>
-
     </section>
   `,
   styles: `
@@ -211,7 +215,6 @@ import {QuestionsOutline} from './questions-outline';
       cursor: not-allowed;
     }
     @media (width >= 1024px) {
-
       app-questions-outline {
         position: sticky;
         top: 1rem;

@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+
 import { StudentQuizApiDto } from './models/student-quizzes.model';
 
 @Component({
@@ -133,7 +134,6 @@ export class StudentScheduledQuizzes {
     if (!Number.isFinite(startsAtMs) || !Number.isFinite(endsAtMs)) {
       return 0;
     }
-    1;
     return Math.max(0, Math.round((endsAtMs - startsAtMs) / 60000));
   }
 

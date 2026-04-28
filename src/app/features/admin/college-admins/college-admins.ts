@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AdminService } from '../../../shared/services/admin.service';
+
+import { AdminService } from '@shared/services/admin.service';
+
 import { AddAdminModal } from './add-admin-modal';
-import { EditAdminModal } from './edit-admin-modal';
 import { DeleteAdminModal } from './delete-admin-modal';
+import { EditAdminModal } from './edit-admin-modal';
 
 @Component({
   selector: 'app-college-admins',
@@ -22,7 +25,7 @@ import { DeleteAdminModal } from './delete-admin-modal';
 
       @if (adminsResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
+          <p-progress-spinner ariaLabel="loading"/>
         </div>
       } @else if (adminsResource.error()) {
         <div class="error">
@@ -32,11 +35,11 @@ import { DeleteAdminModal } from './delete-admin-modal';
         <div class="table-shell">
           <table>
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-              </tr>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
               @for (admin of adminsResource.value() ?? []; track admin.adminId) {

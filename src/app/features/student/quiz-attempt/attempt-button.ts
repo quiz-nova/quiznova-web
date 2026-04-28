@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-attempt-button',
   imports: [],
-  template: ` <button type="button" class="btn submit-btn">Submit Quiz</button> `,
+  template: ` <button class="btn submit-btn" type="button">Submit Quiz</button> `,
   styles: `
     :host {
       display: block;

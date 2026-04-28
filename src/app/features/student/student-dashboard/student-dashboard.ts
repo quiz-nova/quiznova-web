@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { forkJoin, of } from 'rxjs';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AuthService } from '../../auth/auth.service';
-import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
-import { CoursesService } from '../../../shared/services/courses.service';
-import { QuizAttemptsService } from '../../../shared/services/quiz-attempts.service';
+import { forkJoin, of } from 'rxjs';
+
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { CoursesService } from '@shared/services/courses.service';
+import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
+
 
 @Component({
   selector: 'app-student-dashboard',
@@ -14,8 +17,8 @@ import { QuizAttemptsService } from '../../../shared/services/quiz-attempts.serv
     <section class="dashboard">
       <header class="dashboard-header">
         <app-role-dashboard-header
-          title="Student Dashboard"
           [description]="'Welcome back, ' + welcomeName()"
+          title="Student Dashboard"
         />
       </header>
 
@@ -134,9 +137,11 @@ import { QuizAttemptsService } from '../../../shared/services/quiz-attempts.serv
 export class StudentDashboard {
   private readonly authService = inject(AuthService);
   private readonly coursesService = inject(CoursesService);
-  private readonly quizAttemptsService = inject(QuizAttemptsService);
+  private readonly quizAttemptsService = inject(QuizAttemptService);
 
-  protected readonly welcomeName = computed(() => this.authService.currentUser()?.name || 'Student');
+  protected readonly welcomeName = computed(
+    () => this.authService.currentUser()?.name || 'Student',
+  );
   protected readonly studentId = computed(() => this.authService.currentUser()?.userId ?? null);
 
   protected readonly summaryResource = rxResource({

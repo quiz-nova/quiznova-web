@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { map, of } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
-import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
-import { QuizService } from '../../../shared/services/quiz.service';
+
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { QuizService } from '@shared/services/quiz.service';
+
 import { StudentQuizzesApiResponse, StudentQuizStatus } from './models/student-quizzes.model';
 import { StudentAvailableQuizzes } from './student-available-quizzes';
 import { StudentScheduledQuizzes } from './student-scheduled-quizzes';

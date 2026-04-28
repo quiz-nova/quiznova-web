@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { StudentService } from '../../../shared/services/student.service';
+
 import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { StudentService } from '@shared/services/student.service';
+
 import { AddStudentModal } from './add-student-modal';
-import { EditStudentModal } from './edit-student-modal';
 import { DeleteStudentModal } from './delete-student-modal';
+import { EditStudentModal } from './edit-student-modal';
 
 @Component({
   selector: 'app-college-students',
@@ -22,7 +25,7 @@ import { DeleteStudentModal } from './delete-student-modal';
 
       @if (studentsResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
+          <p-progress-spinner ariaLabel="loading"/>
         </div>
       } @else if (studentsResource.error()) {
         <div class="error">
@@ -34,17 +37,17 @@ import { DeleteStudentModal } from './delete-student-modal';
         <div class="table-shell">
           <table>
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Enrolled Courses</th>
-                <th>Actions</th>
-              </tr>
+            <tr>
+              <th>Name</th>
+              <th>Enrolled Courses</th>
+              <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
               @for (student of studentsResource.value() ?? []; track student.studentId) {
                 <tr>
                   <td>{{ student.name }}</td>
-                  <td>{{ student.enrolledCourseCount }}</td>
+                  <td>{{ student.enrolledCoursesCount }}</td>
                   <td>
                     <div class="actions">
                       <app-edit-student-modal

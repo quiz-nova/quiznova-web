@@ -1,6 +1,6 @@
-import { Choice, MCQ } from '../../../shared/models/quiz/mcq.model';
-import { Question, QuestionType } from '../../../shared/models/quiz/question.model';
-import { TrueFalseQuestion } from '../../../shared/models/quiz/true-false.model';
+import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Tf } from '@shared/models/quiz/tf.model';
 
 interface CreateQuestionContext {
   quizId: string;
@@ -35,12 +35,12 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
       choices: [createChoice(questionId, 1), createChoice(questionId, 2)],
     };
   },
-  [QuestionType.TrueFalse]: (context): TrueFalseQuestion => ({
+  [QuestionType.Tf]: (context): Tf => ({
     id: context.questionId ?? crypto.randomUUID(),
     quizId: context.quizId,
     questionText: '',
     marks: DEFAULT_MARKS,
-    type: QuestionType.TrueFalse,
+    type: QuestionType.Tf,
     correctChoice: true,
   }),
 };

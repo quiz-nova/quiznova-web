@@ -1,40 +1,43 @@
-import {Component, DestroyRef, inject, input, OnInit} from '@angular/core';
-import {QuestionAttemptComponent} from '../../../shared/models/quiz/question-component.contracts';
-import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-import {distinctUntilChanged, startWith} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TrueFalseQuestionAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
-import {QuizAttemptStore} from './quiz-attempt.store';
+import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-export type TrueFalseAttemptForm = FormGroup<{
+import { distinctUntilChanged, startWith } from 'rxjs';
+
+import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+
+import { SubmitTfAnswer } from './models/SubmitQuizAttempt.model';
+import { QuizAttemptStore } from './quiz-attempt.store';
+
+export type TfAttemptForm = FormGroup<{
   selectedOption: FormControl<boolean | null>;
 }>;
 
 @Component({
-  selector: 'app-true-false-attempt',
+  selector: 'app-tf-attempt',
   imports: [],
   template: `
     <article class="question-card" aria-label="True or false question">
       <p class="badge">True / False</p>
-      <h2>Lists in Python are immutable.</h2>
+      <h2>{{ question().questionText }}</h2>
 
       <div class="options-grid">
         <button
-          type="button"
           class="option"
-          [class.selected]="trueFalseAttemptForm.controls.selectedOption.value"
-          (click)=" trueFalseAttemptForm.controls.selectedOption.setValue(true)">True
+          [class.selected]="selectedOptionControl.value === true"
+          (click)="selectedOptionControl.setValue(true)"
+          type="button"
+        >
+          True
         </button>
         <button
-          [class.selected]="trueFalseAttemptForm.controls.selectedOption.value"
-          type="button" class="option"
-          (click)=" trueFalseAttemptForm.controls.selectedOption.setValue(false)">False
+          class="option"
+          [class.selected]="selectedOptionControl.value === false"
+          (click)="selectedOptionControl.setValue(false)"
+          type="button"
+        >
+          False
         </button>
       </div>
     </article>
@@ -81,6 +84,19 @@ export type TrueFalseAttemptForm = FormGroup<{
       background: var(--clr-white);
       font-weight: 700;
       color: var(--clr-gray-600);
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        border-color: var(--clr-green-500);
+        transform: scale(1.01);
+      }
+
+      &.selected {
+        border-color: var(--clr-green-600);
+        background-color: var(--clr-green-50);
+        color: var(--clr-green-700);
+        box-shadow: 0 0 0 1px var(--clr-green-600);
+      }
     }
 
     @media (width <= 40rem) {
@@ -90,7 +106,7 @@ export type TrueFalseAttemptForm = FormGroup<{
     }
   `,
 })
-export class TrueFalseAttempt implements QuestionAttemptComponent, OnInit {
+export class TfAttempt implements QuestionAttemptContract, OnInit {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
   private readonly destroyRef = inject(DestroyRef);
   readonly question = input.required<Question>();
@@ -98,9 +114,9 @@ export class TrueFalseAttempt implements QuestionAttemptComponent, OnInit {
   private readonly fb = inject(FormBuilder);
 
   protected get selectedOptionControl() {
-    return this.trueFalseAttemptForm.controls.selectedOption;
+    return this.tfAttemptForm.controls.selectedOption;
   }
-  protected readonly trueFalseAttemptForm: TrueFalseAttemptForm = this.fb.group({
+  protected readonly tfAttemptForm: TfAttemptForm = this.fb.group({
     selectedOption: this.fb.control<boolean | null>(null, {
       validators: [Validators.required],
     }),
@@ -118,13 +134,11 @@ export class TrueFalseAttempt implements QuestionAttemptComponent, OnInit {
           return;
         }
 
-        const answer: TrueFalseQuestionAnswer = {
+        const answer: SubmitTfAnswer = {
           id: crypto.randomUUID(),
-          studentId: this.quizAttemptStore.studentId(),
           questionId: this.question().id,
-          quizAttemptId: this.quizAttemptStore.quizAttemptId(),
           studentChoice: selectedValue,
-          type: QuestionType.TrueFalse,
+          type: QuestionType.Tf,
         };
 
         this.quizAttemptStore.submitAnswer(answer);

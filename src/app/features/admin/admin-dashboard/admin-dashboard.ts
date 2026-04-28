@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { FeatureCardComponent } from '../../landing/feature-card';
-import { CollegeService } from '../../../shared/services/college.service';
+
+import { AuthService } from '@Features/auth/auth.service';
+import { FeatureCardComponent } from '@Features/landing/feature-card';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { AuthService } from '../../auth/auth.service';
-import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-header/role-dashboard-header';
+
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { CollegeService } from '@shared/services/college.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -13,8 +15,8 @@ import { RoleDashboardHeader } from '../../../shared/components/role-dashboard-h
     <section class="page">
       <header class="page-header">
         <app-role-dashboard-header
-          title="Admin Dashboard"
           [description]="'Welcome back, ' + welcomeName()"
+          title="Admin Dashboard"
         />
       </header>
 

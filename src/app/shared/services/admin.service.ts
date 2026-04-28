@@ -1,10 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+
+
+import { APP_SETTINGS } from '@Core/config/app.settings';
+import { CreateAdmin } from '@Features/admin/models/create-admin.model';
+import { UpdateAdmin } from '@Features/admin/models/update-admin.model';
 import { Observable } from 'rxjs';
-import { APP_SETTINGS } from '../../core/config/app.settings';
-import { Admin } from '../models/admin/admin.model';
-import { CreateAdmin } from '../../features/admin/models/create-admin.model';
-import { UpdateAdmin } from '../../features/admin/models/update-admin.model';
+
+import { Admin } from '@shared/models/admin/admin.model';
+import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
+import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +18,16 @@ export class AdminService {
   private readonly appSettings = inject(APP_SETTINGS);
   private readonly http = inject(HttpClient);
 
-  getAllAdmins(): Observable<Admin[]> {
-    return this.http.get<Admin[]>(`${this.appSettings.apiBaseUrl}/admins`);
+  getAllAdmins(query: PaginatedQuery): Observable<PaginatedList<Admin>> {
+    let params = new HttpParams();
+
+    if (query.searchTerm) {
+      params = params.set('searchTerm', query.searchTerm);
+    }
+    params = params.set('pageNumber', query.pageNumber ?? 1);
+    params = params.set('pageSize', query.pageSize ?? 10);
+
+    return this.http.get<PaginatedList<Admin>>(`${this.appSettings.apiBaseUrl}/admins`, { params });
   }
 
   createAdmin(admin: CreateAdmin): Observable<Admin> {

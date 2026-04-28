@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+
 import { ProgressBar } from 'primeng/progressbar';
+
 import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({

@@ -1,5 +1,7 @@
-import {FormGroup} from '@angular/forms';
-import {computed, inject} from '@angular/core';
+import { computed, inject } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+
+import { AuthService } from '@Features/auth/auth.service';
 import {
   patchState,
   signalStore,
@@ -8,10 +10,11 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import {Choice, MCQ} from '../../../shared/models/quiz/mcq.model';
-import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
-import {Quiz} from '../../../shared/models/quiz/quiz.model';
-import {AuthService} from '../../auth/auth.service';
+
+import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Quiz } from '@shared/models/quiz/quiz.model';
+
 
 const createInitialQuiz = (): Quiz => ({
   id: crypto.randomUUID(),
@@ -40,7 +43,7 @@ const initialState: CreateQuizState = {
 };
 
 export const CreateQuizStore = signalStore(
-  {providedIn: 'root'},
+  { providedIn: 'root' },
   withState<CreateQuizState>(initialState),
   withComputed((store) => ({
     quizId: computed(() => store.quiz().id),
@@ -102,10 +105,12 @@ export const CreateQuizStore = signalStore(
     },
 
     removeQuestion(questionId: string): void {
-      const updatedQuestions = store.quiz().questions.filter((question) => question.id !== questionId);
+      const updatedQuestions = store
+        .quiz()
+        .questions.filter((question) => question.id !== questionId);
       const nextActiveQuestionId =
         store.activeQuestionId() === questionId
-          ? updatedQuestions[0]?.id ?? null
+          ? (updatedQuestions[0]?.id ?? null)
           : store.activeQuestionId();
 
       patchState(store, {
@@ -124,7 +129,7 @@ export const CreateQuizStore = signalStore(
           questions: store
             .quiz()
             .questions.map((question) =>
-              question.id === questionId ? {...question, marks} : question,
+              question.id === questionId ? { ...question, marks } : question,
             ),
         },
       });
@@ -137,7 +142,7 @@ export const CreateQuizStore = signalStore(
           questions: store
             .quiz()
             .questions.map((question) =>
-              question.id === questionId ? {...question, questionText} : question,
+              question.id === questionId ? { ...question, questionText } : question,
             ),
         },
       });
@@ -184,9 +189,7 @@ export const CreateQuizStore = signalStore(
               return question;
             }
 
-            const updatedChoices = mcq.choices.filter(
-              (choice: Choice) => choice.id !== choiceId,
-            );
+            const updatedChoices = mcq.choices.filter((choice: Choice) => choice.id !== choiceId);
             return {
               ...question,
               choices: updatedChoices,
@@ -238,6 +241,10 @@ export const CreateQuizStore = signalStore(
       patchState(store, {
         activeQuestionId: questionId,
       });
+    },
+
+    getQuestionByIndex(index: number): Question {
+      return store.quiz().questions[index];
     },
   })),
   withHooks({

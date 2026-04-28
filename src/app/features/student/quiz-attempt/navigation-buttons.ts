@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+
 import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
@@ -6,10 +7,10 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   imports: [],
   template: `
     <nav class="nav-actions" aria-label="Question navigation">
-      <button type="button" class="btn btn-gray" [disabled]="!quizAttemptStore.canGoPrevious()">
+      <button class="btn btn-gray" [disabled]="!quizAttemptStore.canGoPrevious()" type="button">
         Previous
       </button>
-      <button type="button" class="btn btn-green" [disabled]="!quizAttemptStore.canGoNext()">
+      <button class="btn btn-green" [disabled]="!quizAttemptStore.canGoNext()" type="button">
         Next
       </button>
     </nav>

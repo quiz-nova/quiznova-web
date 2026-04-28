@@ -1,6 +1,8 @@
-import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
-import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
-import {CreateQuizStore} from './create-quiz.store';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+
+import { CreateQuizStore } from './create-quiz.store';
 
 @Component({
   selector: 'app-questions-outline',
@@ -17,11 +19,11 @@ import {CreateQuizStore} from './create-quiz.store';
         @for (question of questions(); track question.id; let index = $index) {
           <li>
             <button
-              type="button"
               class="questions-outline__item"
               [class.questions-outline__item--active]="question.id === activeQuestionId()"
               [attr.aria-current]="question.id === activeQuestionId() ? 'step' : null"
               (click)="onQuestionSelect(question.id)"
+              type="button"
             >
               <span class="questions-outline__number">{{ index + 1 }}</span>
               <span class="questions-outline__details">
@@ -207,8 +209,6 @@ export class QuestionsOutline {
   }
 
   protected getQuestionTypeIcon(questionType: QuestionType): string {
-    return questionType === QuestionType.Mcq
-      ? 'fa-solid fa-list-check'
-      : 'fa-solid fa-circle-dot';
+    return questionType === QuestionType.Mcq ? 'fa-solid fa-list-check' : 'fa-solid fa-circle-dot';
   }
 }

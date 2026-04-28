@@ -6,13 +6,16 @@ import {
   type FormControl,
   type FormGroup,
 } from '@angular/forms';
+
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { EditButton } from '../../../shared/components/edit-button/edit-button';
-import { Admin } from '../../../shared/models/admin/admin.model';
-import { AdminService } from '../../../shared/services/admin.service';
+
+import { EditButton } from '@shared/components/edit-button/edit-button';
+import { FieldError } from '@shared/components/field-error/field-error';
+import { Admin } from '@shared/models/admin/admin.model';
+import { AdminService } from '@shared/services/admin.service';
 
 type EditAdminFormGroup = FormGroup<{
   name: FormControl<string>;
@@ -23,93 +26,85 @@ type EditAdminFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-admin-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, Password, EditButton],
+  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, Password, EditButton, FieldError],
   template: `
-    <app-edit-button ariaLabel="Edit admin" (edited)="openDialog()"></app-edit-button>
+    <app-edit-button (editButtonClicked)="openDialog()" ariaLabel="Edit admin"></app-edit-button>
 
     <p-dialog
-      header="Edit Admin"
       [visible]="isDialogOpen()"
       [modal]="true"
       [dismissableMask]="true"
       [style]="{ width: 'min(40rem, 95vw)' }"
       (visibleChange)="onDialogVisibilityChange($event)"
+      header="Edit Admin"
     >
       <form class="edit-form" [formGroup]="EditAdminForm" (ngSubmit)="onSubmit()">
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-admin-name"
+              [fluid]="true"
+              pInputText
               type="text"
               formControlName="name"
-              [fluid]="true"
             />
             <label for="edit-admin-name">Name</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (nameControl.invalid && nameControl.touched) {
-              <span>Name is required.</span>
-            }
-          </div>
+          @if (nameControl.invalid && nameControl.touched) {
+            <app-field-error errorText="Name is required."/>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-admin-email"
+              [fluid]="true"
+              pInputText
               type="email"
               formControlName="email"
-              [fluid]="true"
             />
             <label for="edit-admin-email">Email</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (emailControl.invalid && emailControl.touched) {
-              @if (emailControl.hasError('required')) {
-                <span>Email is required.</span>
-              } @else if (emailControl.hasError('email')) {
-                <span>Please enter a valid email address.</span>
-              }
+          @if (emailControl.invalid && emailControl.touched) {
+            @if (emailControl.hasError('required')) {
+              <app-field-error errorText="Email is required."/>
+            } @else if (emailControl.hasError('email')) {
+              <app-field-error errorText="Please enter a valid email address."/>
             }
-          </div>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <p-password
-              inputId="edit-admin-password"
-              formControlName="password"
               [feedback]="false"
               [toggleMask]="true"
               [fluid]="true"
+              inputId="edit-admin-password"
+              formControlName="password"
             />
             <label for="edit-admin-password">Password</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (passwordControl.invalid && passwordControl.touched) {
-              <span>Password is required.</span>
-            }
-          </div>
+          @if (passwordControl.invalid && passwordControl.touched) {
+            <app-field-error errorText="Password is required."/>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-admin-phone"
+              [fluid]="true"
+              pInputText
               type="text"
               formControlName="phoneNumber"
-              [fluid]="true"
             />
             <label for="edit-admin-phone">Phone Number</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
-              <span>Phone number is required.</span>
-            }
-          </div>
+          @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
+            <app-field-error errorText="Phone number is required."/>
+          }
         </div>
 
         @if (submitError()) {
@@ -117,8 +112,8 @@ type EditAdminFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button type="button" class="btn btn-gray" (click)="closeDialog()">Cancel</button>
-          <button type="submit" class="btn btn-green" [disabled]="isSubmitting()">
+          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
@@ -135,12 +130,6 @@ type EditAdminFormGroup = FormGroup<{
     .form-field {
       display: grid;
       gap: 0.5rem;
-    }
-
-    .field-error {
-      min-height: 1.25rem;
-      color: var(--clr-red-500);
-      font-size: 0.875rem;
     }
 
     .submit-error {

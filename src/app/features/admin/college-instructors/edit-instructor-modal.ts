@@ -6,13 +6,16 @@ import {
   type FormControl,
   type FormGroup,
 } from '@angular/forms';
+
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { EditButton } from '../../../shared/components/edit-button/edit-button';
-import { Instructor } from '../../../shared/models/instructor/instructor.model';
-import { InstructorService } from '../../../shared/services/instructor.service';
+
+import { EditButton } from '@shared/components/edit-button/edit-button';
+import { FieldError } from '@shared/components/field-error/field-error';
+import { Instructor } from '@shared/models/instructor/instructor.model';
+import { InstructorService } from '@shared/services/instructor.service';
 
 type EditInstructorFormGroup = FormGroup<{
   name: FormControl<string>;
@@ -23,93 +26,88 @@ type EditInstructorFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-instructor-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, Password, EditButton],
+  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, Password, EditButton, FieldError],
   template: `
-    <app-edit-button ariaLabel="Edit instructor" (edited)="openDialog()"></app-edit-button>
+    <app-edit-button
+      (editButtonClicked)="openDialog()"
+      ariaLabel="Edit instructor"
+    ></app-edit-button>
 
     <p-dialog
-      header="Edit Instructor"
       [visible]="isDialogOpen()"
       [modal]="true"
       [dismissableMask]="true"
       [style]="{ width: 'min(40rem, 95vw)' }"
       (visibleChange)="onDialogVisibilityChange($event)"
+      header="Edit Instructor"
     >
       <form class="edit-form" [formGroup]="EditInstructorForm" (ngSubmit)="onSubmit()">
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-instructor-name"
+              [fluid]="true"
+              pInputText
               type="text"
               formControlName="name"
-              [fluid]="true"
             />
             <label for="edit-instructor-name">Name</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (nameControl.invalid && nameControl.touched) {
-              <span>Name is required.</span>
-            }
-          </div>
+          @if (nameControl.invalid && nameControl.touched) {
+            <app-field-error errorText="Name is required."/>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-instructor-email"
+              [fluid]="true"
+              pInputText
               type="email"
               formControlName="email"
-              [fluid]="true"
             />
             <label for="edit-instructor-email">Email</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (emailControl.invalid && emailControl.touched) {
-              @if (emailControl.hasError('required')) {
-                <span>Email is required.</span>
-              } @else if (emailControl.hasError('email')) {
-                <span>Please enter a valid email address.</span>
-              }
+          @if (emailControl.invalid && emailControl.touched) {
+            @if (emailControl.hasError('required')) {
+              <app-field-error errorText="Email is required."/>
+            } @else if (emailControl.hasError('email')) {
+              <app-field-error errorText="Please enter a valid email address."/>
             }
-          </div>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <p-password
-              inputId="edit-instructor-password"
-              formControlName="password"
               [feedback]="false"
               [toggleMask]="true"
               [fluid]="true"
+              inputId="edit-instructor-password"
+              formControlName="password"
             />
             <label for="edit-instructor-password">Password</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (passwordControl.invalid && passwordControl.touched) {
-              <span>Password is required.</span>
-            }
-          </div>
+          @if (passwordControl.invalid && passwordControl.touched) {
+            <app-field-error errorText="Password is required."/>
+          }
         </div>
 
         <div class="form-field">
           <p-floatlabel variant="on">
             <input
-              pInputText
               id="edit-instructor-phone"
+              [fluid]="true"
+              pInputText
               type="text"
               formControlName="phoneNumber"
-              [fluid]="true"
             />
             <label for="edit-instructor-phone">Phone Number</label>
           </p-floatlabel>
-          <div class="field-error">
-            @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
-              <span>Phone number is required.</span>
-            }
-          </div>
+          @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
+            <app-field-error errorText="Phone number is required."/>
+          }
         </div>
 
         @if (submitError()) {
@@ -117,8 +115,8 @@ type EditInstructorFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button type="button" class="btn btn-gray" (click)="closeDialog()">Cancel</button>
-          <button type="submit" class="btn btn-green" [disabled]="isSubmitting()">
+          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
@@ -135,12 +133,6 @@ type EditInstructorFormGroup = FormGroup<{
     .form-field {
       display: grid;
       gap: 0.5rem;
-    }
-
-    .field-error {
-      min-height: 1.25rem;
-      color: var(--clr-red-500);
-      font-size: 0.875rem;
     }
 
     .submit-error {

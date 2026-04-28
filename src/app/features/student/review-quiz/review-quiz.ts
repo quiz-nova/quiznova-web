@@ -1,42 +1,87 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { ReviewQuizDetails } from './models/review-quiz.model';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
+
+import {TfNotAnswerd} from '@Features/student/review-quiz/tf-not-answerd';
+import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { McqAnswerReview } from './mcq-answer-review';
+import { McqNotAnswerd } from './mcq-not-answerd';
+import { ResultBanner } from './result-banner';
+import { ReviewQuizHeader } from './review-quiz-header';
+import { ReviewQuizStatusCard } from './review-quiz-status-card';
+import {
+  isMcqAnswer,
+  isMcqQuestion,
+  isTfAnswer,
+  isTf,
+  ReviewQuizStore,
+} from './review-quiz.store';
+import { TfAnswerReview } from './tf-answer-review';
 
 @Component({
   selector: 'app-review-quiz',
-  imports: [RouterLink],
+  imports: [
+    ProgressSpinner,
+    ReviewQuizHeader,
+    ResultBanner,
+    ReviewQuizStatusCard,
+    McqAnswerReview,
+    TfAnswerReview,
+    McqNotAnswerd,
+    TfNotAnswerd,
+  ],
   template: `
-    <section class="review-page" aria-labelledby="review-title">
-      <header class="review-header">
-        <h1 id="review-title">Quiz Review</h1>
-        <p>Attempt details scaffold for {{ attemptId() }}.</p>
-      </header>
+    <section class="review-page" aria-label="Quiz attempt review">
+      @if (reviewQuizStore.isPending()) {
+        <div class="spinner">
+          <p-progress-spinner ariaLabel="Loading attempt review" />
+        </div>
+      } @else if (reviewQuizStore.error(); as errorMessage) {
+        <div class="error" role="alert">{{ errorMessage }}</div>
+      } @else if (reviewQuizStore.quizAttempt()) {
+        <app-review-quiz-header />
 
-      <article class="review-card" aria-label="Review summary">
-        <h2>{{ details().quizTitle }}</h2>
-        <dl>
-          <div>
-            <dt>Status</dt>
-            <dd>{{ details().statusLabel }}</dd>
-          </div>
-          <div>
-            <dt>Score</dt>
-            <dd>{{ details().scoreLabel }}</dd>
-          </div>
-          <div>
-            <dt>Submitted</dt>
-            <dd>{{ details().submittedAtLabel }}</dd>
-          </div>
-        </dl>
+        <app-result-banner />
+        <app-review-quiz-status-card />
 
-        <ul>
-          @for (note of details().notes; track note) {
-            <li>{{ note }}</li>
-          }
-        </ul>
-      </article>
+        <section class="review-questions" aria-label="Question-by-question review">
+          <h2 class="review-questions__title">Question-by-Question Review</h2>
 
-      <a class="btn btn-gray" [routerLink]="['/student/quizzes']">Back to Quizzes</a>
+          <div class="review-questions__list">
+            @for (
+              item of reviewQuizStore.questionReviewItems();
+              track item.question.id;
+              let i = $index
+            ) {
+              @if (isMcqQuestion(item.question)) {
+                @if (isMcqAnswer(item.answer)) {
+                  <app-mcq-answer-review
+                    [question]="item.question"
+                    [answer]="item.answer"
+                    [questionNumber]="i + 1"
+                  />
+                } @else {
+                  <app-mcq-not-answerd [question]="item.question" [questionNumber]="i + 1" />
+                }
+              } @else if (isTf(item.question)) {
+                @if (isTfAnswer(item.answer)) {
+                  <app-tf-answer-review
+                    [question]="item.question"
+                    [answer]="item.answer"
+                    [questionNumber]="i + 1"
+                  />
+                } @else {
+                  <app-tf-question-not-answerd
+                    [question]="item.question"
+                    [questionNumber]="i + 1"
+                  />
+                }
+              }
+            }
+          </div>
+        </section>
+      } @else {
+        <div class="error" role="alert">Attempt review is unavailable.</div>
+      }
     </section>
   `,
   styles: `
@@ -47,76 +92,47 @@ import { ReviewQuizDetails } from './models/review-quiz.model';
     }
 
     .review-page {
-      display: grid;
-      gap: 1rem;
-      padding: 1.5rem;
-    }
-
-    .review-header h1 {
-      margin: 0;
-      color: var(--clr-blue-900);
-    }
-
-    .review-header p {
-      margin-top: 0.25rem;
-      color: var(--clr-gray-600);
-    }
-
-    .review-card {
+      width: min(100%, 76rem);
+      margin: 0 auto;
       display: grid;
       gap: 1rem;
       padding: 1rem;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-white);
     }
 
-    h2 {
+    .review-questions {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .review-questions__title {
       margin: 0;
+      font-size: 1.1rem;
       color: var(--clr-blue-900);
-      font-size: var(--fs-600);
     }
 
-    dl {
+    .review-questions__list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-      gap: 0.8rem;
+      gap: 0.75rem;
     }
 
-    dt {
-      color: var(--clr-gray-600);
-      font-size: var(--fs-300);
-      font-weight: 700;
-    }
-
-    dd {
-      margin: 0.2rem 0 0;
-      color: var(--clr-blue-900);
-      font-size: var(--fs-500);
-      font-weight: 700;
-    }
-
-    ul {
-      padding-inline-start: 1.2rem;
-      color: var(--clr-gray-800);
-      display: grid;
-      gap: 0.35rem;
+    @media (width <= 40rem) {
+      .review-page {
+        padding: 0.75rem;
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewQuiz {
+export class ReviewQuiz implements OnInit {
+  protected readonly reviewQuizStore = inject(ReviewQuizStore);
+  protected readonly isMcqQuestion = isMcqQuestion;
+  protected readonly isTf = isTf;
+  protected readonly isMcqAnswer = isMcqAnswer;
+  protected readonly isTfAnswer = isTfAnswer;
+
   readonly attemptId = input.required<string>();
 
-  protected readonly details = computed<ReviewQuizDetails>(() => ({
-    attemptId: this.attemptId(),
-    quizTitle: 'Quiz details will be available soon',
-    statusLabel: 'Processed',
-    scoreLabel: 'Pending full breakdown',
-    submittedAtLabel: 'Captured in attempt history',
-    notes: [
-      'This is a lightweight review scaffold based on attempt ID.',
-      'Per-question breakdown will be added in the next iteration.',
-    ],
-  }));
+  ngOnInit(): void {
+    this.reviewQuizStore.load({ attemptId: this.attemptId() });
+  }
 }

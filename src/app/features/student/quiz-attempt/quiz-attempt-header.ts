@@ -1,9 +1,12 @@
-import {Component, computed, DestroyRef, inject, OnInit, signal} from '@angular/core';
-import {QuizAttemptStore} from './quiz-attempt.store';
-import {QuizService} from '../../../shared/services/quiz.service';
-import {toObservable, toSignal, takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Subscription, switchMap, timer} from 'rxjs';
-import {Quiz} from '../../../shared/models/quiz/quiz.model';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { toObservable, toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { Subscription, switchMap, timer } from 'rxjs';
+
+import { Quiz } from '@shared/models/quiz/quiz.model';
+import { QuizService } from '@shared/services/quiz.service';
+
+import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
   selector: 'app-quiz-attempt-header',
@@ -12,11 +15,18 @@ import {Quiz} from '../../../shared/models/quiz/quiz.model';
     <header class="attempt-header">
       <div>
         <h1>{{ quiz()?.title }}</h1>
-        <p>Question {{ this.quizAttemptStore.currentQuestionIndex() }} of {{ quiz()?.questions?.length }}</p>
+        <p>
+          Question {{ this.quizAttemptStore.currentQuestionIndex() }} of
+          {{ quiz()?.questions?.length }}
+        </p>
       </div>
 
       <div class="attempt-meta" aria-label="Quiz status">
-        <span class="chip">{{ this.quizAttemptStore.numberOfSolvedQuestions() }}/{{ quiz()?.questions?.length }}</span>
+        <span class="chip"
+          >{{ this.quizAttemptStore.numberOfSolvedQuestions() }}/{{
+            quiz()?.questions?.length
+          }}</span
+        >
         <span class="chip">{{ remainingTime() }}</span>
       </div>
     </header>

@@ -4,6 +4,6 @@ export interface Instructor {
   email: string;
   password: string;
   phoneNumber: string;
-  courseCount: number;
-  quizCount: number;
+  coursesCount: number;
+  quizzesCount: number;
 }

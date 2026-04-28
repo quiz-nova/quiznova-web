@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { QuizService } from '../../shared/services/quiz.service';
+
 import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
   selector: 'app-college-quizzes',
@@ -18,7 +20,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 
       @if (quizzesResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
+          <p-progress-spinner ariaLabel="loading"/>
         </div>
       } @else if (quizzesResource.error()) {
         <div class="error">
@@ -30,30 +32,30 @@ import { ProgressSpinner } from 'primeng/progressspinner';
         <div class="table-shell">
           <table>
             <thead>
-              <tr>
-                <th>Title</th>
-                <th>Course</th>
-                <th>Instructor</th>
-                <th>Marks</th>
-                <th>Starts At</th>
-                <th>Ends At</th>
-                <th>State</th>
-              </tr>
+            <tr>
+              <th>Title</th>
+              <th>Course</th>
+              <th>Instructor</th>
+              <th>Marks</th>
+              <th>Starts At</th>
+              <th>Ends At</th>
+              <th>State</th>
+            </tr>
             </thead>
             <tbody>
-              <!-- @for (quiz of quizzesResource.value() ?? []; track quiz.quizId) {
-              <tr>
-                <td>{{ quiz.title }}</td>
-                <td>{{ quiz.courseName }}</td>
-                <td>{{ quiz.instructorName }}</td>
-                <td>{{ quiz.marks }}</td>
-                <td>{{ quiz.startsAtUtc | date: 'medium' }}</td>
-                <td>{{ quiz.endsAtUtc | date: 'medium' }}</td>
-                <td>
-                  <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>
-                </td>
-              </tr>
-            } -->
+<!--              @for (quiz of quizzesResource.value() ?? []; track quiz.id) {-->
+<!--                <tr>-->
+<!--                  <td>{{ quiz.title }}</td>-->
+<!--                  <td>{{ quiz.quizName }}</td>-->
+<!--                  <td>{{ quiz.instructorName }}</td>-->
+<!--                  <td>{{ quiz.marks }}</td>-->
+<!--                  <td>{{ quiz.startsAtUtc | date: 'medium' }}</td>-->
+<!--                  <td>{{ quiz.endsAtUtc | date: 'medium' }}</td>-->
+<!--                  <td>-->
+<!--                    <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>-->
+<!--                  </td>-->
+<!--                </tr>-->
+<!--              }-->
             </tbody>
           </table>
         </div>

@@ -1,5 +1,6 @@
-import {computed, inject} from '@angular/core';
-import {Question, QuestionType} from '../../../shared/models/quiz/question.model';
+import { computed, inject } from '@angular/core';
+
+import { AuthService } from '@Features/auth/auth.service';
 import {
   patchState,
   signalStore,
@@ -8,18 +9,25 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import {AuthService} from '../../auth/auth.service';
-import {QuizService} from '../../../shared/services/quiz.service';
-import {QuizAttemptService} from '../../../shared/services/quiz-attempt.service';
-import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
   setError,
   setFulfilled,
   setPending,
-  withRequestStatus
-} from '../../../../store-features/with-request-status.feature';
-import {EMPTY, catchError, exhaustMap, tap} from 'rxjs';
-import {QuestionAnswer} from '../../../shared/models/quiz-attempt/question-answer.model';
+  withRequestStatus,
+} from '@StoreFeatures/with-request-status.feature';
+import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
+
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
+import { QuizService } from '@shared/services/quiz.service';
+
+import {
+  SubmitMcqAnswer,
+  SubmitQuestionAnswer,
+  SubmitQuizAttempt,
+  SubmitTfAnswer,
+} from './models/SubmitQuizAttempt.model';
 
 export interface QuestionWithStatus {
   id: string;
@@ -36,7 +44,7 @@ export interface QuizAttemptState {
   quizId: string;
   studentId: string;
   quizQuestions: QuestionWithStatus[];
-  questionAttempts: QuestionAnswer[];
+  questionAttempts: (SubmitMcqAnswer | SubmitTfAnswer)[];
   currentQuestionIndex: number;
 }
 
@@ -44,7 +52,6 @@ export interface QuestionAttempt {
   questionId: string;
   type: QuestionType;
 }
-
 
 const initialState: QuizAttemptState = {
   quizAttemptId: crypto.randomUUID(),
@@ -55,11 +62,11 @@ const initialState: QuizAttemptState = {
   currentQuestionIndex: 0,
 };
 
-function isAnswerSolved(answer: QuestionAnswer): boolean {
+function isAnswerSolved(answer: SubmitQuestionAnswer): boolean {
   switch (answer.type) {
     case QuestionType.Mcq:
-      return answer.selectedChoiceId.trim().length > 0;
-    case QuestionType.TrueFalse:
+      return (answer as SubmitMcqAnswer).selectedChoiceId.trim().length > 0;
+    case QuestionType.Tf:
       return true;
     default:
       return false;
@@ -67,7 +74,7 @@ function isAnswerSolved(answer: QuestionAnswer): boolean {
 }
 
 export const QuizAttemptStore = signalStore(
-  {providedIn: 'root'},
+  { providedIn: 'root' },
   withState<QuizAttemptState>(initialState),
   withRequestStatus(),
   withMethods((store) => {
@@ -82,7 +89,7 @@ export const QuizAttemptStore = signalStore(
     return {
       toQuestionWithStatus,
       load: rxMethod<{ quizId: string }>(
-        exhaustMap(({quizId}) => {
+        exhaustMap(({ quizId }) => {
           patchState(store, setPending());
 
           return quizService.getQuizById(quizId).pipe(
@@ -96,18 +103,18 @@ export const QuizAttemptStore = signalStore(
               });
               patchState(store, setFulfilled());
             }),
-            catchError((error: unknown) => {
-              patchState(store, setError("Error Occured When we try to submit yout quiz")); // TODO we well modify this to be alliend with the backend error messages
+            catchError(() => {
+              patchState(store, setError('Error Occured When we try to submit yout quiz')); // TODO we well modify this to be alliend with the backend error messages
               return EMPTY;
             }),
           );
         }),
       ),
       setStudentId(studentId: string): void {
-        patchState(store, {studentId});
+        patchState(store, { studentId });
       },
       setCurrentQuestionIndex(index: number): void {
-        patchState(store, {currentQuestionIndex: index});
+        patchState(store, { currentQuestionIndex: index });
       },
       changeFlagStatusForTheCurrentQuestion(): void {
         patchState(store, (state) => {
@@ -116,36 +123,25 @@ export const QuizAttemptStore = signalStore(
           if (currentQuestion) {
             currentQuestion.isFlagged = !currentQuestion.isFlagged;
           }
-          return {quizQuestions: questions};
+          return { quizQuestions: questions };
         });
       },
       isCurrentQuestionFlagged(): boolean {
         const currentQuestion = store.quizQuestions()[store.currentQuestionIndex()];
         return currentQuestion ? currentQuestion.isFlagged : false;
       },
-      submitAnswer(answer: QuestionAnswer): void {
+      submitAnswer(answer: SubmitMcqAnswer | SubmitTfAnswer): void {
         patchState(store, (state) => {
           const solved = isAnswerSolved(answer);
 
-          const exists = state.questionAttempts.some(
-            (q) => q.questionId === answer.questionId,
-          );
+          const exists = state.questionAttempts.some((q) => q.questionId === answer.questionId);
           // if he submits the answer before we update it else we add it to the list of attempts
           const updatedAttempts = exists
-            ? state.questionAttempts.map((q) =>
-              q.questionId === answer.questionId
-                ? answer
-                : q,
-            )
-            : [
-              ...state.questionAttempts,
-              answer,
-            ];
-           // Update the isSolved to reactivity in the ui specially in the question navigator
+            ? state.questionAttempts.map((q) => (q.questionId === answer.questionId ? answer : q))
+            : [...state.questionAttempts, answer];
+          // Update the isSolved to reactivity in the ui specially in the question navigator
           const updatedQuestions = state.quizQuestions.map((question) =>
-            question.id === answer.questionId
-              ? {...question, isSolved: solved}
-              : question,
+            question.id === answer.questionId ? { ...question, isSolved: solved } : question,
           );
 
           return {
@@ -155,7 +151,28 @@ export const QuizAttemptStore = signalStore(
         });
       },
       SubmitQuiz(): void {
+        const studentId = store.studentId();
+        const request: SubmitQuizAttempt = {
+          id: store.quizAttemptId(),
+          quizId: store.quizId(),
+          startedAt: new Date().toISOString(), // Track from start in real implementation
+          submittedAt: new Date().toISOString(),
+          questionAnswers: store.questionAttempts(),
+        };
 
+        patchState(store, setPending());
+        quizAttemptService
+          .createQuizAttempt(studentId, request)
+          .pipe(
+            tap(() => {
+              patchState(store, setFulfilled());
+            }),
+            catchError(() => {
+              patchState(store, setError('Error occurred during submission'));
+              return EMPTY;
+            }),
+          )
+          .subscribe();
       },
     };
   }),

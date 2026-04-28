@@ -1,26 +1,31 @@
 import { Component, inject, input, output, signal } from '@angular/core';
+
 import { DialogModule } from 'primeng/dialog';
-import { DeleteButton } from '../../../shared/components/delete-button/delete-button';
-import { Admin } from '../../../shared/models/admin/admin.model';
-import { AdminService } from '../../../shared/services/admin.service';
+
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { Admin } from '@shared/models/admin/admin.model';
+import { AdminService } from '@shared/services/admin.service';
 
 @Component({
   selector: 'app-delete-admin-modal',
   imports: [DialogModule, DeleteButton],
   template: `
-    <app-delete-button ariaLabel="Delete admin" (deleted)="openDialog()"></app-delete-button>
+    <app-delete-button
+      (deleteButtonClicked)="openDialog()"
+      ariaLabel="Delete admin"
+    ></app-delete-button>
 
     <p-dialog
-      header="Delete Admin"
       [visible]="isDialogOpen()"
       [modal]="true"
       [dismissableMask]="true"
       [style]="{ width: 'min(30rem, 95vw)' }"
       (visibleChange)="onDialogVisibilityChange($event)"
+      header="Delete Admin"
     >
       <p class="message">
         Are you sure you want to delete <strong>{{ admin().name }}</strong
-        >?
+      >?
       </p>
 
       @if (submitError()) {
@@ -28,8 +33,8 @@ import { AdminService } from '../../../shared/services/admin.service';
       }
 
       <div class="actions">
-        <button type="button" class="btn btn-gray" (click)="closeDialog()">Cancel</button>
-        <button type="button" class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()">
+        <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
+        <button class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()" type="button">
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>
@@ -38,7 +43,7 @@ import { AdminService } from '../../../shared/services/admin.service';
   styles: `
     .message {
       margin: 0;
-      color: var(--clr-gray-700);
+      color: var(--clr-gray-600);
       line-height: 1.6;
     }
 

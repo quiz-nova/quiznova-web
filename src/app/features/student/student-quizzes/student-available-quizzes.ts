@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { QuizCountdownTag } from '../../../shared/components/quiz-countdown-tag/quiz-countdown-tag';
+
+import { QuizCountdownTag } from '@shared/components/quiz-countdown-tag/quiz-countdown-tag';
+
 import { StudentQuizApiDto } from './models/student-quizzes.model';
 
 @Component({

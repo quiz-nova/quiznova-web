@@ -1,22 +1,27 @@
 import { Component, inject, input, output, signal } from '@angular/core';
+
 import { DialogModule } from 'primeng/dialog';
-import { DeleteButton } from '../../../shared/components/delete-button/delete-button';
-import { Student } from '../../../shared/models/student/student.model';
-import { StudentService } from '../../../shared/services/student.service';
+
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { Student } from '@shared/models/student/student.model';
+import { StudentService } from '@shared/services/student.service';
 
 @Component({
   selector: 'app-delete-student-modal',
   imports: [DialogModule, DeleteButton],
   template: `
-    <app-delete-button ariaLabel="Delete student" (deleted)="openDialog()"></app-delete-button>
+    <app-delete-button
+      (deleteButtonClicked)="openDialog()"
+      ariaLabel="Delete student"
+    ></app-delete-button>
 
     <p-dialog
-      header="Delete Student"
       [visible]="isDialogOpen()"
       [modal]="true"
       [dismissableMask]="true"
       [style]="{ width: 'min(30rem, 95vw)' }"
       (visibleChange)="onDialogVisibilityChange($event)"
+      header="Delete Student"
     >
       <p class="message">
         Are you sure you want to delete <strong>{{ student().name }}</strong
@@ -28,8 +33,8 @@ import { StudentService } from '../../../shared/services/student.service';
       }
 
       <div class="actions">
-        <button type="button" class="btn btn-gray" (click)="closeDialog()">Cancel</button>
-        <button type="button" class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()">
+        <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
+        <button class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()" type="button">
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>
@@ -38,7 +43,7 @@ import { StudentService } from '../../../shared/services/student.service';
   styles: `
     .message {
       margin: 0;
-      color: var(--clr-gray-700);
+      color: var(--clr-gray-600);
       line-height: 1.6;
     }
 

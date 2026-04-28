@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { CoursesService } from '../../shared/services/courses.service';
+
 import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { CoursesService } from '@shared/services/courses.service';
 
 @Component({
   selector: 'app-college-courses',
@@ -18,7 +20,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 
       @if (coursesResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
+          <p-progress-spinner ariaLabel="loading"/>
         </div>
       } @else if (coursesResource.error()) {
         <div class="error">
@@ -30,13 +32,13 @@ import { ProgressSpinner } from 'primeng/progressspinner';
         <div class="table-shell">
           <table>
             <thead>
-              <tr>
-                <th>Id</th>
-                <th>Course</th>
-                <th>Instructor</th>
-                <th>Enrolled</th>
-                <th>Quizzes</th>
-              </tr>
+            <tr>
+              <th>Id</th>
+              <th>Course</th>
+              <th>Instructor</th>
+              <th>Enrolled</th>
+              <th>Quizzes</th>
+            </tr>
             </thead>
             <tbody>
               @for (course of coursesResource.value() ?? []; track course.courseId) {
@@ -44,8 +46,8 @@ import { ProgressSpinner } from 'primeng/progressspinner';
                   <td>{{ course.courseId.slice(0, 8) }}</td>
                   <td>{{ course.courseName }}</td>
                   <td>{{ course.instructorName }}</td>
-                  <td>{{ course.enrolledStudentCount }}</td>
-                  <td>{{ course.quizCount }}</td>
+                  <td>{{ course.enrolledStudentsCount }}</td>
+                  <td>{{ course.quizzesCount }}</td>
                 </tr>
               }
             </tbody>

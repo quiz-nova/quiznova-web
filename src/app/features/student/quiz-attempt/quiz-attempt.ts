@@ -1,12 +1,14 @@
+import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, input, OnInit } from '@angular/core';
+
+import { QuizService } from '@shared/services/quiz.service';
+
 import { AttemptButton } from './attempt-button';
 import { NavigationButtons } from './navigation-buttons';
-import { QuestionsNavigator } from './questions-navigator';
-import { QuizAttemptHeader } from './quiz-attempt-header';
-import { QuizService } from '../../../shared/services/quiz.service';
 import { QuestionAttemptHeader } from './question-attempt-header';
+import { QuestionsNavigator } from './questions-navigator';
 import { QuestionsProgrssBar } from './questions-progrss-bar';
-import { NgComponentOutlet } from '@angular/common';
+import { QuizAttemptHeader } from './quiz-attempt-header';
 import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({

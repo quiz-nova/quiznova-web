@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { of } from 'rxjs';
-import { AuthService } from '../../auth/auth.service';
-import { CoursesService } from '../../../shared/services/courses.service';
+
+import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { of } from 'rxjs';
+
+import { CoursesService } from '@shared/services/courses.service';
+
 
 @Component({
   selector: 'app-instructor-courses',
@@ -49,11 +52,11 @@ import { ProgressSpinner } from 'primeng/progressspinner';
                 </div>
                 <div>
                   <dt>Students</dt>
-                  <dd>{{ course.enrolledStudentCount }}</dd>
+                  <dd>{{ course.enrolledStudentsCount }}</dd>
                 </div>
                 <div>
                   <dt>Quizzes</dt>
-                  <dd>{{ course.quizCount }}</dd>
+                  <dd>{{ course.quizzesCount }}</dd>
                 </div>
               </dl>
             </article>

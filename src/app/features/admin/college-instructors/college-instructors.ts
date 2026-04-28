@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { InstructorService } from '../../../shared/services/instructor.service';
+
 import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { InstructorService } from '@shared/services/instructor.service';
+
 import { AddInstructorModal } from './add-instructor-modal';
-import { EditInstructorModal } from './edit-instructor-modal';
 import { DeleteInstructorModal } from './delete-instructor-modal';
+import { EditInstructorModal } from './edit-instructor-modal';
 
 @Component({
   selector: 'app-admin-instructors',
@@ -22,7 +25,7 @@ import { DeleteInstructorModal } from './delete-instructor-modal';
 
       @if (instructorsResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
+          <p-progress-spinner ariaLabel="loading"/>
         </div>
       } @else if (instructorsResource.error()) {
         <div class="error">
@@ -32,22 +35,20 @@ import { DeleteInstructorModal } from './delete-instructor-modal';
         <div class="table-shell">
           <table>
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Courses</th>
-                <th>Quizzes</th>
-                <th>Actions</th>
-              </tr>
+            <tr>
+              <th>Name</th>
+              <th>Courses</th>
+              <th>Quizzes</th>
+              <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
-              @for (
-                instructor of instructorsResource.value() || [];
-                track instructor.instructorId
-              ) {
+              @for (instructor of instructorsResource.value() || [];
+                track instructor.instructorId) {
                 <tr>
                   <td>{{ instructor.name }}</td>
-                  <td>{{ instructor.courseCount }}</td>
-                  <td>{{ instructor.quizCount }}</td>
+                  <td>{{ instructor.coursesCount }}</td>
+                  <td>{{ instructor.quizzesCount }}</td>
                   <td>
                     <div class="actions">
                       <app-edit-instructor-modal

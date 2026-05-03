@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject, model } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { of } from 'rxjs';
+
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
+import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { Instructor } from '@shared/models/instructor/instructor.model';
+import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 
@@ -141,7 +143,8 @@ import { InstructorService } from '@shared/services/instructor.service';
 
       <div class="pagination-row">
         <p class="page-info">
-          Page {{ coursesResource.value()?.pageNumber ?? 1 }} of {{ coursesResource.value()?.totalPages ?? 1 }}
+          Page {{ coursesResource.value()?.pageNumber ?? 1 }}
+          of {{ coursesResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
           ariaLabel="Courses pagination"
@@ -185,10 +188,18 @@ export class CollegeCourses {
     stream: (shouldFetch) =>
       shouldFetch
         ? this.instructorService.getAllInstructors({
-            pageNumber: 1,
-            pageSize: 10,
-          })
-        : of({ items: [], pageNumber: 1, pageSize: 10, totalPages: 1, totalCount: 0, hasPreviousPage: false, hasNextPage: false } as any),
+          pageNumber: 1,
+          pageSize: 10,
+        })
+        : of({
+          items: [],
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1,
+          totalCount: 0,
+          hasPreviousPage: false,
+          hasNextPage: false
+        } as PaginatedList<Instructor>),
   });
 
   protected readonly instructorOptions = computed(() =>

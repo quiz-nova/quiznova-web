@@ -1,5 +1,6 @@
 import { Component, inject, output } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { AuthService } from '@Features/auth/auth.service';
 
 @Component({

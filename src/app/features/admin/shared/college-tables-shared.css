@@ -6,8 +6,8 @@
 
 .page-header {
   display: flex;
-  justify-content: space-between;
   align-items: start;
+  justify-content: space-between;
   gap: 1rem;
 }
 
@@ -16,8 +16,8 @@
   color: var(--clr-green-500);
   font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 h1 {
@@ -32,9 +32,9 @@ h1 {
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem;
   align-items: end;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
 .filter-item {
@@ -43,16 +43,16 @@ h1 {
 }
 
 .filter-item > label {
-  font-size: 0.875rem;
   color: var(--clr-gray-600);
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
 .table-shell {
-  overflow: auto;
   border: 1px solid var(--clr-gray-200);
   border-radius: var(--radius-md);
   background-color: var(--clr-white);
+  overflow: auto;
 }
 
 table {

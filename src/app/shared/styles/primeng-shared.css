@@ -19,11 +19,11 @@
     display: flex;
     align-items: center;
     min-height: 3rem;
+    padding: 0.25rem 0.5rem;
     border: 1px solid var(--clr-gray-500);
     border-radius: var(--radius-md);
     background-color: var(--clr-white);
     color: var(--clr-blue-900);
-    padding: 0.25rem 0.5rem;
   }
 
   .p-select:not(.p-disabled):hover {
@@ -43,8 +43,8 @@
   }
 
   .p-select-option {
-    color: var(--clr-blue-900);
     padding: 0.25rem 0.5rem;
+    color: var(--clr-blue-900);
   }
 
   .p-select-option.p-select-option-selected,
@@ -95,12 +95,12 @@
     align-items: center;
     justify-content: center;
     width: 2.5rem;
-    background-color: var(--clr-gray-50);
     border: 1px solid var(--clr-gray-500);
+    background-color: var(--clr-gray-50);
     color: var(--clr-blue-900);
-    cursor: pointer;
     transition: background-color 0.2s ease-in-out,
     color 0.2s ease-in-out;
+    cursor: pointer;
   }
 
   .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
@@ -186,7 +186,7 @@
       transform: rotate(135deg);
     }
 
-    to {
+    100% {
       stroke-dashoffset: 169.646;
       transform: rotate(450deg);
     }

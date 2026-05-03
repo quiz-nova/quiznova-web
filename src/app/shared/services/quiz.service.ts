@@ -6,6 +6,9 @@ import { APP_SETTINGS } from '@Core/config/app.settings';
 import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 import { Observable } from 'rxjs';
 
+import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
+import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
+import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
 import {
   CREATE_QUESTION_COMPONENT_MAP,
   QUESTION_ATTEMPT_COMPONENT_MAP,
@@ -19,8 +22,6 @@ import {
 import { QuestionType } from '@shared/models/quiz/question.model';
 import { QuizCount } from '@shared/models/quiz/quiz-count.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
-import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
-import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
@@ -41,7 +42,7 @@ export class QuizService {
     return QUESTION_ATTEMPT_COMPONENT_MAP[questionType] || null;
   }
 
-  createQuiz(quiz: Quiz): Observable<Quiz> {
+  createQuiz(quiz: CreateQuiz): Observable<Quiz> {
     return this.http.post<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes`, quiz);
   }
 

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
-import {TfNotAnswerd} from '@Features/student/review-quiz/tf-not-answerd';
+import {TfNotAnswered} from '@Features/student/review-quiz/tf-not-answered';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { McqAnswerReview } from './mcq-answer-review';
-import { McqNotAnswerd } from './mcq-not-answerd';
+import { McqNotAnswered } from './mcq-not-answered';
 import { ResultBanner } from './result-banner';
 import { ReviewQuizHeader } from './review-quiz-header';
 import { ReviewQuizStatusCard } from './review-quiz-status-card';
@@ -26,8 +26,8 @@ import { TfAnswerReview } from './tf-answer-review';
     ReviewQuizStatusCard,
     McqAnswerReview,
     TfAnswerReview,
-    McqNotAnswerd,
-    TfNotAnswerd,
+    McqNotAnswered,
+    TfNotAnswered,
   ],
   template: `
     <section class="review-page" aria-label="Quiz attempt review">
@@ -60,7 +60,7 @@ import { TfAnswerReview } from './tf-answer-review';
                     [questionNumber]="i + 1"
                   />
                 } @else {
-                  <app-mcq-not-answerd [question]="item.question" [questionNumber]="i + 1" />
+                  <app-mcq-not-answered [question]="item.question" [questionNumber]="i + 1" />
                 }
               } @else if (isTf(item.question)) {
                 @if (isTfAnswer(item.answer)) {
@@ -70,7 +70,7 @@ import { TfAnswerReview } from './tf-answer-review';
                     [questionNumber]="i + 1"
                   />
                 } @else {
-                  <app-tf-question-not-answerd
+                  <app-tf-question-not-answered
                     [question]="item.question"
                     [questionNumber]="i + 1"
                   />

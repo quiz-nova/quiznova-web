@@ -6,10 +6,10 @@ import { APP_SETTINGS } from '@Core/config/app.settings';
 import { SubmitQuizAttempt } from '@Features/student/quiz-attempt/models/SubmitQuizAttempt.model';
 import { Observable } from 'rxjs';
 
-import { QuizAttemptCount } from '@shared/models/quiz-attempt/quiz-attempt-count.model';
-import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
+import { QuizAttemptCount } from '@shared/models/quiz-attempt/quiz-attempt-count.model';
+import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 
 @Injectable({
   providedIn: 'root',

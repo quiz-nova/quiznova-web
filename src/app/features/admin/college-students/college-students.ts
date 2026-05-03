@@ -1,8 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 
+import { InputNumber } from 'primeng/inputnumber';
+import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
+import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { StudentService } from '@shared/services/student.service';
 
 import { AddStudentModal } from './add-student-modal';
@@ -11,7 +16,16 @@ import { EditStudentModal } from './edit-student-modal';
 
 @Component({
   selector: 'app-college-students',
-  imports: [ProgressSpinner, AddStudentModal, EditStudentModal, DeleteStudentModal],
+  imports: [
+    ProgressSpinner,
+    AddStudentModal,
+    EditStudentModal,
+    DeleteStudentModal,
+    FormsModule,
+    InputText,
+    InputNumber,
+    NavigationButtons,
+  ],
   template: `
     <section class="page">
       <header class="page-header">
@@ -23,28 +37,66 @@ import { EditStudentModal } from './edit-student-modal';
         <app-add-student-modal (created)="reloadStudents()"></app-add-student-modal>
       </header>
 
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label for="student-search">Search</label>
+          <input
+            id="student-search"
+            pInputText
+            class="focus-green-ring"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="onSearchTermChange($event)"
+            placeholder="Search by name or email"
+          />
+        </div>
+
+        <div class="filter-item">
+          <label for="page-size">Page size</label>
+          <p-inputnumber
+            inputId="page-size"
+            [ngModel]="pageSize()"
+            (ngModelChange)="onPageSizeChange($event)"
+            [min]="1"
+            [max]="100"
+            [showButtons]="true"
+          ></p-inputnumber>
+        </div>
+
+        <div class="filter-item">
+          <label for="enrolled-count">Enrolled courses</label>
+          <p-inputnumber
+            inputId="enrolled-count"
+            [ngModel]="enrolledCoursesCount()"
+            (ngModelChange)="onEnrolledCoursesCountChange($event)"
+            [min]="0"
+            [showButtons]="true"
+            placeholder="Any"
+          ></p-inputnumber>
+        </div>
+      </div>
+
       @if (studentsResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading"/>
+          <p-progress-spinner ariaLabel="loading" />
         </div>
       } @else if (studentsResource.error()) {
         <div class="error">
           <p>Failed to load student data.</p>
         </div>
-      } @else if (!(studentsResource.value()?.length ?? 0)) {
-        <p class="feedback">No students are available yet.</p>
+      } @else if (!(studentsResource.value()?.items?.length ?? 0)) {
+        <p class="feedback">No students match your filters.</p>
       } @else {
         <div class="table-shell">
           <table>
             <thead>
-            <tr>
-              <th>Name</th>
-              <th>Enrolled Courses</th>
-              <th>Actions</th>
-            </tr>
+              <tr>
+                <th>Name</th>
+                <th>Enrolled Courses</th>
+                <th>Actions</th>
+              </tr>
             </thead>
             <tbody>
-              @for (student of studentsResource.value() ?? []; track student.studentId) {
+              @for (student of studentsResource.value()?.items ?? []; track student.studentId) {
                 <tr>
                   <td>{{ student.name }}</td>
                   <td>{{ student.enrolledCoursesCount }}</td>
@@ -66,93 +118,86 @@ import { EditStudentModal } from './edit-student-modal';
           </table>
         </div>
       }
+
+      <div class="pagination-row">
+        <p class="page-info">
+          Page {{ studentsResource.value()?.pageNumber ?? 1 }} of
+          {{ studentsResource.value()?.totalPages ?? 1 }}
+        </p>
+        <app-navigation-buttons
+          ariaLabel="Students pagination"
+          previousLabel="Previous page"
+          nextLabel="Next page"
+          [canGoPrevious]="studentsResource.value()?.hasPreviousPage ?? false"
+          [canGoNext]="studentsResource.value()?.hasNextPage ?? false"
+          (previousClicked)="goToPreviousPage()"
+          (nextClicked)="goToNextPage()"
+        />
+      </div>
     </section>
   `,
-  styles: `
-    .page {
-      display: grid;
-      gap: 1.5rem;
-      padding: 2rem;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 1rem;
-    }
-
-    .eyebrow {
-      margin: 0 0 0.25rem;
-      color: var(--clr-green-500);
-      font-size: 0.875rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 2.75rem);
-    }
-
-    .description {
-      margin: 0.75rem 0 0;
-      color: var(--clr-gray-600);
-    }
-
-    .table-shell {
-      overflow: auto;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-white);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--clr-gray-200);
-    }
-
-    th {
-      color: var(--clr-gray-600);
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .feedback {
-      padding: 1rem 1.25rem;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-white);
-      color: var(--clr-gray-600);
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-  `,
+  styleUrl: '../shared/college-tables-shared.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeStudents {
   private readonly studentService = inject(StudentService);
 
+  protected readonly searchTerm = model('');
+  protected readonly pageNumber = model(1);
+  protected readonly pageSize = model(10);
+  protected readonly enrolledCoursesCount = model<number | null>(null);
+
+  private readonly debouncedSearchTerm = toSignal(
+    toObservable(this.searchTerm).pipe(
+      map((value) => value?.trim() || ''),
+      debounceTime(300),
+      distinctUntilChanged(),
+    ),
+    { initialValue: '' },
+  );
+
   protected readonly studentsResource = rxResource({
-    stream: () => this.studentService.getAllStudents(),
+    params: () => ({
+      searchTerm: this.debouncedSearchTerm(),
+      pageNumber: this.pageNumber(),
+      pageSize: this.pageSize(),
+      enrolledCoursesCount: this.enrolledCoursesCount(),
+    }),
+    stream: ({ params }) =>
+      this.studentService.getAllStudents({
+        searchTerm: params.searchTerm,
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+        enrolledCoursesCount: params.enrolledCoursesCount ?? undefined,
+      }),
   });
+
+  protected onSearchTermChange(value: string): void {
+    this.searchTerm.set(value);
+    this.pageNumber.set(1);
+  }
+
+  protected onPageSizeChange(value: number | null | undefined): void {
+    this.pageSize.set(value && value > 0 ? value : 10);
+    this.pageNumber.set(1);
+  }
+
+  protected onEnrolledCoursesCountChange(value: number | null | undefined): void {
+    this.enrolledCoursesCount.set(value ?? null);
+    this.pageNumber.set(1);
+  }
+
+  protected goToPreviousPage(): void {
+    if (this.studentsResource.value()?.hasPreviousPage) {
+      this.pageNumber.update((value) => Math.max(1, value - 1));
+    }
+  }
+
+  protected goToNextPage(): void {
+    if (this.studentsResource.value()?.hasNextPage) {
+      this.pageNumber.update((value) => value + 1);
+    }
+  }
 
   protected reloadStudents(): void {
     this.studentsResource.reload();

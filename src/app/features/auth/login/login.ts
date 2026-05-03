@@ -47,8 +47,8 @@ type LoginFormGroup = FormGroup<{
           <p>Don't have an account? Contact Your Admin</p>
         </div>
 
-        @if (loginFaild()) {
-          <div class="login-faild" role="alert" aria-live="polite">
+        @if (loginFailed()) {
+          <div class="login-failed" role="alert" aria-live="polite">
             <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
             <p>The login information you entered is incorrect.</p>
           </div>
@@ -189,7 +189,7 @@ type LoginFormGroup = FormGroup<{
       gap: 1rem;
     }
 
-    .login-faild {
+    .login-failed {
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -257,9 +257,6 @@ type LoginFormGroup = FormGroup<{
     .auth-submit {
       width: 100%;
     }
-    .auth-error {
-      color: var(--clr-red-500);
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -269,7 +266,7 @@ export class Login {
   private readonly authService = inject(AuthService);
   protected readonly userRoles = ROLES;
 
-  protected readonly loginFaild = signal(false);
+  protected readonly loginFailed = signal(false);
 
   protected readonly loginForm: LoginFormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -293,7 +290,7 @@ export class Login {
         this.router.navigate([route]);
       },
       error: () => {
-        this.loginFaild.set(true);
+        this.loginFailed.set(true);
       },
     });
   }

@@ -1,12 +1,16 @@
 import { Question } from './question.model';
 
 export interface Quiz {
-  id: string;
+  quizId: string;
+  title: string;
+  courseName: string;
+  instructorName: string;
+  marks: number;
   courseId: string;
   instructorId: string;
-  title: string;
-  startsAtUtc: Date;
-  endsAtUtc: Date;
-  serverUtc?: Date | string;
+  startsAtUtc: Date | string;
+  endsAtUtc: Date | string;
+  serverUtc: Date | string;
+  state: string;
   questions: Question[];
 }

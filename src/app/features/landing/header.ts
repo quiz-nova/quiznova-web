@@ -7,12 +7,13 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Logo } from '../../shared/components/logo/logo';
+
+import { Logo } from '@shared/components/logo/logo';
 
 export interface HeaderLink {
   id: number;
-  label: string; // Name Will Apper To The User
-  name: string; // Name We Will Use In Html attripute
+  label: string; // Name Will Appear To The User
+  name: string; // Name We Will Use In Html attribute
 }
 export const headerLinks: HeaderLink[] = [
   { id: 1, label: 'Features', name: 'features' },
@@ -30,11 +31,11 @@ export const headerLinks: HeaderLink[] = [
         <app-logo />
 
         <button
-          type="button"
           class="icon"
-          (click)="onClick()"
           [attr.aria-label]="menuClicked() ? 'Close menu' : 'Open menu'"
           [attr.aria-expanded]="menuClicked()"
+          (click)="onClick()"
+          type="button"
         >
           <i class="fa-solid" [class.fa-bars]="!menuClicked()" [class.fa-xmark]="menuClicked()"></i>
         </button>
@@ -49,8 +50,8 @@ export const headerLinks: HeaderLink[] = [
           class="buttons header__panel"
           [class.menu-open]="activateBurgerIcon() && menuClicked()"
         >
-          <button type="button" class="btn btn-gray" routerLink="/auth/login">Log in</button>
-          <button type="button" class="btn btn-green" routerLink="/auth/register">
+          <button class="btn btn-gray" type="button" routerLink="/auth/login">Log in</button>
+          <button class="btn btn-green" type="button" routerLink="/auth/register">
             Get Started
           </button>
         </div>

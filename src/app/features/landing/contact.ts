@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Logo } from '../../shared/components/logo/logo';
+
+import { Logo } from '@shared/components/logo/logo';
 
 export interface ProductLinks {
   id: number;
@@ -29,7 +30,7 @@ export const companyLinks: CompanyLinks[] = [
   selector: 'app-contact',
   imports: [Logo],
   template: `
-    <footer id="contact" class="footer">
+    <footer class="footer" id="contact">
       <div class="footer__top">
         <div class="footer__brand">
           <app-logo />

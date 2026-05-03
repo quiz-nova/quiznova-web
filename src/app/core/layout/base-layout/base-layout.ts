@@ -8,7 +8,6 @@ import { TopBar } from '@Core/layout/top-bar/top-bar';
 import { distinctUntilChanged } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
 @Component({
   selector: 'app-base-layout',
   imports: [RouterOutlet, TopBar, SideBar],
@@ -62,6 +61,14 @@ import { map } from 'rxjs/operators';
     }
 
     .base-layout__content {
+      width: 100%;
+      min-width: 0;
+      overflow-x: clip;
+    }
+
+    .base-layout__content > * {
+      display: block;
+      width: 100%;
       min-width: 0;
     }
 
@@ -109,7 +116,7 @@ export class BaseLayout {
   );
 
   protected readonly isSidebarOpen = signal(true);
-  
+
   constructor() {
     effect(() => {
       this.isSidebarOpen.set(!this.isMobile());

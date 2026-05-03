@@ -71,6 +71,7 @@ export class Tab {
     Instructors: 'fa-solid fa-chalkboard-user',
     Students: 'fa-solid fa-users',
     Courses: 'fa-solid fa-book',
+    Admins: 'fa-solid fa-user-shield',
     Settings: 'fa-solid fa-gear',
   };
 

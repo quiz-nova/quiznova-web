@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { CourseCount } from '@shared/models/course/course-count.model';
 import { Course } from '@shared/models/course/course.model';
@@ -20,22 +20,33 @@ export class CoursesService {
   getInstructorCourses(instructorId: string): Observable<Course[]> {
     const params = new HttpParams().set('instructorId', instructorId);
 
-    return this.http.get<Course[]>(`${this.appSettings.apiBaseUrl}/courses`, { params });
+    return this.http
+      .get<PaginatedList<Course>>(`${this.appSettings.apiBaseUrl}/courses`, { params })
+      .pipe(map((response) => response.items));
   }
 
   getStudentCourses(studentId: string): Observable<StudentCourse[]> {
     const params = new HttpParams().set('studentId', studentId);
 
-    return this.http.get<StudentCourse[]>(`${this.appSettings.apiBaseUrl}/courses`, { params });
+    return this.http
+      .get<PaginatedList<StudentCourse>>(`${this.appSettings.apiBaseUrl}/courses`, { params })
+      .pipe(map((response) => response.items));
   }
 
   getAllCourses(
-    query: PaginatedQuery & { enrolledStudentsCount?: number; quizzesCount?: number },
+    query: PaginatedQuery & {
+      instructorId?: string;
+      enrolledStudentsCount?: number;
+      quizzesCount?: number;
+    },
   ): Observable<PaginatedList<Course>> {
     let params = new HttpParams();
 
     if (query.searchTerm) {
       params = params.set('searchTerm', query.searchTerm);
+    }
+    if (query.instructorId) {
+      params = params.set('instructorId', query.instructorId);
     }
     if (query.enrolledStudentsCount !== undefined) {
       params = params.set('enrolledStudentsCount', query.enrolledStudentsCount);

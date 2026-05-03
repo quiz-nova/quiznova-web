@@ -149,9 +149,9 @@ export class StudentDashboard {
       const studentId = this.studentId();
 
       if (!studentId) {
-        return of({
-          courses: {
-            courseCount: 0,
+          return of({
+            courses: {
+            coursesCount: 0,
           },
           quizAttempts: {
             quizAttemptCount: 0,
@@ -166,7 +166,7 @@ export class StudentDashboard {
     },
     defaultValue: {
       courses: {
-        courseCount: 0,
+        coursesCount: 0,
       },
       quizAttempts: {
         quizAttemptCount: 0,
@@ -180,7 +180,7 @@ export class StudentDashboard {
     return [
       {
         title: 'Enrolled Courses',
-        value: summary.courses.courseCount,
+        value: summary.courses.coursesCount,
         icon: 'fa-solid fa-book-open',
       },
       {

@@ -11,12 +11,12 @@ import {
   withState,
 } from '@ngrx/signals';
 
+import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
 import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-import { Quiz } from '@shared/models/quiz/quiz.model';
 
 
-const createInitialQuiz = (): Quiz => ({
+const createInitialQuiz = (): CreateQuiz => ({
   id: crypto.randomUUID(),
   title: '',
   courseId: '',
@@ -27,7 +27,7 @@ const createInitialQuiz = (): Quiz => ({
 });
 
 export interface CreateQuizState {
-  quiz: Quiz;
+  quiz: CreateQuiz;
   registeredForms: FormGroup[];
   loading: boolean;
   error: string | null;

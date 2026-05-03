@@ -98,13 +98,13 @@ export const QuizAttemptStore = signalStore(
               patchState(store, {
                 quizQuestions: questions,
                 questionAttempts: [],
-                quizId: quiz.id,
+                quizId: quiz.quizId,
                 currentQuestionIndex: 0,
               });
               patchState(store, setFulfilled());
             }),
             catchError(() => {
-              patchState(store, setError('Error Occured When we try to submit yout quiz')); // TODO we well modify this to be alliend with the backend error messages
+              patchState(store, setError('Error Occurred When we try to submit your quiz')); // TODO we well modify this to be aligned with the backend error messages
               return EMPTY;
             }),
           );

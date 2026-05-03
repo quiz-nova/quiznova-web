@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FadeInOnScrollDirective } from '../../shared/directives/fade-in-on-scroll.directive';
+
+import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-hero',
@@ -8,19 +9,19 @@ import { FadeInOnScrollDirective } from '../../shared/directives/fade-in-on-scro
     <div class="container">
       <main>
         <div class="content" appFadeInOnScroll>
-          <div class="icon" appFadeInOnScroll [delay]="50">
+          <div class="icon" [delay]="50" appFadeInOnScroll>
             <i class="fa-solid fa-star"></i>
           </div>
-          <p appFadeInOnScroll [delay]="100">The future of educational assessment</p>
+          <p [delay]="100" appFadeInOnScroll>The future of educational assessment</p>
         </div>
-        <h1 appFadeInOnScroll [delay]="150">
+        <h1 [delay]="150" appFadeInOnScroll>
           Smarter quizzes for <span class="gradient-text">modern education</span>
         </h1>
-        <p class="system-description" appFadeInOnScroll [delay]="200">
+        <p class="system-description" [delay]="200" appFadeInOnScroll>
           QuizNova empowers colleges and institutions to create, assign, and analyze quizzes with a
           powerful multi-tenant platform built for scale.
         </p>
-        <div class="buttons" appFadeInOnScroll [delay]="250">
+        <div class="buttons" [delay]="250" appFadeInOnScroll>
           <button class="btn btn-green" appFadeInOnScroll>Start free trial</button>
           <button class="btn btn-gray" appFadeInOnScroll>See how it works</button>
         </div>

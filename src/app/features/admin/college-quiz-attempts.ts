@@ -8,31 +8,31 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
-import { QuizService } from '@shared/services/quiz.service';
+import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 
 @Component({
-  selector: 'app-college-quizzes',
+  selector: 'app-college-quiz-attempts',
   imports: [ProgressSpinner, FormsModule, InputText, InputNumber, NavigationButtons],
   template: `
     <section class="page">
       <header class="page-header">
         <div>
-          <p class="eyebrow">Quizzes</p>
-          <h1>Quiz Schedule</h1>
-          <p class="description">Track quiz ownership, score weight, and delivery state.</p>
+          <p class="eyebrow">Quiz Attempts</p>
+          <h1>Attempts Overview</h1>
+          <p class="description">Review student submissions, answers, and scores.</p>
         </div>
       </header>
 
       <div class="filters-grid">
         <div class="filter-item">
-          <label for="quiz-search">Search</label>
+          <label for="attempt-search">Search</label>
           <input
-            id="quiz-search"
+            id="attempt-search"
             pInputText
             class="focus-green-ring"
             [ngModel]="searchTerm()"
             (ngModelChange)="onSearchTermChange($event)"
-            placeholder="Search by title, course, or instructor"
+            placeholder="Search by quiz title or student"
           />
         </div>
 
@@ -49,11 +49,11 @@ import { QuizService } from '@shared/services/quiz.service';
         </div>
 
         <div class="filter-item">
-          <label for="marks">Marks</label>
+          <label for="correct-answers">Correct answers</label>
           <p-inputnumber
-            inputId="marks"
-            [ngModel]="marks()"
-            (ngModelChange)="onMarksChange($event)"
+            inputId="correct-answers"
+            [ngModel]="correctAnswers()"
+            (ngModelChange)="onCorrectAnswersChange($event)"
             [min]="0"
             [showButtons]="true"
             placeholder="Any"
@@ -61,42 +61,38 @@ import { QuizService } from '@shared/services/quiz.service';
         </div>
       </div>
 
-      @if (quizzesResource.isLoading()) {
+      @if (quizAttemptsResource.isLoading()) {
         <div class="spinner">
           <p-progress-spinner ariaLabel="loading" />
         </div>
-      } @else if (quizzesResource.error()) {
+      } @else if (quizAttemptsResource.error()) {
         <div class="error">
-          <p>Failed to load quiz data.</p>
+          <p>Failed to load quiz attempts data.</p>
         </div>
-      } @else if (!(quizzesResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No quizzes match your filters.</p>
+      } @else if (!(quizAttemptsResource.value()?.items?.length ?? 0)) {
+        <p class="feedback">No quiz attempts match your filters.</p>
       } @else {
         <div class="table-shell">
           <table>
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Course</th>
-                <th>Instructor</th>
-                <th>Marks</th>
-                <th>Starts At</th>
-                <th>Ends At</th>
-                <th>State</th>
+                <th>Attempt ID</th>
+                <th>Quiz Title</th>
+                <th>Answered</th>
+                <th>Correct</th>
+                <th>Score</th>
+                <th>Submitted At</th>
               </tr>
             </thead>
             <tbody>
-              @for (quiz of quizzesResource.value()?.items ?? []; track quiz.quizId) {
+              @for (attempt of quizAttemptsResource.value()?.items ?? []; track attempt.quizAttemptId) {
                 <tr>
-                  <td>{{ quiz.title }}</td>
-                  <td>{{ quiz.courseName }}</td>
-                  <td>{{ quiz.instructorName }}</td>
-                  <td>{{ quiz.marks }}</td>
-                  <td>{{ quiz.startsAtUtc }}</td>
-                  <td>{{ quiz.endsAtUtc }}</td>
-                  <td>
-                    <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>
-                  </td>
+                  <td>{{ attempt.quizAttemptId.slice(0, 8) }}</td>
+                  <td>{{ attempt.quizTitle }}</td>
+                  <td>{{ attempt.answeredQuestions }}/{{ attempt.totalQuestions }}</td>
+                  <td>{{ attempt.correctAnswers }}</td>
+                  <td>{{ attempt.score }}</td>
+                  <td>{{ attempt.submittedAt }}</td>
                 </tr>
               }
             </tbody>
@@ -106,15 +102,15 @@ import { QuizService } from '@shared/services/quiz.service';
 
       <div class="pagination-row">
         <p class="page-info">
-          Page {{ quizzesResource.value()?.pageNumber ?? 1 }} of
-          {{ quizzesResource.value()?.totalPages ?? 1 }}
+          Page {{ quizAttemptsResource.value()?.pageNumber ?? 1 }} of
+          {{ quizAttemptsResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
-          ariaLabel="Quizzes pagination"
+          ariaLabel="Quiz attempts pagination"
           previousLabel="Previous page"
           nextLabel="Next page"
-          [canGoPrevious]="quizzesResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="quizzesResource.value()?.hasNextPage ?? false"
+          [canGoPrevious]="quizAttemptsResource.value()?.hasPreviousPage ?? false"
+          [canGoNext]="quizAttemptsResource.value()?.hasNextPage ?? false"
           (previousClicked)="goToPreviousPage()"
           (nextClicked)="goToNextPage()"
         />
@@ -122,39 +118,15 @@ import { QuizService } from '@shared/services/quiz.service';
     </section>
   `,
   styleUrl: './shared/college-tables-shared.css',
-  styles: `
-    .state {
-      display: inline-flex;
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.875rem;
-      font-weight: 700;
-    }
-
-    .state.upcoming {
-      background-color: #e0f2fe;
-      color: #0369a1;
-    }
-
-    .state.active {
-      background-color: #dcfce7;
-      color: #15803d;
-    }
-
-    .state.completed {
-      background-color: #f3f4f6;
-      color: #4b5563;
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollegeQuizzes {
-  private readonly quizService = inject(QuizService);
+export class CollegeQuizAttempts {
+  private readonly quizAttemptService = inject(QuizAttemptService);
 
   protected readonly searchTerm = model('');
   protected readonly pageNumber = model(1);
   protected readonly pageSize = model(10);
-  protected readonly marks = model<number | null>(null);
+  protected readonly correctAnswers = model<number | null>(null);
 
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
@@ -165,19 +137,19 @@ export class CollegeQuizzes {
     { initialValue: '' },
   );
 
-  protected readonly quizzesResource = rxResource({
+  protected readonly quizAttemptsResource = rxResource({
     params: () => ({
       searchTerm: this.debouncedSearchTerm(),
       pageNumber: this.pageNumber(),
       pageSize: this.pageSize(),
-      marks: this.marks(),
+      correctAnswers: this.correctAnswers(),
     }),
     stream: ({ params }) =>
-      this.quizService.getAllQuizzes({
+      this.quizAttemptService.getAllQuizAttempts({
         searchTerm: params.searchTerm,
         pageNumber: params.pageNumber,
         pageSize: params.pageSize,
-        marks: params.marks ?? undefined,
+        correctAnswers: params.correctAnswers ?? undefined,
       }),
   });
 
@@ -191,19 +163,19 @@ export class CollegeQuizzes {
     this.pageNumber.set(1);
   }
 
-  protected onMarksChange(value: number | null | undefined): void {
-    this.marks.set(value ?? null);
+  protected onCorrectAnswersChange(value: number | null | undefined): void {
+    this.correctAnswers.set(value ?? null);
     this.pageNumber.set(1);
   }
 
   protected goToPreviousPage(): void {
-    if (this.quizzesResource.value()?.hasPreviousPage) {
+    if (this.quizAttemptsResource.value()?.hasPreviousPage) {
       this.pageNumber.update((value) => Math.max(1, value - 1));
     }
   }
 
   protected goToNextPage(): void {
-    if (this.quizzesResource.value()?.hasNextPage) {
+    if (this.quizAttemptsResource.value()?.hasNextPage) {
       this.pageNumber.update((value) => value + 1);
     }
   }

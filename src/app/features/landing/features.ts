@@ -1,26 +1,28 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+
+import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
+
 import { FeatureCardComponent, featureCards } from './feature-card';
-import { FadeInOnScrollDirective } from '../../shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-features',
   imports: [FadeInOnScrollDirective, FeatureCardComponent],
   template: `
-    <section id="features" class="features">
+    <section class="features" id="features">
       <div class="container">
         <article class="section-heading">
           <h2 appFadeInOnScroll>
             Everything you need to
             <span class="gradient-text">assess brilliance</span>
           </h2>
-          <p appFadeInOnScroll [delay]="100">
+          <p [delay]="100" appFadeInOnScroll>
             A complete platform for creating, managing, and analyzing educational assessments at
             scale.
           </p>
         </article>
         <div class="cards">
           @for (feature of cards(); track feature.id; let i = $index) {
-            <app-feature-card appFadeInOnScroll [delay]="i * 50">
+            <app-feature-card [delay]="i * 50" appFadeInOnScroll>
               <i [class]="feature.icon"></i>
               <h3 class="card-title">{{ feature.title }}</h3>
               <p class="card-content">{{ feature.content }}</p>

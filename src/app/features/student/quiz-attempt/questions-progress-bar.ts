@@ -5,7 +5,7 @@ import { ProgressBar } from 'primeng/progressbar';
 import { QuizAttemptStore } from './quiz-attempt.store';
 
 @Component({
-  selector: 'app-questions-progrss-bar',
+  selector: 'app-questions-progress-bar',
   imports: [ProgressBar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -65,7 +65,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     }
   `,
 })
-export class QuestionsProgrssBar {
+export class QuestionsProgressBar {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
   protected readonly progressValue = computed(() => {
     const total = this.quizAttemptStore.numberOfQuestions();

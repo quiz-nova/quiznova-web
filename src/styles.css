@@ -1,3 +1,5 @@
+@import url('./app/shared/styles/primeng-shared.css');
+
 @layer reset {
   *,
   *::before,
@@ -86,25 +88,33 @@
     --clr-violet-500: #8254d3;
 
     /* green */
+    --clr-green-50: #f0faf8;
     --clr-green-100: #eaf6f3;
     --clr-green-200: #42b7a0;
     --clr-green-500: #12a588;
+    --clr-green-600: #0f8a71;
+    --clr-green-700: #0c6e5a;
 
     /* cyan */
     --clr-cyan-500: #209db6;
 
     /* yellow */
     --clr-yellow-500: #fef3c7;
-    --gradient-main: linear-gradient(
-      135deg,
-      var(--clr-green-500),
-      var(--clr-cyan-500)
-    );
+
+    /* review */
+    --clr-review-success-50: #ecfdf5;
+    --clr-review-success-200: #a7f3d0;
+    --clr-review-success-500: #0f9f73;
+    --clr-review-danger-50: #fff1f2;
+    --clr-review-danger-200: #fecdd3;
+    --clr-review-danger-500: #e11d48;
+    --clr-review-info-500: #2563eb;
+    --gradient-main: linear-gradient(135deg, var(--clr-green-500), var(--clr-cyan-500));
     --radius-lg: 15px; /* large radius */
     --radius-md: 10px; /* medium radius */
     --radius-sm: 5px; /* small radius */
-    --ff-heading: "Space Grotesk", sans-serif;
-    --ff-body: "Inter", sans-serif;
+    --ff-heading: 'Space Grotesk', sans-serif;
+    --ff-body: 'Inter', sans-serif;
     --fs-300: 0.875rem;
     --fs-400: 1rem;
     --fs-500: 1.125rem;
@@ -164,55 +174,6 @@
 }
 
 @layer utilities {
-  /* PrimeNG RadioButton Styling */
-  .p-radiobutton .p-radiobutton-box.p-highlight {
-    border-color: var(--clr-green-500);
-    background-color: var(--clr-green-500);
-  }
-
-  .p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon {
-    color: var(--clr-white);
-  }
-
-  .p-radiobutton:not(.p-disabled) .p-radiobutton-box:hover {
-    border-color: var(--clr-green-500);
-  }
-
-  .p-select {
-    display: flex;
-    align-items: center;
-    min-height: 3rem;
-    border: 1px solid var(--clr-gray-500);
-    border-radius: var(--radius-md);
-    background-color: var(--clr-white);
-    color: var(--clr-blue-900);
-  }
-
-  .p-select:not(.p-disabled):hover {
-    border-color: var(--clr-green-500);
-  }
-
-  .p-select.p-focus {
-    border-color: var(--clr-green-500);
-    box-shadow: 0 0 0 3px
-      color-mix(in srgb, var(--clr-green-500) 25%, transparent);
-  }
-
-  .p-select-overlay {
-    border: 1px solid var(--clr-gray-200);
-    border-radius: var(--radius-md);
-    box-shadow: 0 12px 32px rgb(15 23 42 / 12%);
-  }
-
-  .p-select-option {
-    color: var(--clr-blue-900);
-  }
-  .p-select-option.p-select-option-selected,
-  .p-select-option:not(.p-disabled).p-focus {
-    background-color: var(--clr-gray-300);
-    color: var(--clr-blue-900);
-  }
-
   .dropdown-label {
     color: var(--clr-blue-900);
     font-size: var(--fs-300);
@@ -237,8 +198,9 @@
     border: 1px solid var(--clr-gray-500);
     &:focus-visible {
       outline: none;
-      border: 2.5px solid var(--clr-green-500);
+      border: 2px solid var(--clr-green-500);
       border-radius: var(--radius-md);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 25%, transparent);
     }
   }
 
@@ -282,70 +244,6 @@
     &:hover:not(:disabled) {
       background-color: var(--clr-violet-500);
       color: var(--clr-white);
-    }
-  }
-
-  .dashboard-top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.75rem 2rem;
-    border-bottom: 1px solid var(--clr-gray-200);
-    background-color: var(--clr-white);
-  }
-
-  .dashboard-top-bar__menu-btn {
-    display: inline-grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--clr-gray-500);
-    border-radius: var(--radius-md);
-    color: var(--clr-blue-900);
-    transition:
-      background-color 0.2s ease-in-out,
-      border-color 0.2s ease-in-out,
-      color 0.2s ease-in-out;
-
-    &:hover {
-      border-color: var(--clr-violet-500);
-      background-color: var(--clr-violet-500);
-      color: var(--clr-white);
-    }
-  }
-
-  .dashboard-top-bar__logout {
-    min-width: 7.5rem;
-    font-weight: 600;
-  }
-
-  .base-layout__content {
-    width: 100%;
-    min-width: 0;
-    overflow-x: clip;
-  }
-
-  .base-layout__content > * {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .add-question-sticky-container {
-    position: fixed;
-    right: clamp(1rem, 2vw, 2rem);
-    bottom: 1.25rem;
-    z-index: 1100;
-    pointer-events: none;
-  }
-
-  @media (width < 960px) {
-    .add-question-sticky-container {
-      right: 1rem;
-      left: 1rem;
-      display: flex;
-      justify-content: center;
     }
   }
 

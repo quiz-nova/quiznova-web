@@ -1,34 +1,36 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { Tf } from '@shared/models/quiz/tf.model';
+import { MCQ } from '@shared/models/quiz/mcq.model';
 
 @Component({
-  selector: 'app-tf-question-not-answerd',
+  selector: 'app-mcq-not-answered',
   imports: [],
   template: `
-    <article class="review-question" aria-label="Unanswered tf question">
+    <article class="review-question" aria-label="Unanswered multiple choice question">
       <header class="review-question__header">
         <div class="review-question__meta">
           <span class="review-question__index">Q{{ questionNumber() }}</span>
-          <span class="review-question__type">True / False</span>
+          <span class="review-question__type">Multiple Choice</span>
         </div>
-
         <span class="review-question__marks">0/{{ question().marks }} pt</span>
       </header>
 
       <p class="review-question__text">{{ question().questionText }}</p>
       <p class="review-question__note">Not answered</p>
 
-      <div class="review-question__answers">
-        <div class="review-answer review-answer--student">
-          <p class="review-answer__label">Your answer</p>
-          <p class="review-answer__value">Not answered</p>
-        </div>
-
-        <div class="review-answer review-answer--correct">
-          <p class="review-answer__label">Correct answer</p>
-          <p class="review-answer__value">{{ correctAnswerLabel() }}</p>
-        </div>
+      <div class="review-question__choices">
+        @for (choice of choices(); track choice.id; let i = $index) {
+          <div
+            class="review-choice"
+            [class.review-choice--correct]="choice.id === question().correctChoiceId"
+          >
+            <span class="review-choice__prefix">{{ letter(i) }}.</span>
+            <span class="review-choice__text">{{ choice.text }}</span>
+            @if (choice.id === question().correctChoiceId) {
+              <span class="review-choice__pill">correct</span>
+            }
+          </div>
+        }
       </div>
     </article>
   `,
@@ -98,51 +100,60 @@ import { Tf } from '@shared/models/quiz/tf.model';
       font-weight: 700;
     }
 
-    .review-question__answers {
+    .review-question__choices {
       display: grid;
-      gap: 0.55rem;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
     }
 
-    .review-answer {
-      border-radius: 0.6rem;
+    .review-choice {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.45rem;
       border: 1px solid var(--clr-gray-300);
+      border-radius: 0.6rem;
       background: var(--clr-white);
-      padding: 0.5rem 0.6rem;
+      padding: 0.4rem 0.55rem;
     }
 
-    .review-answer--correct {
+    .review-choice--correct {
       border-color: var(--clr-review-success-200);
       background: var(--clr-review-success-50);
     }
 
-    .review-answer__label {
-      margin: 0;
+    .review-choice__prefix {
+      font-size: 0.78rem;
+      font-weight: 700;
       color: var(--clr-gray-600);
-      font-size: 0.72rem;
+    }
+
+    .review-choice__text {
+      font-size: 0.88rem;
+      color: var(--clr-blue-900);
       font-weight: 600;
     }
 
-    .review-answer__value {
-      margin: 0.2rem 0 0;
-      color: var(--clr-blue-900);
-      font-size: 0.9rem;
+    .review-choice__pill {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+      border: 1px solid var(--clr-review-success-200);
+      color: var(--clr-review-success-500);
       font-weight: 700;
-    }
-
-    @media (width <= 40rem) {
-      .review-question__answers {
-        grid-template-columns: 1fr;
-      }
+      background: var(--clr-white);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TfNotAnswerd {
-  readonly question = input.required<Tf>();
+export class McqNotAnswered {
+  readonly question = input.required<MCQ>();
   readonly questionNumber = input.required<number>();
 
-  protected readonly correctAnswerLabel = computed(() =>
-    this.question().correctChoice ? 'True' : 'False',
-  );
+  protected readonly choices = computed(() => {
+    return [...this.question().choices].sort((a, b) => a.displayOrder - b.displayOrder);
+  });
+
+  protected letter(index: number): string {
+    return String.fromCharCode(65 + index);
+  }
 }

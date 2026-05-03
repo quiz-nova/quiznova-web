@@ -1,13 +1,13 @@
 import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, input, OnInit } from '@angular/core';
 
+import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { QuizService } from '@shared/services/quiz.service';
 
 import { AttemptButton } from './attempt-button';
-import { NavigationButtons } from './navigation-buttons';
 import { QuestionAttemptHeader } from './question-attempt-header';
 import { QuestionsNavigator } from './questions-navigator';
-import { QuestionsProgrssBar } from './questions-progrss-bar';
+import { QuestionsProgressBar } from './questions-progress-bar';
 import { QuizAttemptHeader } from './quiz-attempt-header';
 import { QuizAttemptStore } from './quiz-attempt.store';
 
@@ -20,7 +20,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     NavigationButtons,
     QuestionAttemptHeader,
     NgComponentOutlet,
-    QuestionsProgrssBar,
+    QuestionsProgressBar,
   ],
   template: `
     <section class="attempt-layout" aria-label="Quiz attempt layout">
@@ -37,12 +37,15 @@ import { QuizAttemptStore } from './quiz-attempt.store';
               [ngComponentOutlet]="quizService.getSuitableQuestionAttemptComponent(question.type)"
             ></ng-container>
           }
-          <app-navigation-buttons />
+            <app-navigation-buttons
+              [canGoPrevious]="quizAttemptStore.canGoPrevious()"
+              [canGoNext]="quizAttemptStore.canGoNext()"
+            />
         </div>
 
         <aside class="sidebar-column" aria-label="Quiz tools">
           <app-questions-navigator />
-          <app-questions-progrss-bar />
+          <app-questions-progress-bar />
           <app-attempt-button />
         </aside>
       </div>

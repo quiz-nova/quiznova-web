@@ -2,7 +2,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, signal, Signal } from '@angular/core';
 
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
-import { Quiz } from '@shared/models/quiz/quiz.model';
+import { CreateQuiz as CreateQuizModel } from '@shared/models/quiz/create-quiz.model';
 import { QuizService } from '@shared/services/quiz.service';
 
 import { AddQuestion } from './add-question';
@@ -251,6 +251,23 @@ import { QuizMetadata } from './quiz-metadata';
       }
     }
 
+    .add-question-sticky-container {
+      position: fixed;
+      right: clamp(1rem, 2vw, 2rem);
+      bottom: 1.25rem;
+      z-index: 1100;
+      pointer-events: none;
+    }
+
+    @media (width < 960px) {
+      .add-question-sticky-container {
+        right: 1rem;
+        left: 1rem;
+        display: flex;
+        justify-content: center;
+      }
+    }
+
     @keyframes float-add-question-button-leave {
       from {
         opacity: 1;
@@ -273,7 +290,8 @@ import { QuizMetadata } from './quiz-metadata';
 export class CreateQuiz {
   protected readonly quizService = inject(QuizService);
   protected readonly createQuizStore = inject(CreateQuizStore);
-  protected readonly quiz: Signal<Quiz> = this.createQuizStore.quiz as Signal<Quiz>;
+  protected readonly quiz: Signal<CreateQuizModel> = this.createQuizStore
+    .quiz as Signal<CreateQuizModel>;
   protected readonly numberOfQuestions: Signal<number> = this.createQuizStore
     .numberOfQuestions as Signal<number>;
   protected readonly isAddQuestionButtonVisible = signal(true);

@@ -1,13 +1,29 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, model } from '@angular/core';
+import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 
+import { InputNumber } from 'primeng/inputnumber';
+import { InputText } from 'primeng/inputtext';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { SelectModule } from 'primeng/select';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
+import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { Instructor } from '@shared/models/instructor/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
+import { InstructorService } from '@shared/services/instructor.service';
 
 @Component({
   selector: 'app-college-courses',
-  imports: [ProgressSpinner],
+  imports: [
+    ProgressSpinner,
+    FormsModule,
+    InputText,
+    InputNumber,
+    SelectModule,
+    NavigationButtons,
+  ],
   template: `
     <section class="page">
       <header class="page-header">
@@ -18,16 +34,84 @@ import { CoursesService } from '@shared/services/courses.service';
         </div>
       </header>
 
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label for="course-search">Search</label>
+          <input
+            id="course-search"
+            pInputText
+            class="focus-green-ring"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="onSearchTermChange($event)"
+            placeholder="Search by course ID or course name"
+          />
+        </div>
+
+        <div class="filter-item">
+          <label for="page-size">Page size</label>
+          <p-inputnumber
+            inputId="page-size"
+            [ngModel]="pageSize()"
+            (ngModelChange)="onPageSizeChange($event)"
+            [min]="1"
+            [max]="100"
+            [showButtons]="true"
+          ></p-inputnumber>
+        </div>
+
+        <div class="filter-item">
+          <label for="quizzes-count">Quizzes count</label>
+          <p-inputnumber
+            inputId="quizzes-count"
+            [ngModel]="quizzesCount()"
+            (ngModelChange)="onQuizzesCountChange($event)"
+            [min]="0"
+            [showButtons]="true"
+            placeholder="Any"
+          ></p-inputnumber>
+        </div>
+
+        <div class="filter-item">
+          <label for="enrolled-count">Enrolled students</label>
+          <p-inputnumber
+            inputId="enrolled-count"
+            [ngModel]="enrolledStudentsCount()"
+            (ngModelChange)="onEnrolledStudentsCountChange($event)"
+            [min]="0"
+            [showButtons]="true"
+            placeholder="Any"
+          ></p-inputnumber>
+        </div>
+
+        <div class="filter-item">
+          <label for="instructor-filter">Instructor</label>
+          <p-select
+            inputId="instructor-filter"
+            [ngModel]="instructorId()"
+            (ngModelChange)="onInstructorChange($event)"
+            [options]="instructorOptions()"
+            optionLabel="name"
+            optionValue="id"
+            [filter]="true"
+            filterBy="name"
+            [showClear]="true"
+            placeholder="All instructors"
+            appendTo="body"
+            (onShow)="onInstructorDropdownShow()"
+          ></p-select>
+        </div>
+      </div>
+
       @if (coursesResource.isLoading()) {
         <div class="spinner">
-          <p-progress-spinner ariaLabel="loading"/>
+          <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
         </div>
       } @else if (coursesResource.error()) {
         <div class="error">
           <p>Failed to load course data.</p>
         </div>
-      } @else if (!(coursesResource.value()?.length ?? 0)) {
-        <p class="feedback">No courses are available yet.</p>
+      } @else if (!(coursesResource.value()?.items?.length ?? 0)) {
+        <p class="feedback">No courses match your filters.</p>
       } @else {
         <div class="table-shell">
           <table>
@@ -41,7 +125,7 @@ import { CoursesService } from '@shared/services/courses.service';
             </tr>
             </thead>
             <tbody>
-              @for (course of coursesResource.value() ?? []; track course.courseId) {
+              @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
                 <tr>
                   <td>{{ course.courseId.slice(0, 8) }}</td>
                   <td>{{ course.courseName }}</td>
@@ -54,78 +138,124 @@ import { CoursesService } from '@shared/services/courses.service';
           </table>
         </div>
       }
+
+      <div class="pagination-row">
+        <p class="page-info">
+          Page {{ coursesResource.value()?.pageNumber ?? 1 }} of {{ coursesResource.value()?.totalPages ?? 1 }}
+        </p>
+        <app-navigation-buttons
+          ariaLabel="Courses pagination"
+          previousLabel="Previous page"
+          nextLabel="Next page"
+          [canGoPrevious]="coursesResource.value()?.hasPreviousPage ?? false"
+          [canGoNext]="coursesResource.value()?.hasNextPage ?? false"
+          (previousClicked)="goToPreviousPage()"
+          (nextClicked)="goToNextPage()"
+        />
+      </div>
     </section>
   `,
-  styles: `
-    .page {
-      display: grid;
-      gap: 1.5rem;
-      padding: 2rem;
-    }
-
-    .eyebrow {
-      margin: 0 0 0.25rem;
-      color: var(--clr-green-500);
-      font-size: 0.875rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 2.75rem);
-    }
-
-    .description {
-      margin: 0.75rem 0 0;
-      color: var(--clr-gray-600);
-    }
-
-    .table-shell {
-      overflow: auto;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-white);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--clr-gray-200);
-      white-space: nowrap;
-    }
-
-    th {
-      color: var(--clr-gray-600);
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .feedback {
-      padding: 1rem 1.25rem;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-white);
-      color: var(--clr-gray-600);
-    }
-  `,
+  styleUrl: './shared/college-tables-shared.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeCourses {
   private readonly coursesService = inject(CoursesService);
-  protected readonly coursesResource = rxResource({
-    stream: () => this.coursesService.getAllCourses(),
+  private readonly instructorService = inject(InstructorService);
+
+  protected readonly searchTerm = model('');
+  protected readonly pageNumber = model(1);
+  protected readonly pageSize = model(10);
+  protected readonly quizzesCount = model<number | null>(null);
+  protected readonly enrolledStudentsCount = model<number | null>(null);
+  protected readonly instructorId = model<string | null>(null);
+
+  protected readonly dropdownOpen = model(false);
+
+  private readonly debouncedSearchTerm = toSignal(
+    toObservable(this.searchTerm).pipe(
+      map((value) => value?.trim() || ''),
+      debounceTime(300),
+      distinctUntilChanged(),
+    ),
+    { initialValue: '' },
+  );
+
+  protected readonly instructorsResource = rxResource({
+    params: () => this.dropdownOpen(),
+    stream: (shouldFetch) =>
+      shouldFetch
+        ? this.instructorService.getAllInstructors({
+            pageNumber: 1,
+            pageSize: 10,
+          })
+        : of({ items: [], pageNumber: 1, pageSize: 10, totalPages: 1, totalCount: 0, hasPreviousPage: false, hasNextPage: false } as any),
   });
+
+  protected readonly instructorOptions = computed(() =>
+    (this.instructorsResource.value()?.items ?? []).map((instructor: Instructor) => ({
+      id: instructor.instructorId,
+      name: instructor.name,
+    })),
+  );
+
+  protected readonly coursesResource = rxResource({
+    params: () => ({
+      searchTerm: this.debouncedSearchTerm(),
+      pageNumber: this.pageNumber(),
+      pageSize: this.pageSize(),
+      quizzesCount: this.quizzesCount(),
+      enrolledStudentsCount: this.enrolledStudentsCount(),
+      instructorId: this.instructorId(),
+    }),
+    stream: ({ params }) =>
+      this.coursesService.getAllCourses({
+        searchTerm: params.searchTerm,
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+        quizzesCount: params.quizzesCount ?? undefined,
+        enrolledStudentsCount: params.enrolledStudentsCount ?? undefined,
+        instructorId: params.instructorId ?? undefined,
+      }),
+  });
+
+  protected onSearchTermChange(value: string): void {
+    this.searchTerm.set(value);
+    this.pageNumber.set(1);
+  }
+
+  protected onPageSizeChange(value: number | null | undefined): void {
+    this.pageSize.set(value && value > 0 ? value : 10);
+    this.pageNumber.set(1);
+  }
+
+  protected onQuizzesCountChange(value: number | null | undefined): void {
+    this.quizzesCount.set(value ?? null);
+    this.pageNumber.set(1);
+  }
+
+  protected onEnrolledStudentsCountChange(value: number | null | undefined): void {
+    this.enrolledStudentsCount.set(value ?? null);
+    this.pageNumber.set(1);
+  }
+
+  protected onInstructorChange(value: string | null | undefined): void {
+    this.instructorId.set(value ?? null);
+    this.pageNumber.set(1);
+  }
+
+  protected goToPreviousPage(): void {
+    if (this.coursesResource.value()?.hasPreviousPage) {
+      this.pageNumber.update((value) => Math.max(1, value - 1));
+    }
+  }
+
+  protected goToNextPage(): void {
+    if (this.coursesResource.value()?.hasNextPage) {
+      this.pageNumber.update((value) => value + 1);
+    }
+  }
+
+  protected onInstructorDropdownShow(): void {
+    this.dropdownOpen.set(true);
+  }
 }

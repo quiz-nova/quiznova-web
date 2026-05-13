@@ -14,7 +14,7 @@ import {
 import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
 import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-
+import { CoursesService } from '@shared/services/courses.service';
 
 const createInitialQuiz = (): CreateQuiz => ({
   id: crypto.randomUUID(),
@@ -32,6 +32,7 @@ export interface CreateQuizState {
   loading: boolean;
   error: string | null;
   activeQuestionId: string | null;
+  remainingMarks: number | null;
 }
 
 const initialState: CreateQuizState = {
@@ -40,6 +41,7 @@ const initialState: CreateQuizState = {
   loading: false,
   error: null,
   activeQuestionId: null,
+  remainingMarks: null,
 };
 
 export const CreateQuizStore = signalStore(
@@ -52,6 +54,21 @@ export const CreateQuizStore = signalStore(
     totalMarks: computed(() =>
       store.quiz().questions.reduce((sum, question) => sum + question.marks, 0),
     ),
+    effectiveRemainingMarks: computed(() => {
+      const rm = store.remainingMarks();
+      if (rm === null) {
+        return null;
+      }
+      return rm - store.quiz().questions.reduce((sum, question) => sum + question.marks, 0);
+    }),
+    canAddMoreQuestions: computed(() => {
+      const rm = store.remainingMarks();
+      if (rm === null) {
+        return false;
+      }
+      const totalMarks = store.quiz().questions.reduce((sum, question) => sum + question.marks, 0);
+      return rm - totalMarks > 0;
+    }),
     isEntireQuizValid: computed(() => {
       const quiz = store.quiz();
 
@@ -62,20 +79,37 @@ export const CreateQuizStore = signalStore(
       );
     }),
   })),
-  withMethods((store) => ({
-    setHeaderMetadata(payload: {
-      title: string;
-      courseId: string;
-      startsAtUtc: Date;
-      endsAtUtc: Date;
-    }): void {
+  withMethods((store, coursesService = inject(CoursesService)) => ({
+    setHeaderMetadata(payload: { title: string; startsAtUtc: Date; endsAtUtc: Date }): void {
       patchState(store, {
         quiz: {
           ...store.quiz(),
           title: payload.title,
-          courseId: payload.courseId,
           startsAtUtc: payload.startsAtUtc,
           endsAtUtc: payload.endsAtUtc,
+        },
+      });
+    },
+
+    updateCourseId(courseId: string): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          courseId,
+          questions: [],
+        },
+        activeQuestionId: null,
+        remainingMarks: null,
+      });
+
+      coursesService.getCourseById(courseId).subscribe({
+        next: (course) => {
+          patchState(store, {
+            remainingMarks: course.remainingMarks,
+          });
+        },
+        error: (err) => {
+          console.error('Failed to fetch course details', err);
         },
       });
     },
@@ -144,6 +178,21 @@ export const CreateQuizStore = signalStore(
     },
 
     updateQuestionMarks(questionId: string, marks: number): void {
+      const currentQuestion = store.quiz().questions.find((q) => q.id === questionId);
+      if (!currentQuestion) {
+        return;
+      }
+      if (marks < 0) {
+        return;
+      }
+      const effectiveRemaining = store.effectiveRemainingMarks();
+      if (effectiveRemaining !== null) {
+        const marksDifference = marks - currentQuestion.marks;
+        if (marksDifference > effectiveRemaining) {
+          return;
+        }
+      }
+
       patchState(store, {
         quiz: {
           ...store.quiz(),
@@ -255,6 +304,7 @@ export const CreateQuizStore = signalStore(
         loading: false,
         error: null,
         activeQuestionId: null,
+        remainingMarks: null,
       });
     },
 

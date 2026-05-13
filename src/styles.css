@@ -247,6 +247,14 @@
       background-color 0.2s ease-in-out,
       color 0.2s ease-in-out,
       border-color 0.2s ease-in-out;
+
+    &:disabled {
+      background-color: var(--clr-gray-100);
+      color: var(--clr-gray-500);
+      border-color: var(--clr-gray-200);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
   }
 
   .btn-green {

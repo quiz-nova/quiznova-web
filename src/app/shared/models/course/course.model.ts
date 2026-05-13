@@ -5,4 +5,5 @@ export interface Course {
   instructorName: string;
   enrolledStudentsCount: number;
   quizzesCount: number;
+  remainingMarks: number;
 }

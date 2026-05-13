@@ -7,6 +7,7 @@ import {
   input,
   output,
   effect,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -23,6 +24,7 @@ import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { of, startWith, switchMap } from 'rxjs';
 
+import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { CoursesService } from '@shared/services/courses.service';
 
@@ -42,7 +44,7 @@ type QuizHeaderFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-quiz-metadata-form',
-  imports: [ReactiveFormsModule, SelectModule, DatePicker, InputText, FieldError],
+  imports: [ReactiveFormsModule, SelectModule, DatePicker, InputText, FieldError, ConfirmActionModal],
   template: `
     <form class="metadata-form" [formGroup]="quizHeaderForm">
       <div class="field-group">
@@ -75,7 +77,7 @@ type QuizHeaderFormGroup = FormGroup<{
           [formControl]="courseIdControl"
           [options]="instructorCourses()"
           [attr.aria-invalid]="courseIdControl.invalid && courseIdControl.touched ? 'true' : null"
-          (onBlur)="emitValue()"
+          (onChange)="onCourseChange($event.value)"
           inputId="quiz-course"
           optionLabel="courseName"
           optionValue="courseId"
@@ -143,6 +145,17 @@ type QuizHeaderFormGroup = FormGroup<{
         }
       </div>
     </form>
+
+    @if (showConfirmModal()) {
+      <app-confirm-action-modal
+        title="Change Course"
+        warningMessage="This action is irreversible. All questions you have added will be permanently removed."
+        confirmationPhrase="change course"
+        confirmButtonText="I understand, change course"
+        (confirmed)="confirmCourseChange()"
+        (cancelled)="cancelCourseChange()"
+      />
+    }
   `,
   styles: `
     .metadata-form {
@@ -169,6 +182,8 @@ type QuizHeaderFormGroup = FormGroup<{
       color: var(--clr-red-500);
       font-size: var(--fs-300);
     }
+
+
   `,
 })
 export class QuizMetadataForm implements OnInit, OnDestroy {
@@ -183,6 +198,7 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
   readonly formDestroyed = output<FormGroup>();
   readonly valueChange = output<QuizMetadataValue>();
   readonly blurEvent = output<QuizMetadataValue>();
+  readonly courseIdChanged = output<string>();
 
   protected readonly instructorCourses = toSignal(
     toObservable(this.authService.currentUser).pipe(
@@ -198,10 +214,15 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
     endsAtUtc: [this.getDefaultEndsAt(), Validators.required],
   });
 
+  protected readonly showConfirmModal = signal(false);
+  private pendingCourseId = '';
+  private previousCourseId = '';
+
   constructor() {
     effect(() => {
       const data = this.initialData();
       if (data) {
+        this.previousCourseId = data.courseId;
         this.quizHeaderForm.patchValue(
           {
             title: data.title,
@@ -243,6 +264,34 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.formDestroyed.emit(this.quizHeaderForm);
+  }
+
+  protected onCourseChange(newCourseId: string): void {
+    if (!this.previousCourseId || this.previousCourseId === newCourseId) {
+      this.previousCourseId = newCourseId;
+      this.courseIdChanged.emit(newCourseId);
+      return;
+    }
+
+    // Show confirmation modal
+    this.pendingCourseId = newCourseId;
+    this.showConfirmModal.set(true);
+
+    // Revert the dropdown visually until confirmed
+    this.courseIdControl.setValue(this.previousCourseId, { emitEvent: false });
+  }
+
+  protected confirmCourseChange(): void {
+    this.showConfirmModal.set(false);
+    this.previousCourseId = this.pendingCourseId;
+    this.courseIdControl.setValue(this.pendingCourseId, { emitEvent: false });
+    this.courseIdChanged.emit(this.pendingCourseId);
+    this.pendingCourseId = '';
+  }
+
+  protected cancelCourseChange(): void {
+    this.showConfirmModal.set(false);
+    this.pendingCourseId = '';
   }
 
   protected emitValue() {

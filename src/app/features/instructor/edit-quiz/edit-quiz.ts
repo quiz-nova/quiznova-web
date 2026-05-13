@@ -30,7 +30,7 @@ import { EditQuizStore } from './edit-quiz.store';
     McqForm,
     TfForm,
     McqTag,
-    TfTag
+    TfTag,
   ],
   providers: [EditQuizStore],
   template: `
@@ -40,6 +40,7 @@ import { EditQuizStore } from './edit-quiz.store';
           <app-questions-outline
             [questions]="store.questions()"
             [activeQuestionId]="store.activeQuestionId()"
+            [remainingMarks]="store.effectiveRemainingMarks()"
             (questionSelect)="store.setCurrentQuestionId($event)"
           ></app-questions-outline>
         } @else {
@@ -55,21 +56,23 @@ import { EditQuizStore } from './edit-quiz.store';
             <p class="subtitle">Changes are saved automatically as you edit</p>
           </div>
           @if (store.isPending()) {
-             <span class="loading-indicator">Saving...</span>
+            <span class="loading-indicator">Saving...</span>
           }
         </header>
 
         @if (store.quizId() && store.metadata()) {
-          <app-quiz-metadata-form 
+          <app-quiz-metadata-form
             [initialData]="store.metadata()"
             (blurEvent)="store.updateMetadata($event)"
+            (courseIdChanged)="onCourseIdChanged($event)"
           ></app-quiz-metadata-form>
-          
-          <app-quiz-header 
-            [numberOfQuestions]="store.numberOfQuestions()" 
+
+          <app-quiz-header
+            [numberOfQuestions]="store.numberOfQuestions()"
             [totalMarks]="store.totalMarks()"
+            [remainingMarks]="store.effectiveRemainingMarks()"
           ></app-quiz-header>
-          
+
           <div class="questions-workspace">
             <div class="questions-content">
               <div class="questions-list">
@@ -83,9 +86,10 @@ import { EditQuizStore } from './edit-quiz.store';
                     animate.enter="element-enter"
                     animate.leave="element-leave"
                   >
-                    <app-question-header 
-                      [index]="index" 
+                    <app-question-header
+                      [index]="index"
                       [question]="question"
+                      [maxMarks]="getMaxMarksForQuestion(question.marks)"
                       (deleteQuestion)="store.removeQuestion($event)"
                       (blurEvent)="updateQuestionMarks(question, $event.marks)"
                     >
@@ -98,17 +102,17 @@ import { EditQuizStore } from './edit-quiz.store';
                         }
                       }
                     </app-question-header>
-                    
+
                     @switch (question.type) {
                       @case ('mcq') {
-                        <app-mcq-form 
-                          [initialData]="question" 
+                        <app-mcq-form
+                          [initialData]="question"
                           (blurEvent)="store.updateQuestion($event)"
                         ></app-mcq-form>
                       }
                       @case ('tf') {
-                        <app-tf-form 
-                          [initialData]="question" 
+                        <app-tf-form
+                          [initialData]="question"
                           (blurEvent)="store.updateQuestion($event)"
                         ></app-tf-form>
                       }
@@ -118,8 +122,10 @@ import { EditQuizStore } from './edit-quiz.store';
               </div>
 
               <div class="add-question-main">
-                <app-add-question 
-                  [quizId]="store.quizId()" 
+                <app-add-question
+                  [quizId]="store.quizId()"
+                  [disabled]="!store.canAddMoreQuestions()"
+                  [remainingMarks]="store.effectiveRemainingMarks() ?? 0"
                   (questionAdded)="store.addQuestion($event)"
                 ></app-add-question>
               </div>
@@ -144,11 +150,15 @@ import { EditQuizStore } from './edit-quiz.store';
 
     .create-quiz {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 1.5rem;
       width: 100%;
       background-color: var(--clr-gray-50);
-      padding: 2rem;
+      padding: clamp(1rem, 3vw, 2rem);
+
+      @media (width >= 1024px) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      }
     }
 
     .main {
@@ -232,11 +242,6 @@ import { EditQuizStore } from './edit-quiz.store';
     }
 
     @media (width >= 1024px) {
-      app-questions-outline {
-        position: sticky;
-        top: 1rem;
-        align-self: start;
-      }
     }
 
     .question {
@@ -245,7 +250,7 @@ import { EditQuizStore } from './edit-quiz.store';
       border-left: 6px solid var(--clr-green-500);
       border-radius: var(--radius-md);
     }
-  `
+  `,
 })
 export class EditQuiz implements OnInit {
   protected readonly store = inject(EditQuizStore);
@@ -253,12 +258,16 @@ export class EditQuiz implements OnInit {
 
   ngOnInit() {
     // Assuming the route is configured like: 'edit/:id'
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
         this.store.loadQuiz({ quizId: id });
       }
     });
+  }
+
+  protected onCourseIdChanged(courseId: string) {
+    this.store.updateCourseId(courseId);
   }
 
   protected onQuestionVisibilityChanged(isVisible: boolean, questionId: string) {
@@ -270,5 +279,13 @@ export class EditQuiz implements OnInit {
 
   protected updateQuestionMarks(question: Question, marks: number) {
     this.store.updateQuestion({ ...question, marks });
+  }
+
+  protected getMaxMarksForQuestion(currentMarks: number): number {
+    const effectiveRemaining = this.store.effectiveRemainingMarks();
+    if (effectiveRemaining === null) {
+      return 5;
+    }
+    return Math.min(5, currentMarks + effectiveRemaining);
   }
 }

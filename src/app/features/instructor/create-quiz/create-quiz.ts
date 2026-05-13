@@ -38,6 +38,7 @@ import { QuizService } from '@shared/services/quiz.service';
           <app-questions-outline
             [questions]="quiz().questions"
             [activeQuestionId]="createQuizStore.activeQuestionId()"
+            [remainingMarks]="createQuizStore.effectiveRemainingMarks()"
             (questionSelect)="createQuizStore.setCurrentQuestionId($event)"
           ></app-questions-outline>
         } @else {
@@ -65,10 +66,12 @@ import { QuizService } from '@shared/services/quiz.service';
           (formReady)="createQuizStore.registerForm($event)"
           (formDestroyed)="createQuizStore.unregisterForm($event)"
           (valueChange)="createQuizStore.setHeaderMetadata($event)"
+          (courseIdChanged)="onCourseIdChanged($event)"
         ></app-quiz-metadata-form>
         <app-quiz-header
           [numberOfQuestions]="numberOfQuestions()"
           [totalMarks]="createQuizStore.totalMarks()"
+          [remainingMarks]="createQuizStore.effectiveRemainingMarks()"
         ></app-quiz-header>
         <div class="questions-workspace">
           <div class="questions-content">
@@ -86,6 +89,7 @@ import { QuizService } from '@shared/services/quiz.service';
                   <app-question-header
                     [index]="index"
                     [question]="question"
+                    [maxMarks]="getMaxMarksForQuestion(question.marks)"
                     (deleteQuestion)="createQuizStore.removeQuestion($event)"
                     (marksChange)="
                       createQuizStore.updateQuestionMarks($event.questionId, $event.marks)
@@ -130,6 +134,8 @@ import { QuizService } from '@shared/services/quiz.service';
             >
               <app-add-question
                 [quizId]="quiz().id"
+                [disabled]="!createQuizStore.canAddMoreQuestions()"
+                [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
                 (questionAdded)="createQuizStore.addQuestion($event)"
               ></app-add-question>
             </div>
@@ -138,6 +144,8 @@ import { QuizService } from '@shared/services/quiz.service';
                 <app-add-question
                   class="pill-style"
                   [quizId]="quiz().id"
+                  [disabled]="!createQuizStore.canAddMoreQuestions()"
+                  [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
                   (questionAdded)="createQuizStore.addQuestion($event)"
                   animate.leave="float-add-question-button-leave"
                   animate.enter="float-add-question-button-enter"
@@ -264,14 +272,6 @@ import { QuizService } from '@shared/services/quiz.service';
       cursor: not-allowed;
     }
 
-    @media (width >= 1024px) {
-      app-questions-outline {
-        position: sticky;
-        top: 1rem;
-        align-self: start;
-      }
-    }
-
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
@@ -360,6 +360,10 @@ export class CreateQuiz {
     }
   }
 
+  protected onCourseIdChanged(courseId: string) {
+    this.createQuizStore.updateCourseId(courseId);
+  }
+
   protected onAddQuestionButtonVisible(isVisible: boolean) {
     this.isAddQuestionButtonVisible.set(isVisible);
   }
@@ -370,6 +374,14 @@ export class CreateQuiz {
     }
 
     this.createQuizStore.setCurrentQuestionId(questionId);
+  }
+
+  protected getMaxMarksForQuestion(currentMarks: number): number {
+    const effectiveRemaining = this.createQuizStore.effectiveRemainingMarks();
+    if (effectiveRemaining === null) {
+      return 5;
+    }
+    return Math.min(5, currentMarks + effectiveRemaining);
   }
 
   protected getInvalidFormsCount(): number {

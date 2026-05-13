@@ -15,6 +15,11 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         <i class="fa-solid fa-arrow-trend-up stat-icon" aria-hidden="true"></i>
         <span>{{ totalMarks() }} Marks</span>
       </div>
+
+      <div class="stat-pill" [class.stat-pill--warning]="remainingMarks() !== null && remainingMarks()! <= 0">
+        <i class="fa-solid fa-coins stat-icon" aria-hidden="true"></i>
+        <span>{{ remainingMarks() !== null ? remainingMarks() : '—' }} Remaining</span>
+      </div>
     </div>
   `,
   styles: `
@@ -37,6 +42,17 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       font-size: var(--fs-300);
       font-weight: 500;
       line-height: 1;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .stat-pill--warning {
+      border-color: #fecaca;
+      background-color: #fef2f2;
+      color: #991b1b;
+    }
+
+    .stat-pill--warning .stat-icon {
+      color: #991b1b;
     }
 
     .stat-icon {
@@ -47,4 +63,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class QuizHeader {
   readonly numberOfQuestions = input.required<number>();
   readonly totalMarks = input.required<number>();
+  readonly remainingMarks = input<number | null>(null);
 }

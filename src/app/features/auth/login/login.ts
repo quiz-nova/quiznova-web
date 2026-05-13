@@ -12,7 +12,6 @@ import { AuthService } from '@Features/auth/auth.service';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
-import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Logo } from '@shared/components/logo/logo';
@@ -34,7 +33,6 @@ type LoginFormGroup = FormGroup<{
     InputText,
     Password,
     FieldError,
-    ProgressSpinner,
   ],
   template: `
     <section class="auth-page">
@@ -55,11 +53,7 @@ type LoginFormGroup = FormGroup<{
           <p>Don't have an account? Contact Your Admin</p>
         </div>
 
-        @if (isLogging()) {
-          <div class="spinner">
-            <p-progress-spinner ariaLabel="loading" strokeWidth="4"></p-progress-spinner>
-          </div>
-        }
+
         @if (loginFailed()) {
           <div class="login-failed" role="alert" aria-live="polite">
             <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
@@ -130,7 +124,12 @@ type LoginFormGroup = FormGroup<{
             </div>
           </fieldset>
           <button class="btn btn-green auth-submit" [disabled]="isLogging()" type="submit">
-            Sign in
+            @if (isLogging()) {
+              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+              <span>Signing in...</span>
+            } @else {
+              <span>Sign in</span>
+            }
           </button>
         </form>
       </div>
@@ -285,6 +284,8 @@ type LoginFormGroup = FormGroup<{
     }
     .auth-submit {
       width: 100%;
+      min-height: 3.5rem; /* Ensure enough height for the spinner */
+      min-width: 10rem;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

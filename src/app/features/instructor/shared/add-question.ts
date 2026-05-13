@@ -6,12 +6,11 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
-import { mapQuestionTypeToQuestion } from '@Features/instructor/create-quiz/question-type.mapper';
+import { mapQuestionTypeToQuestion } from '@Features/instructor/shared/question-type.mapper';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-
 
 type AddQuestionFormGroup = FormGroup<{
   questionType: FormControl<QuestionType>;
@@ -34,7 +33,9 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button class="btn btn-green" (click)="onAddQuestion()" type="button">+Add Question</button>
+      <button class="btn btn-green" [disabled]="disabled()" (click)="onAddQuestion()" type="button">
+        +Add Question
+      </button>
     </div>
   `,
   styles: [
@@ -90,6 +91,8 @@ export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);
 
   readonly quizId = input.required<string>();
+  readonly disabled = input<boolean>(false);
+  readonly remainingMarks = input.required<number>();
   readonly questionAdded = output<Question>();
 
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
@@ -108,7 +111,10 @@ export class AddQuestion {
   onAddQuestion(): void {
     const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
       quizId: this.quizId(),
+      remainingMarks: this.remainingMarks(),
     });
-    this.questionAdded.emit(question);
+    if (question) {
+      this.questionAdded.emit(question);
+    }
   }
 }

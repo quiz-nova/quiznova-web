@@ -10,7 +10,17 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
     <aside class="questions-outline" aria-label="Questions outline">
       <header class="questions-outline__header">
         <h2>Questions</h2>
-        <span class="questions-outline__counter">{{ questions().length }}</span>
+        <div class="questions-outline__badges">
+          <span class="questions-outline__counter">{{ questions().length }}</span>
+          @if (remainingMarks() !== null) {
+            <span
+              class="questions-outline__remaining"
+              [class.questions-outline__remaining--zero]="remainingMarks()! <= 0"
+            >
+              {{ remainingMarks() }} marks left
+            </span>
+          }
+        </div>
       </header>
 
       <ol class="questions-outline__list">
@@ -29,6 +39,7 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
                 <span class="questions-outline__meta">
                   <i [class]="getQuestionTypeIcon(question.type)" aria-hidden="true"></i>
                   <span>{{ getQuestionTypeLabel(question.type) }}</span>
+                  <span class="questions-outline__item-marks">• {{ question.marks }} pts</span>
                 </span>
               </span>
             </button>
@@ -47,7 +58,6 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      max-height: calc(100dvh - 2rem);
       padding: 1rem;
       border: 1px solid var(--clr-gray-200);
       border-radius: 1rem;
@@ -56,12 +66,52 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       font-size: var(--fs-300);
     }
 
+    @media (width >= 1024px) {
+      :host {
+        position: sticky;
+        top: 1.5rem;
+        align-self: start;
+        z-index: 10;
+      }
+
+      .questions-outline {
+        max-height: calc(100dvh - 3rem);
+      }
+    }
+
     .questions-outline__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
       color: var(--clr-blue-900);
+
+      @media (width < 1444px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .questions-outline__badges {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .questions-outline__remaining {
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background-color: var(--clr-green-100);
+      color: var(--clr-green-700, #15803d);
+      font-size: var(--fs-300);
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .questions-outline__remaining--zero {
+      background-color: #fef2f2;
+      color: #991b1b;
     }
 
     h2 {
@@ -91,7 +141,9 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       padding: 0;
       list-style: none;
       min-height: 0;
-      /*overflow-y: auto;*/
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+      padding-right: 0.5rem;
     }
 
     .questions-outline__item {
@@ -174,6 +226,12 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       font-size: var(--fs-300);
     }
 
+    .questions-outline__item-marks {
+      color: var(--clr-blue-900);
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
     @media (width < 1024px) {
       .questions-outline {
         max-height: none;
@@ -184,12 +242,13 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
 export class QuestionsOutline {
   readonly questions = input.required<Question[]>();
   readonly activeQuestionId = input.required<string | null>();
-  
+  readonly remainingMarks = input<number | null>(null);
+
   readonly questionSelect = output<string>();
 
   protected onQuestionSelect(questionId: string): void {
     this.questionSelect.emit(questionId);
-    
+
     document.getElementById(questionId)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',

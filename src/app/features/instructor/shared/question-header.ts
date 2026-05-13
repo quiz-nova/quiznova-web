@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, output, OnInit } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, output, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -37,11 +37,11 @@ type QuestionHeaderFormGroup = FormGroup<{
               type="number"
               formControlName="marks"
               min="1"
-              max="5"
+              [max]="maxMarks()"
               step="1"
               (blur)="onBlur()"
               [attr.aria-invalid]="marksControl.invalid && marksControl.touched ? 'true' : null"
-              aria-describedby="marks-is-required-error marks-must-be-between-1-and-5-error"
+              aria-describedby="marks-is-required-error marks-must-be-between-1-and-max-error"
             />
           </div>
         </form>
@@ -50,7 +50,7 @@ type QuestionHeaderFormGroup = FormGroup<{
           @if (marksControl.hasError('required')) {
             <app-field-error id="marks-is-required-error">Marks is required.</app-field-error>
           } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
-            <app-field-error id="marks-must-be-between-1-and-5-error">Marks must be between 1 and 5.</app-field-error>
+            <app-field-error id="marks-must-be-between-1-and-max-error">Marks must be between 1 and {{ maxMarks() }}.</app-field-error>
           }
         }
       </div>
@@ -116,6 +116,7 @@ type QuestionHeaderFormGroup = FormGroup<{
 export class QuestionHeader implements OnInit {
   readonly index = input.required<number>();
   readonly question = input.required<Question>();
+  readonly maxMarks = input<number>(5);
   
   readonly deleteQuestion = output<string>();
   readonly marksChange = output<{questionId: string, marks: number}>();
@@ -127,6 +128,14 @@ export class QuestionHeader implements OnInit {
   protected readonly form: QuestionHeaderFormGroup = this.fb.group({
     marks: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
   });
+
+  constructor() {
+    effect(() => {
+      const max = this.maxMarks();
+      this.marksControl.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
+      this.marksControl.updateValueAndValidity();
+    });
+  }
 
   protected get marksControl() {
     return this.form.controls.marks;

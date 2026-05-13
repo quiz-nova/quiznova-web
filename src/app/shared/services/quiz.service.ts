@@ -103,6 +103,10 @@ export class QuizService {
     return this.http.delete<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`);
   }
 
+  updateQuizCourseId(quizId: string, courseId: string): Observable<void> {
+    return this.http.put<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/course`, { courseId });
+  }
+
   private withTypeDiscriminatorFirst(question: Question): Question {
     const { type, ...questionBody } = question;
 

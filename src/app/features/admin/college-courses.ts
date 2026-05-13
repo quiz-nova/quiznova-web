@@ -1,7 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, inject, model } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  model,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -16,9 +24,16 @@ import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 
+import { AddCourseModal } from './college-courses/add-course-modal';
+import { DeleteCourseModal } from './college-courses/delete-course-modal';
+import { ManageCourseModal } from './college-courses/manage-course-modal';
+
 @Component({
   selector: 'app-college-courses',
   imports: [
+    AddCourseModal,
+    DeleteCourseModal,
+    ManageCourseModal,
     ProgressSpinner,
     FormsModule,
     InputText,
@@ -34,17 +49,18 @@ import { InstructorService } from '@shared/services/instructor.service';
           <h1>Course Status</h1>
           <p class="description">Each row shows ownership, enrollment, and quiz coverage.</p>
         </div>
+        <app-add-course-modal (created)="reloadCourses()" />
       </header>
 
       <div class="filters-grid">
         <div class="filter-item">
           <label for="course-search">Search</label>
           <input
-            id="course-search"
-            pInputText
             class="focus-green-ring"
+            id="course-search"
             [ngModel]="searchTerm()"
             (ngModelChange)="onSearchTermChange($event)"
+            pInputText
             placeholder="Search by course ID or course name"
           />
         </div>
@@ -52,23 +68,23 @@ import { InstructorService } from '@shared/services/instructor.service';
         <div class="filter-item">
           <label for="page-size">Page size</label>
           <p-inputnumber
-            inputId="page-size"
-            [ngModel]="pageSize()"
-            (ngModelChange)="onPageSizeChange($event)"
+            [(ngModel)]="pageSize"
             [min]="1"
             [max]="100"
             [showButtons]="true"
+            (ngModelChange)="onPageSizeChange($event)"
+            inputId="page-size"
           ></p-inputnumber>
         </div>
 
         <div class="filter-item">
           <label for="quizzes-count">Quizzes count</label>
           <p-inputnumber
-            inputId="quizzes-count"
-            [ngModel]="quizzesCount()"
-            (ngModelChange)="onQuizzesCountChange($event)"
+            [(ngModel)]="quizzesCount"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onQuizzesCountChange($event)"
+            inputId="quizzes-count"
             placeholder="Any"
           ></p-inputnumber>
         </div>
@@ -76,11 +92,11 @@ import { InstructorService } from '@shared/services/instructor.service';
         <div class="filter-item">
           <label for="enrolled-count">Enrolled students</label>
           <p-inputnumber
-            inputId="enrolled-count"
-            [ngModel]="enrolledStudentsCount()"
-            (ngModelChange)="onEnrolledStudentsCountChange($event)"
+            [(ngModel)]="enrolledStudentsCount"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onEnrolledStudentsCountChange($event)"
+            inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>
         </div>
@@ -88,72 +104,90 @@ import { InstructorService } from '@shared/services/instructor.service';
         <div class="filter-item">
           <label for="instructor-filter">Instructor</label>
           <p-select
-            inputId="instructor-filter"
             [ngModel]="instructorId()"
-            (ngModelChange)="onInstructorChange($event)"
             [options]="instructorOptions()"
+            [filter]="true"
+            [showClear]="true"
+            (ngModelChange)="onInstructorChange($event)"
+            (onShow)="onInstructorDropdownShow()"
+            inputId="instructor-filter"
             optionLabel="name"
             optionValue="id"
-            [filter]="true"
             filterBy="name"
-            [showClear]="true"
             placeholder="All instructors"
             appendTo="body"
-            (onShow)="onInstructorDropdownShow()"
           ></p-select>
         </div>
       </div>
 
-      @if (coursesResource.isLoading()) {
-        <div class="spinner">
-          <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-        </div>
-      } @else if (coursesResource.error()) {
-        <div class="error">
-          <p>Failed to load course data.</p>
-        </div>
-      } @else if (!(coursesResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No courses match your filters.</p>
-      } @else {
-        <div class="table-shell">
-          <table>
-            <thead>
+      <div class="table-shell">
+        @if (coursesResource.isLoading()) {
+          <div class="table-overlay-spinner">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+          </div>
+        }
+        <table>
+          <thead>
             <tr>
               <th>Id</th>
               <th>Course</th>
               <th>Instructor</th>
               <th>Enrolled</th>
               <th>Quizzes</th>
+              <th>Actions</th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
+            @if (coursesResource.error()) {
+              <tr>
+                <td colspan="6">
+                  <div class="error">
+                    <p>Failed to load course data.</p>
+                  </div>
+                </td>
+              </tr>
+            } @else if (
+              !coursesResource.isLoading() && !(coursesResource.value()?.items?.length ?? 0)
+            ) {
+              <tr>
+                <td colspan="6">
+                  <p class="feedback">No courses match your filters.</p>
+                </td>
+              </tr>
+            } @else {
               @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
                 <tr>
                   <td>{{ course.courseId.slice(0, 8) }}</td>
                   <td>{{ course.courseName }}</td>
-                  <td>{{ course.instructorName }}</td>
+                  <td>{{ course.instructorName || 'Unassigned' }}</td>
                   <td>{{ course.enrolledStudentsCount }}</td>
                   <td>{{ course.quizzesCount }}</td>
+                  <td>
+                    <div class="actions">
+                      <app-manage-course-modal [course]="course" (changed)="reloadCourses()" />
+                      <app-delete-course-modal [course]="course" (deleted)="reloadCourses()" />
+                    </div>
+                  </td>
                 </tr>
               }
-            </tbody>
-          </table>
-        </div>
-      }
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination-row">
         <p class="page-info">
-          Page {{ coursesResource.value()?.pageNumber ?? 1 }}
-          of {{ coursesResource.value()?.totalPages ?? 1 }}
+          Page {{ coursesResource.value()?.pageNumber ?? 1 }} of
+          {{ coursesResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
+          [canGoPrevious]="coursesResource.value()?.hasPreviousPage ?? false"
+          [canGoNext]="coursesResource.value()?.hasNextPage ?? false"
+          (previousButtonClicked)="goToPreviousPage()"
+          (nextButtonClicked)="goToNextPage()"
           ariaLabel="Courses pagination"
           previousLabel="Previous page"
           nextLabel="Next page"
-          [canGoPrevious]="coursesResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="coursesResource.value()?.hasNextPage ?? false"
-          (previousClicked)="goToPreviousPage()"
-          (nextClicked)="goToNextPage()"
         />
       </div>
     </section>
@@ -164,13 +198,43 @@ import { InstructorService } from '@shared/services/instructor.service';
 export class CollegeCourses {
   private readonly coursesService = inject(CoursesService);
   private readonly instructorService = inject(InstructorService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  protected readonly searchTerm = model('');
-  protected readonly pageNumber = model(1);
-  protected readonly pageSize = model(10);
-  protected readonly quizzesCount = model<number | null>(null);
-  protected readonly enrolledStudentsCount = model<number | null>(null);
-  protected readonly instructorId = model<string | null>(null);
+  protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
+  protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
+  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly quizzesCount = signal<number | null>(
+    this.route.snapshot.queryParams['quizzes']
+      ? Number(this.route.snapshot.queryParams['quizzes'])
+      : null,
+  );
+  protected readonly enrolledStudentsCount = signal<number | null>(
+    this.route.snapshot.queryParams['enrolled']
+      ? Number(this.route.snapshot.queryParams['enrolled'])
+      : null,
+  );
+  protected readonly instructorId = signal<string | null>(
+    this.route.snapshot.queryParams['instructor'] || null,
+  );
+
+  constructor() {
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          search: this.searchTerm() || null,
+          page: this.pageNumber(),
+          size: this.pageSize(),
+          quizzes: this.quizzesCount(),
+          enrolled: this.enrolledStudentsCount(),
+          instructor: this.instructorId(),
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+  }
 
   protected readonly dropdownOpen = model(false);
 
@@ -188,18 +252,18 @@ export class CollegeCourses {
     stream: (shouldFetch) =>
       shouldFetch
         ? this.instructorService.getAllInstructors({
-          pageNumber: 1,
-          pageSize: 10,
-        })
+            pageNumber: 1,
+            pageSize: 10,
+          })
         : of({
-          items: [],
-          pageNumber: 1,
-          pageSize: 10,
-          totalPages: 1,
-          totalCount: 0,
-          hasPreviousPage: false,
-          hasNextPage: false
-        } as PaginatedList<Instructor>),
+            items: [],
+            pageNumber: 1,
+            pageSize: 10,
+            totalPages: 1,
+            totalCount: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          } as PaginatedList<Instructor>),
   });
 
   protected readonly instructorOptions = computed(() =>
@@ -235,7 +299,9 @@ export class CollegeCourses {
   }
 
   protected onPageSizeChange(value: number | null | undefined): void {
-    this.pageSize.set(value && value > 0 ? value : 10);
+    if (!value || value <= 0) {
+      this.pageSize.set(10);
+    }
     this.pageNumber.set(1);
   }
 
@@ -268,5 +334,9 @@ export class CollegeCourses {
 
   protected onInstructorDropdownShow(): void {
     this.dropdownOpen.set(true);
+  }
+
+  protected reloadCourses(): void {
+    this.coursesResource.reload();
   }
 }

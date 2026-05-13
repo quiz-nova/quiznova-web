@@ -1,5 +1,4 @@
 @layer utilities {
-
   /* PrimeNG RadioButton Styling */
   .p-radiobutton .p-radiobutton-box.p-highlight {
     border-color: var(--clr-green-500);
@@ -71,8 +70,9 @@
     background-color: var(--clr-white);
     color: var(--clr-blue-900);
     font: inherit;
-    transition: border-color 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+    transition:
+      border-color 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
   }
 
   .p-inputnumber .p-inputnumber-input:hover:not(:disabled) {
@@ -98,8 +98,9 @@
     border: 1px solid var(--clr-gray-500);
     background-color: var(--clr-gray-50);
     color: var(--clr-blue-900);
-    transition: background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
     cursor: pointer;
   }
 
@@ -123,8 +124,17 @@
     border-radius: 0 0 var(--radius-md) var(--radius-md);
   }
 
-  /* PrimeNG Input Text (pInputText directive) */
-  [pInputText] {
+  /* PrimeNG DatePicker Wrapper Override */
+  .p-datepicker {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  /* PrimeNG Input Text (pInputText directive and DatePicker) */
+  [pInputText],
+  .p-datepicker-input {
     display: block;
     width: 100%;
     min-height: 3rem;
@@ -134,21 +144,25 @@
     background-color: var(--clr-white);
     color: var(--clr-blue-900);
     font: inherit;
-    transition: border-color 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
+    transition:
+      border-color 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
   }
 
-  [pInputText]:hover:not(:disabled) {
+  [pInputText]:hover:not(:disabled),
+  .p-datepicker-input:hover:not(:disabled) {
     border-color: var(--clr-green-500);
   }
 
-  [pInputText]:focus {
+  [pInputText]:focus,
+  .p-datepicker-input:focus {
     border-color: var(--clr-green-500);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 25%, transparent);
     outline: none;
   }
 
-  [pInputText]::placeholder {
+  [pInputText]::placeholder,
+  .p-datepicker-input::placeholder {
     color: var(--clr-gray-600);
   }
 
@@ -191,6 +205,4 @@
       transform: rotate(450deg);
     }
   }
-
 }
-

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -40,7 +41,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="page-size">Page size</label>
           <p-inputnumber
             inputId="page-size"
-            [ngModel]="pageSize()"
+            [(ngModel)]="pageSize"
             (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
@@ -52,7 +53,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="correct-answers">Correct answers</label>
           <p-inputnumber
             inputId="correct-answers"
-            [ngModel]="correctAnswers()"
+            [(ngModel)]="correctAnswers"
             (ngModelChange)="onCorrectAnswersChange($event)"
             [min]="0"
             [showButtons]="true"
@@ -61,30 +62,39 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
         </div>
       </div>
 
-      @if (quizAttemptsResource.isLoading()) {
-        <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
-        </div>
-      } @else if (quizAttemptsResource.error()) {
-        <div class="error">
-          <p>Failed to load quiz attempts data.</p>
-        </div>
-      } @else if (!(quizAttemptsResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No quiz attempts match your filters.</p>
-      } @else {
-        <div class="table-shell">
-          <table>
-            <thead>
+      <div class="table-shell">
+        @if (quizAttemptsResource.isLoading()) {
+          <div class="table-overlay-spinner">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+          </div>
+        }
+        <table>
+          <thead>
+            <tr>
+              <th>Attempt ID</th>
+              <th>Quiz Title</th>
+              <th>Answered</th>
+              <th>Correct</th>
+              <th>Score</th>
+              <th>Submitted At</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (quizAttemptsResource.error()) {
               <tr>
-                <th>Attempt ID</th>
-                <th>Quiz Title</th>
-                <th>Answered</th>
-                <th>Correct</th>
-                <th>Score</th>
-                <th>Submitted At</th>
+                <td colspan="6">
+                  <div class="error">
+                    <p>Failed to load quiz attempts data.</p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
+            } @else if (!quizAttemptsResource.isLoading() && !(quizAttemptsResource.value()?.items?.length ?? 0)) {
+              <tr>
+                <td colspan="6">
+                  <p class="feedback">No quiz attempts match your filters.</p>
+                </td>
+              </tr>
+            } @else {
               @for (attempt of quizAttemptsResource.value()?.items ?? []; track attempt.quizAttemptId) {
                 <tr>
                   <td>{{ attempt.quizAttemptId.slice(0, 8) }}</td>
@@ -95,10 +105,10 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
                   <td>{{ attempt.submittedAt }}</td>
                 </tr>
               }
-            </tbody>
-          </table>
-        </div>
-      }
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination-row">
         <p class="page-info">
@@ -111,8 +121,8 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           nextLabel="Next page"
           [canGoPrevious]="quizAttemptsResource.value()?.hasPreviousPage ?? false"
           [canGoNext]="quizAttemptsResource.value()?.hasNextPage ?? false"
-          (previousClicked)="goToPreviousPage()"
-          (nextClicked)="goToNextPage()"
+          (previousButtonClicked)="goToPreviousPage()"
+          (nextButtonClicked)="goToNextPage()"
         />
       </div>
     </section>
@@ -122,11 +132,31 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 })
 export class CollegeQuizAttempts {
   private readonly quizAttemptService = inject(QuizAttemptService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  protected readonly searchTerm = model('');
-  protected readonly pageNumber = model(1);
-  protected readonly pageSize = model(10);
-  protected readonly correctAnswers = model<number | null>(null);
+  protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
+  protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
+  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly correctAnswers = signal<number | null>(
+    this.route.snapshot.queryParams['correct'] ? Number(this.route.snapshot.queryParams['correct']) : null
+  );
+
+  constructor() {
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          search: this.searchTerm() || null,
+          page: this.pageNumber(),
+          size: this.pageSize(),
+          correct: this.correctAnswers(),
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+  }
 
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
@@ -159,7 +189,9 @@ export class CollegeQuizAttempts {
   }
 
   protected onPageSizeChange(value: number | null | undefined): void {
-    this.pageSize.set(value && value > 0 ? value : 10);
+    if (!value || value <= 0) {
+      this.pageSize.set(10);
+    }
     this.pageNumber.set(1);
   }
 

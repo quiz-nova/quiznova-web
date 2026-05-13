@@ -16,6 +16,7 @@ import { User } from '@shared/models/user/user.model';
       [routerLink]="routeLink()"
       [routerLinkActiveOptions]="{ exact: true }"
       routerLinkActive="active"
+      ariaCurrentWhenActive="page"
     >
       <i class="tab-icon" [class]="iconClass()" aria-hidden="true"></i>
       <span class="tab-label">{{ tabName() }}</span>

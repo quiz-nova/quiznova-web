@@ -1,4 +1,4 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
@@ -10,18 +10,20 @@ import { AuthService } from '@Features/auth/auth.service';
     <header class="dashboard-top-bar">
       <button
         class="dashboard-top-bar__menu-btn focus-green-ring"
+        [attr.aria-expanded]="isSidebarOpen()"
         (click)="toggleMenu.emit()"
         type="button"
         aria-label="Toggle sidebar"
+        aria-controls="main-sidebar"
       >
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
 
       <button
         class="dashboard-top-bar__logout btn btn-gray focus-green-ring"
+        (click)="onLogout()"
         type="button"
         aria-label="Logout"
-        (click)="onLogout()"
       >
         <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
         <span>Logout</span>
@@ -74,6 +76,7 @@ export class TopBar {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  readonly isSidebarOpen = input.required<boolean>();
   toggleMenu = output<void>();
 
   onLogout(): void {

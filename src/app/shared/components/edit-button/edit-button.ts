@@ -7,11 +7,11 @@ import { Component, input, output } from '@angular/core';
     <button
       class="edit-button"
       [attr.aria-label]="ariaLabel()"
-      [disabled]="disabled()"
+      [disabled]="isDisabled()"
       (click)="editButtonClicked.emit()"
       type="button"
     >
-      <i class="fa-regular fa-pen-to-square"></i>
+      <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
     </button>
   `,
   styles: `
@@ -36,6 +36,12 @@ import { Component, input, output } from '@angular/core';
       color: var(--clr-white);
     }
 
+    .edit-button:focus-visible {
+      outline: none;
+      border-color: var(--clr-violet-500);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-violet-500) 20%, transparent);
+    }
+
     .edit-button:disabled {
       opacity: 0.45;
       cursor: not-allowed;
@@ -43,7 +49,7 @@ import { Component, input, output } from '@angular/core';
   `,
 })
 export class EditButton {
-  readonly ariaLabel = input('edit item');
-  readonly disabled = input(false);
+  readonly ariaLabel = input.required<string>();
+  readonly isDisabled = input(false);
   readonly editButtonClicked = output<void>();
 }

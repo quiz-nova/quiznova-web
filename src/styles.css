@@ -1,3 +1,4 @@
+@layer reset, base, utilities;
 @import url('./app/shared/styles/primeng-shared.css');
 
 @layer reset {
@@ -53,6 +54,11 @@
   textarea,
   select {
     font: inherit;
+  }
+
+  fieldset {
+    outline: none;
+    border: none;
   }
 }
 
@@ -174,6 +180,18 @@
 }
 
 @layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    clip-path: inset(50%);
+    border-width: 0;
+  }
+
   .dropdown-label {
     color: var(--clr-blue-900);
     font-size: var(--fs-300);
@@ -244,23 +262,6 @@
     &:hover:not(:disabled) {
       background-color: var(--clr-violet-500);
       color: var(--clr-white);
-    }
-  }
-
-  /* Question Title That Existed In All Question Types */
-  .element-title {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    & .element-textarea {
-      width: 100%;
-      min-height: 4rem;
-      padding: 0.5rem;
-      border: 1px solid var(--clr-gray-500);
-      border-radius: var(--radius-sm);
-      font-size: var(--fs-400);
-      resize: vertical;
     }
   }
 

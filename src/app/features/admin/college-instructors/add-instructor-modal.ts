@@ -47,11 +47,13 @@ type AddInstructorFormGroup = FormGroup<{
               pInputText
               type="text"
               formControlName="name"
+              [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
+              aria-describedby="name-is-required-error"
             />
             <label for="instructor-name">Name</label>
           </p-floatlabel>
           @if (nameControl.invalid && nameControl.touched) {
-            <app-field-error errorText="Name is required."/>
+            <app-field-error id="name-is-required-error">Name is required.</app-field-error>
           }
         </div>
 
@@ -63,14 +65,16 @@ type AddInstructorFormGroup = FormGroup<{
               pInputText
               type="email"
               formControlName="email"
+              [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
+              aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
             <label for="instructor-email">Email</label>
           </p-floatlabel>
           @if (emailControl.invalid && emailControl.touched) {
             @if (emailControl.hasError('required')) {
-              <app-field-error errorText="Email is required."/>
+              <app-field-error id="email-is-required-error">Email is required.</app-field-error>
             } @else if (emailControl.hasError('email')) {
-              <app-field-error errorText="Please enter a valid email address."/>
+              <app-field-error id="please-enter-a-valid-email-address-error">Please enter a valid email address.</app-field-error>
             }
           }
         </div>
@@ -83,11 +87,13 @@ type AddInstructorFormGroup = FormGroup<{
               [fluid]="true"
               inputId="instructor-password"
               formControlName="password"
+              [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched ? 'true' : null"
+              aria-describedby="password-is-required-error"
             />
             <label for="instructor-password">Password</label>
           </p-floatlabel>
           @if (passwordControl.invalid && passwordControl.touched) {
-            <app-field-error errorText="Password is required."/>
+            <app-field-error id="password-is-required-error">Password is required.</app-field-error>
           }
         </div>
 
@@ -99,11 +105,13 @@ type AddInstructorFormGroup = FormGroup<{
               pInputText
               type="text"
               formControlName="phoneNumber"
+              [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null"
+              aria-describedby="phone-number-is-required-error"
             />
             <label for="instructor-phone">Phone Number</label>
           </p-floatlabel>
           @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
-            <app-field-error errorText="Phone number is required."/>
+            <app-field-error id="phone-number-is-required-error">Phone number is required.</app-field-error>
           }
         </div>
 

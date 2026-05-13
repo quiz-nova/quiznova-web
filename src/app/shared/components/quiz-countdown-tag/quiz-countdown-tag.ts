@@ -15,6 +15,7 @@ import {
   template: `
     <span
       class="countdown"
+      role="timer"
       [class.countdown--expired]="isExpired()"
       [attr.aria-label]="ariaLabel()"
     >

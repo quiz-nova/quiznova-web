@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -54,7 +55,7 @@ import { EditAdminModal } from './edit-admin-modal';
           <label for="page-size">Page size</label>
           <p-inputnumber
             inputId="page-size"
-            [ngModel]="pageSize()"
+            [(ngModel)]="pageSize"
             (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
@@ -63,27 +64,36 @@ import { EditAdminModal } from './edit-admin-modal';
         </div>
       </div>
 
-      @if (adminsResource.isLoading()) {
-        <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
-        </div>
-      } @else if (adminsResource.error()) {
-        <div class="error">
-          <p>Failed to load admin data.</p>
-        </div>
-      } @else if (!(adminsResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No admins match your filters.</p>
-      } @else {
-        <div class="table-shell">
-          <table>
-            <thead>
+      <div class="table-shell">
+        @if (adminsResource.isLoading()) {
+          <div class="table-overlay-spinner">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+          </div>
+        }
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (adminsResource.error()) {
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <td colspan="3">
+                  <div class="error">
+                    <p>Failed to load admin data.</p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
+            } @else if (!adminsResource.isLoading() && !(adminsResource.value()?.items?.length ?? 0)) {
+              <tr>
+                <td colspan="3">
+                  <p class="feedback">No admins match your filters.</p>
+                </td>
+              </tr>
+            } @else {
               @for (admin of adminsResource.value()?.items ?? []; track admin.adminId) {
                 <tr>
                   <td>{{ admin.name }}</td>
@@ -102,10 +112,10 @@ import { EditAdminModal } from './edit-admin-modal';
                   </td>
                 </tr>
               }
-            </tbody>
-          </table>
-        </div>
-      }
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination-row">
         <p class="page-info">
@@ -118,8 +128,8 @@ import { EditAdminModal } from './edit-admin-modal';
           nextLabel="Next page"
           [canGoPrevious]="adminsResource.value()?.hasPreviousPage ?? false"
           [canGoNext]="adminsResource.value()?.hasNextPage ?? false"
-          (previousClicked)="goToPreviousPage()"
-          (nextClicked)="goToNextPage()"
+          (previousButtonClicked)="goToPreviousPage()"
+          (nextButtonClicked)="goToNextPage()"
         />
       </div>
     </section>
@@ -129,10 +139,27 @@ import { EditAdminModal } from './edit-admin-modal';
 })
 export class CollegeAdmins {
   private readonly adminService = inject(AdminService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  protected readonly searchTerm = model('');
-  protected readonly pageNumber = model(1);
-  protected readonly pageSize = model(10);
+  protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
+  protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
+  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+
+  constructor() {
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          search: this.searchTerm() || null,
+          page: this.pageNumber(),
+          size: this.pageSize(),
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+  }
 
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
@@ -163,7 +190,9 @@ export class CollegeAdmins {
   }
 
   protected onPageSizeChange(value: number | null | undefined): void {
-    this.pageSize.set(value && value > 0 ? value : 10);
+    if (!value || value <= 0) {
+      this.pageSize.set(10);
+    }
     this.pageNumber.set(1);
   }
 

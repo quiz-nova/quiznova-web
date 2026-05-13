@@ -4,9 +4,9 @@ import {Component} from '@angular/core';
   selector: 'app-tab-group',
   imports: [],
   template: `
-    <div class="tab-group">
+    <nav class="tab-group" aria-label="Main Navigation">
       <ng-content/>
-    </div> `,
+    </nav> `,
   styles: [
     `
       .tab-group {

@@ -19,7 +19,11 @@ export class StudentService {
   private readonly http = inject(HttpClient);
 
   getAllStudents(
-    query: PaginatedQuery & { enrolledCoursesCount?: number },
+    query: PaginatedQuery & {
+      enrolledCoursesCount?: number;
+      courseId?: string;
+      isEnrolledInCourse?: boolean;
+    },
   ): Observable<PaginatedList<Student>> {
     let params = new HttpParams();
 
@@ -28,6 +32,12 @@ export class StudentService {
     }
     if (query.enrolledCoursesCount !== undefined) {
       params = params.set('enrolledCoursesCount', query.enrolledCoursesCount);
+    }
+    if (query.courseId) {
+      params = params.set('courseId', query.courseId);
+    }
+    if (query.isEnrolledInCourse !== undefined) {
+      params = params.set('isEnrolledInCourse', query.isEnrolledInCourse);
     }
     params = params.set('pageNumber', query.pageNumber ?? 1);
     params = params.set('pageSize', query.pageSize ?? 10);

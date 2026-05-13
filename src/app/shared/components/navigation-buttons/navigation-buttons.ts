@@ -9,7 +9,7 @@ import { Component, input, output } from '@angular/core';
         class="btn btn-gray"
         [disabled]="!canGoPrevious()"
         type="button"
-        (click)="previousClicked.emit()"
+        (click)="previousButtonClicked.emit()"
       >
         {{ previousLabel() }}
       </button>
@@ -17,7 +17,7 @@ import { Component, input, output } from '@angular/core';
         class="btn btn-green"
         [disabled]="!canGoNext()"
         type="button"
-        (click)="nextClicked.emit()"
+        (click)="nextButtonClicked.emit()"
       >
         {{ nextLabel() }}
       </button>
@@ -47,12 +47,12 @@ import { Component, input, output } from '@angular/core';
   `,
 })
 export class NavigationButtons {
-  readonly canGoPrevious = input(false);
-  readonly canGoNext = input(false);
+  readonly canGoPrevious = input.required<boolean>();
+  readonly canGoNext = input.required<boolean>();
   readonly previousLabel = input('Previous');
   readonly nextLabel = input('Next');
-  readonly ariaLabel = input('Navigation');
+  readonly ariaLabel = input.required<string>();
 
-  readonly previousClicked = output<void>();
-  readonly nextClicked = output<void>();
+  readonly previousButtonClicked = output<void>();
+  readonly nextButtonClicked = output<void>();
 }

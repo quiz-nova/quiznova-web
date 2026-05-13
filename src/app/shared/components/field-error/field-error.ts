@@ -4,11 +4,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-field-error',
   imports: [],
   template: `
-    @if (errorText()) {
-      <div class="field-error">
-        {{ errorText() }}
-      </div>
-    }
+    <div class="field-error" [attr.id]="id()" aria-live="polite" role="status">
+      <ng-content></ng-content>
+    </div>
   `,
   styles: `
     .field-error {
@@ -20,5 +18,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FieldError {
-  readonly errorText = input.required<string>();
+  readonly id = input.required<string>();
 }

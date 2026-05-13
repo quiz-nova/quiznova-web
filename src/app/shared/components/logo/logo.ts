@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   template: `
     <div class="content">
       <div class="icon">
-        <i class="fa-solid fa-graduation-cap"></i>
+        <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
       </div>
       <span>QuizNova</span>
     </div>

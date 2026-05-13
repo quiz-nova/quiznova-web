@@ -24,5 +24,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PassedQuizTag {
-  readonly label = input<string>('Passed');
+  readonly label = input.required<string>();
 }

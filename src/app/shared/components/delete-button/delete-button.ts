@@ -7,7 +7,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
     <button
       class="delete-button"
       [attr.aria-label]="ariaLabel()"
-      [disabled]="disabled()"
+      [disabled]="isDisabled()"
       (click)="deleteButtonClicked.emit()"
       type="button"
     >
@@ -51,7 +51,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteButton {
-  readonly ariaLabel = input('Delete item');
-  readonly disabled = input(false);
+  readonly ariaLabel = input.required<string>();
+  readonly isDisabled = input(false);
   readonly deleteButtonClicked = output<void>();
 }

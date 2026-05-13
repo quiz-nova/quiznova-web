@@ -49,10 +49,23 @@ h1 {
 }
 
 .table-shell {
+  position: relative;
+  min-height: 250px;
   border: 1px solid var(--clr-gray-200);
   border-radius: var(--radius-md);
   background-color: var(--clr-white);
   overflow: auto;
+}
+
+.table-overlay-spinner {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255 255 255 / 60%);
+  inset: 0;
+  backdrop-filter: blur(2px);
 }
 
 table {

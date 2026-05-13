@@ -40,6 +40,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
             <app-navigation-buttons
               [canGoPrevious]="quizAttemptStore.canGoPrevious()"
               [canGoNext]="quizAttemptStore.canGoNext()"
+              ariaLabel="Question navigation"
             />
         </div>
 

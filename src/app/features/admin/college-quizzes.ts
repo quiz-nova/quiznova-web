@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -40,7 +41,7 @@ import { QuizService } from '@shared/services/quiz.service';
           <label for="page-size">Page size</label>
           <p-inputnumber
             inputId="page-size"
-            [ngModel]="pageSize()"
+            [(ngModel)]="pageSize"
             (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
@@ -52,7 +53,7 @@ import { QuizService } from '@shared/services/quiz.service';
           <label for="marks">Marks</label>
           <p-inputnumber
             inputId="marks"
-            [ngModel]="marks()"
+            [(ngModel)]="marks"
             (ngModelChange)="onMarksChange($event)"
             [min]="0"
             [showButtons]="true"
@@ -61,31 +62,40 @@ import { QuizService } from '@shared/services/quiz.service';
         </div>
       </div>
 
-      @if (quizzesResource.isLoading()) {
-        <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
-        </div>
-      } @else if (quizzesResource.error()) {
-        <div class="error">
-          <p>Failed to load quiz data.</p>
-        </div>
-      } @else if (!(quizzesResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No quizzes match your filters.</p>
-      } @else {
-        <div class="table-shell">
-          <table>
-            <thead>
+      <div class="table-shell">
+        @if (quizzesResource.isLoading()) {
+          <div class="table-overlay-spinner">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+          </div>
+        }
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Course</th>
+              <th>Instructor</th>
+              <th>Marks</th>
+              <th>Starts At</th>
+              <th>Ends At</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (quizzesResource.error()) {
               <tr>
-                <th>Title</th>
-                <th>Course</th>
-                <th>Instructor</th>
-                <th>Marks</th>
-                <th>Starts At</th>
-                <th>Ends At</th>
-                <th>State</th>
+                <td colspan="7">
+                  <div class="error">
+                    <p>Failed to load quiz data.</p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
+            } @else if (!quizzesResource.isLoading() && !(quizzesResource.value()?.items?.length ?? 0)) {
+              <tr>
+                <td colspan="7">
+                  <p class="feedback">No quizzes match your filters.</p>
+                </td>
+              </tr>
+            } @else {
               @for (quiz of quizzesResource.value()?.items ?? []; track quiz.quizId) {
                 <tr>
                   <td>{{ quiz.title }}</td>
@@ -99,10 +109,10 @@ import { QuizService } from '@shared/services/quiz.service';
                   </td>
                 </tr>
               }
-            </tbody>
-          </table>
-        </div>
-      }
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination-row">
         <p class="page-info">
@@ -115,8 +125,8 @@ import { QuizService } from '@shared/services/quiz.service';
           nextLabel="Next page"
           [canGoPrevious]="quizzesResource.value()?.hasPreviousPage ?? false"
           [canGoNext]="quizzesResource.value()?.hasNextPage ?? false"
-          (previousClicked)="goToPreviousPage()"
-          (nextClicked)="goToNextPage()"
+          (previousButtonClicked)="goToPreviousPage()"
+          (nextButtonClicked)="goToNextPage()"
         />
       </div>
     </section>
@@ -150,11 +160,31 @@ import { QuizService } from '@shared/services/quiz.service';
 })
 export class CollegeQuizzes {
   private readonly quizService = inject(QuizService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  protected readonly searchTerm = model('');
-  protected readonly pageNumber = model(1);
-  protected readonly pageSize = model(10);
-  protected readonly marks = model<number | null>(null);
+  protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
+  protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
+  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly marks = signal<number | null>(
+    this.route.snapshot.queryParams['marks'] ? Number(this.route.snapshot.queryParams['marks']) : null
+  );
+
+  constructor() {
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          search: this.searchTerm() || null,
+          page: this.pageNumber(),
+          size: this.pageSize(),
+          marks: this.marks(),
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+  }
 
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
@@ -187,7 +217,9 @@ export class CollegeQuizzes {
   }
 
   protected onPageSizeChange(value: number | null | undefined): void {
-    this.pageSize.set(value && value > 0 ? value : 10);
+    if (!value || value <= 0) {
+      this.pageSize.set(10);
+    }
     this.pageNumber.set(1);
   }
 

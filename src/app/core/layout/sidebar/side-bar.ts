@@ -13,7 +13,7 @@ import { User } from '@shared/models/user/user.model';
   selector: 'app-side-bar',
   imports: [Logo, TabGroup, Tab],
   template: `
-    <aside class="side-bar">
+    <aside class="side-bar" aria-label="Sidebar">
       <app-logo />
 
       <p class="user-role">{{ currentUser()?.role }}</p>

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
@@ -41,11 +42,11 @@ import { EditStudentModal } from './edit-student-modal';
         <div class="filter-item">
           <label for="student-search">Search</label>
           <input
-            id="student-search"
-            pInputText
             class="focus-green-ring"
+            id="student-search"
             [ngModel]="searchTerm()"
             (ngModelChange)="onSearchTermChange($event)"
+            pInputText
             placeholder="Search by name or email"
           />
         </div>
@@ -53,49 +54,60 @@ import { EditStudentModal } from './edit-student-modal';
         <div class="filter-item">
           <label for="page-size">Page size</label>
           <p-inputnumber
-            inputId="page-size"
-            [ngModel]="pageSize()"
-            (ngModelChange)="onPageSizeChange($event)"
+            [(ngModel)]="pageSize"
             [min]="1"
             [max]="100"
             [showButtons]="true"
+            (ngModelChange)="onPageSizeChange($event)"
+            inputId="page-size"
           ></p-inputnumber>
         </div>
 
         <div class="filter-item">
           <label for="enrolled-count">Enrolled courses</label>
           <p-inputnumber
-            inputId="enrolled-count"
             [ngModel]="enrolledCoursesCount()"
-            (ngModelChange)="onEnrolledCoursesCountChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onEnrolledCoursesCountChange($event)"
+            inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>
         </div>
       </div>
 
-      @if (studentsResource.isLoading()) {
-        <div class="spinner">
-          <p-progress-spinner ariaLabel="loading" />
-        </div>
-      } @else if (studentsResource.error()) {
-        <div class="error">
-          <p>Failed to load student data.</p>
-        </div>
-      } @else if (!(studentsResource.value()?.items?.length ?? 0)) {
-        <p class="feedback">No students match your filters.</p>
-      } @else {
-        <div class="table-shell">
-          <table>
-            <thead>
+      <div class="table-shell">
+        @if (studentsResource.isLoading()) {
+          <div class="table-overlay-spinner">
+            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
+          </div>
+        }
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Enrolled Courses</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (studentsResource.error()) {
               <tr>
-                <th>Name</th>
-                <th>Enrolled Courses</th>
-                <th>Actions</th>
+                <td colspan="3">
+                  <div class="error">
+                    <p>Failed to load student data.</p>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
+            } @else if (
+              !studentsResource.isLoading() && !(studentsResource.value()?.items?.length ?? 0)
+            ) {
+              <tr>
+                <td colspan="3">
+                  <p class="feedback">No students match your filters.</p>
+                </td>
+              </tr>
+            } @else {
               @for (student of studentsResource.value()?.items ?? []; track student.studentId) {
                 <tr>
                   <td>{{ student.name }}</td>
@@ -114,10 +126,10 @@ import { EditStudentModal } from './edit-student-modal';
                   </td>
                 </tr>
               }
-            </tbody>
-          </table>
-        </div>
-      }
+            }
+          </tbody>
+        </table>
+      </div>
 
       <div class="pagination-row">
         <p class="page-info">
@@ -125,13 +137,13 @@ import { EditStudentModal } from './edit-student-modal';
           {{ studentsResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
+          [canGoPrevious]="studentsResource.value()?.hasPreviousPage ?? false"
+          [canGoNext]="studentsResource.value()?.hasNextPage ?? false"
+          (previousButtonClicked)="goToPreviousPage()"
+          (nextButtonClicked)="goToNextPage()"
           ariaLabel="Students pagination"
           previousLabel="Previous page"
           nextLabel="Next page"
-          [canGoPrevious]="studentsResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="studentsResource.value()?.hasNextPage ?? false"
-          (previousClicked)="goToPreviousPage()"
-          (nextClicked)="goToNextPage()"
         />
       </div>
     </section>
@@ -141,11 +153,31 @@ import { EditStudentModal } from './edit-student-modal';
 })
 export class CollegeStudents {
   private readonly studentService = inject(StudentService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  protected readonly searchTerm = model('');
-  protected readonly pageNumber = model(1);
-  protected readonly pageSize = model(10);
-  protected readonly enrolledCoursesCount = model<number | null>(null);
+  protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
+  protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
+  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly enrolledCoursesCount = signal<number | null>(
+    this.route.snapshot.queryParams['enrolled'] ? Number(this.route.snapshot.queryParams['enrolled']) : null
+  );
+
+  constructor() {
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          search: this.searchTerm() || null,
+          page: this.pageNumber(),
+          size: this.pageSize(),
+          enrolled: this.enrolledCoursesCount(),
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
+    });
+  }
 
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
@@ -178,7 +210,9 @@ export class CollegeStudents {
   }
 
   protected onPageSizeChange(value: number | null | undefined): void {
-    this.pageSize.set(value && value > 0 ? value : 10);
+    if (!value || value <= 0) {
+      this.pageSize.set(10);
+    }
     this.pageNumber.set(1);
   }
 

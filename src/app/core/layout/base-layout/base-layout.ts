@@ -13,7 +13,7 @@ import { map } from 'rxjs/operators';
   imports: [RouterOutlet, TopBar, SideBar],
   template: `
     <section class="base-layout" [class.sidebar-open]="isSidebarOpen()">
-      <app-top-bar (toggleMenu)="toggleSidebar()"></app-top-bar>
+      <app-top-bar (toggleMenu)="toggleSidebar()" [isSidebarOpen]="isSidebarOpen()"></app-top-bar>
 
       <div class="base-layout__body">
         @if (isMobile() && isSidebarOpen()) {
@@ -22,10 +22,12 @@ import { map } from 'rxjs/operators';
             (click)="toggleSidebar()"
             type="button"
             aria-label="Close sidebar"
+            aria-controls="main-sidebar"
+            aria-expanded="true"
           ></button>
         }
 
-        <app-side-bar class="base-layout__sidebar" [class.opened]="isSidebarOpen()"></app-side-bar>
+        <app-side-bar id="main-sidebar" class="base-layout__sidebar" [class.opened]="isSidebarOpen()"></app-side-bar>
 
         <main class="base-layout__content">
           <router-outlet></router-outlet>

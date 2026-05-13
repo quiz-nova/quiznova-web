@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,13 +6,12 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
+import { mapQuestionTypeToQuestion } from '@Features/instructor/create-quiz/question-type.mapper';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 
-import { QuestionType } from '@shared/models/quiz/question.model';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
-import { CreateQuizStore } from './create-quiz.store';
-import { mapQuestionTypeToQuestion } from './question-type.mapper';
 
 type AddQuestionFormGroup = FormGroup<{
   questionType: FormControl<QuestionType>;
@@ -35,7 +34,7 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button class="btn btn-green" (click)="addQuestion()" type="button">+Add Question</button>
+      <button class="btn btn-green" (click)="onAddQuestion()" type="button">+Add Question</button>
     </div>
   `,
   styles: [
@@ -89,11 +88,15 @@ type AddQuestionFormGroup = FormGroup<{
 })
 export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly quizId = input.required<string>();
+  readonly questionAdded = output<Question>();
+
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
     { label: 'Multiple Choice', value: QuestionType.Mcq },
     { label: 'True/False', value: QuestionType.Tf },
   ];
-  private readonly createQuizStore = inject(CreateQuizStore);
+
   protected readonly addQuestionForm: AddQuestionFormGroup = this.fb.group({
     questionType: this.fb.control<QuestionType>(QuestionType.Mcq),
   });
@@ -102,11 +105,10 @@ export class AddQuestion {
     return this.addQuestionForm.controls.questionType;
   }
 
-  addQuestion(): void {
-    this.createQuizStore.addQuestion(
-      mapQuestionTypeToQuestion(this.questionTypeControl.value, {
-        quizId: this.createQuizStore.quizId(),
-      }),
-    );
+  onAddQuestion(): void {
+    const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
+      quizId: this.quizId(),
+    });
+    this.questionAdded.emit(question);
   }
 }

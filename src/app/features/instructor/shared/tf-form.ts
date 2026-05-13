@@ -1,12 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   input,
+  output,
   OnDestroy,
   OnInit,
+  effect
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -18,13 +19,12 @@ import {
 } from '@angular/forms';
 
 import { RadioButton } from 'primeng/radiobutton';
-import { startWith } from 'rxjs';
 
 import { FieldError } from '@shared/components/field-error/field-error';
-import { type CreateQuestionContract } from '@shared/models/quiz/question-component.contracts';
+import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
+import { Question } from '@shared/models/quiz/question.model';
 import { Tf } from '@shared/models/quiz/tf.model';
 
-import { CreateQuizStore } from './create-quiz.store';
 import { QuestionTitle } from './question-title';
 
 type TfFormGroup = FormGroup<{
@@ -33,21 +33,28 @@ type TfFormGroup = FormGroup<{
 }>;
 
 @Component({
-  selector: 'app-create-tf',
+  selector: 'app-tf-form',
   imports: [ReactiveFormsModule, QuestionTitle, RadioButton, FieldError],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="tf-container">
       <form [formGroup]="tfForm">
-        <app-question-title [control]="questionTextControl"></app-question-title>
+        <app-question-title 
+          [control]="questionTextControl"
+          (blurEvent)="onBlur()"
+        ></app-question-title>
         <p>Correct Answer:</p>
-        <div class="tf-options">
+        <fieldset class="tf-options">
+          <legend class="sr-only">Correct Answer</legend>
           <label class="answer-option" for="answerTrue">
             <p-radiobutton
               [formControl]="answerControl"
               [value]="true"
               inputId="answerTrue"
               name="answer"
+              (onClick)="onBlur()"
+              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
+              aria-describedby="please-select-the-correct-answer-error"
             ></p-radiobutton>
             <span>True</span>
           </label>
@@ -57,14 +64,17 @@ type TfFormGroup = FormGroup<{
               [value]="false"
               inputId="answerFalse"
               name="answer"
+              (onClick)="onBlur()"
+              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
+              aria-describedby="please-select-the-correct-answer-error"
             ></p-radiobutton>
             <span>False</span>
           </label>
-        </div>
+        </fieldset>
 
         @if (answerControl.invalid && answerControl.touched) {
           @if (answerControl.hasError('required')) {
-            <app-field-error errorText="Please select the correct answer." />
+            <app-field-error id="please-select-the-correct-answer-error">Please select the correct answer.</app-field-error>
           }
         }
       </form>
@@ -94,17 +104,33 @@ type TfFormGroup = FormGroup<{
     `,
   ],
 })
-export class CreateTf implements CreateQuestionContract, OnInit, OnDestroy {
+export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
-  private readonly createQuizStore = inject(CreateQuizStore);
-  readonly index = input.required<number>();
-  protected readonly question = computed(() => this.createQuizStore.getQuestionByIndex(this.index()));
-  protected readonly tf = computed(() => this.question() as Tf);
   private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly initialData = input.required<Question>();
+  
+  readonly formReady = output<FormGroup>();
+  readonly formDestroyed = output<FormGroup>();
+  readonly valueChange = output<Question>();
+  readonly blurEvent = output<Question>();
+
+  protected readonly tf = () => this.initialData() as Tf;
+
   protected readonly tfForm: TfFormGroup = this.fb.group({
     text: ['', [Validators.required]],
     answer: [null as boolean | null, [Validators.required]],
   });
+
+  constructor() {
+    effect(() => {
+      const data = this.tf();
+      this.tfForm.patchValue({
+        text: data.questionText,
+        answer: data.correctChoice
+      }, { emitEvent: false });
+    });
+  }
 
   protected get questionTextControl() {
     return this.tfForm.controls.text;
@@ -115,21 +141,33 @@ export class CreateTf implements CreateQuestionContract, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.tfForm.patchValue({
-      text: this.tf().questionText,
-      answer: this.tf().correctChoice,
-    });
-
-    this.questionTextControl.valueChanges
-      .pipe(startWith(this.questionTextControl.getRawValue()), takeUntilDestroyed(this.destroyRef))
-      .subscribe((questionText) => {
-        this.createQuizStore.updateQuestionText(this.question().id, questionText);
+    this.tfForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.valueChange.emit(this.getLatestTfData());
       });
 
-    this.createQuizStore.registerForm(this.tfForm);
+    this.formReady.emit(this.tfForm);
   }
 
   ngOnDestroy() {
-    this.createQuizStore.unregisterForm(this.tfForm);
+    this.formDestroyed.emit(this.tfForm);
+  }
+
+  protected onBlur() {
+    if (this.tfForm.valid) {
+      this.blurEvent.emit(this.getLatestTfData());
+    }
+  }
+
+  private getLatestTfData(): Tf {
+    const formValue = this.tfForm.getRawValue();
+    const originalTf = this.tf();
+
+    return {
+      ...originalTf,
+      questionText: formValue.text,
+      correctChoice: formValue.answer ?? true 
+    };
   }
 }

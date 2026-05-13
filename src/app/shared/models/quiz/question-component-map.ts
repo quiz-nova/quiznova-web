@@ -1,12 +1,13 @@
-import { CreateMcq } from '@Features/instructor/create-quiz/create-mcq';
-import { CreateTf } from '@Features/instructor/create-quiz/create-tf';
+
+import { McqForm } from '@Features/instructor/shared/mcq-form';
+import { TfForm } from '@Features/instructor/shared/tf-form';
 import { McqAttempt } from '@Features/student/quiz-attempt/mcq-attempt';
 import { TfAttempt } from '@Features/student/quiz-attempt/tf-attempt';
 
 import { McqTag } from '@shared/components/questions-tags/mcq-tag';
 import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import {
-  CreateQuestionMap,
+  QuestionFormMap,
   QuestionAttemptMap,
   QuestionTagMap,
 } from '@shared/models/quiz/question-component.contracts';
@@ -17,9 +18,9 @@ export const QUESTION_ATTEMPT_COMPONENT_MAP: QuestionAttemptMap = {
   [QuestionType.Tf]: TfAttempt,
 };
 
-export const CREATE_QUESTION_COMPONENT_MAP: CreateQuestionMap = {
-  [QuestionType.Mcq]: CreateMcq,
-  [QuestionType.Tf]: CreateTf,
+export const QUESTION_FORM_COMPONENT_MAP: QuestionFormMap = {
+  [QuestionType.Mcq]: McqForm,
+  [QuestionType.Tf]: TfForm,
 };
 
 export const QUESTION_TAG_MAP: QuestionTagMap = {

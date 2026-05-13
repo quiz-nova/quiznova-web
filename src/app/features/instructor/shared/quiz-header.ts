@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-
-import { CreateQuizStore } from './create-quiz.store';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-quiz-header',
@@ -47,7 +45,6 @@ import { CreateQuizStore } from './create-quiz.store';
   `,
 })
 export class QuizHeader {
-  protected readonly createQuizStore = inject(CreateQuizStore);
-  protected readonly numberOfQuestions = this.createQuizStore.numberOfQuestions;
-  protected readonly totalMarks = this.createQuizStore.totalMarks;
+  readonly numberOfQuestions = input.required<number>();
+  readonly totalMarks = input.required<number>();
 }

@@ -1,7 +1,7 @@
-import {Component, input} from '@angular/core';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import { Component, input, output } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
-import {FieldError} from '@shared/components/field-error/field-error';
+import { FieldError } from '@shared/components/field-error/field-error';
 
 @Component({
   selector: 'app-question-title',
@@ -13,12 +13,17 @@ import {FieldError} from '@shared/components/field-error/field-error';
         class="question-title__input"
         id="questionText"
         [formControl]="control()"
+        [attr.aria-invalid]="control().invalid && control().touched ? 'true' : null"
+        (blur)="blurEvent.emit()"
         placeholder="Enter question text..."
+        aria-describedby="question-text-is-required-error"
       ></textarea>
 
       @if (control().invalid && control().touched) {
         @if (control().hasError('required')) {
-          <app-field-error errorText="Question text is required."/>
+          <app-field-error id="question-text-is-required-error"
+            >Question text is required.</app-field-error
+          >
         }
       }
     </div>
@@ -46,6 +51,6 @@ import {FieldError} from '@shared/components/field-error/field-error';
   `,
 })
 export class QuestionTitle {
-
   readonly control = input.required<FormControl<string>>();
+  readonly blurEvent = output();
 }

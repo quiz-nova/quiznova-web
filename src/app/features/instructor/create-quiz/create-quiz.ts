@@ -1,35 +1,45 @@
-import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, signal, Signal } from '@angular/core';
 
+import { CreateQuizStore } from '@Features/instructor/create-quiz/create-quiz.store';
+import { AddQuestion } from '@Features/instructor/shared/add-question';
+import { McqForm } from '@Features/instructor/shared/mcq-form';
+import { NoQuestions } from '@Features/instructor/shared/no-questions';
+import { QuestionHeader } from '@Features/instructor/shared/question-header';
+import { QuestionsOutline } from '@Features/instructor/shared/questions-outline';
+import { QuizHeader } from '@Features/instructor/shared/quiz-header';
+import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
+import { TfForm } from '@Features/instructor/shared/tf-form';
+
+import { McqTag } from '@shared/components/questions-tags/mcq-tag';
+import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { CreateQuiz as CreateQuizModel } from '@shared/models/quiz/create-quiz.model';
 import { QuizService } from '@shared/services/quiz.service';
-
-import { AddQuestion } from './add-question';
-import { CreateQuizStore } from './create-quiz.store';
-import { NoQuestions } from './no-questions';
-import { QuestionHeader } from './question-header';
-import { QuestionsOutline } from './questions-outline';
-import { QuizHeader } from './quiz-header';
-import { QuizMetadata } from './quiz-metadata';
 
 @Component({
   selector: 'app-create-quiz',
   imports: [
     AddQuestion,
-    NgComponentOutlet,
     QuestionHeader,
     QuizHeader,
     NoQuestions,
-    QuizMetadata,
+    QuizMetadataForm,
     ObserveVisibilityDirective,
     QuestionsOutline,
+    McqForm,
+    TfForm,
+    McqTag,
+    TfTag,
   ],
   template: `
     <section class="create-quiz">
       <div class="outline">
         @if (numberOfQuestions() > 0) {
-          <app-questions-outline></app-questions-outline>
+          <app-questions-outline
+            [questions]="quiz().questions"
+            [activeQuestionId]="createQuizStore.activeQuestionId()"
+            (questionSelect)="createQuizStore.setCurrentQuestionId($event)"
+          ></app-questions-outline>
         } @else {
           <div class="empty-outline-placeholder">
             <p class="placeholder-text">Your quiz outline will appear here as you add questions.</p>
@@ -51,12 +61,19 @@ import { QuizMetadata } from './quiz-metadata';
             Publish Quiz
           </button>
         </header>
-        <app-quiz-metadata></app-quiz-metadata>
-        <app-quiz-header></app-quiz-header>
+        <app-quiz-metadata-form
+          (formReady)="createQuizStore.registerForm($event)"
+          (formDestroyed)="createQuizStore.unregisterForm($event)"
+          (valueChange)="createQuizStore.setHeaderMetadata($event)"
+        ></app-quiz-metadata-form>
+        <app-quiz-header
+          [numberOfQuestions]="numberOfQuestions()"
+          [totalMarks]="createQuizStore.totalMarks()"
+        ></app-quiz-header>
         <div class="questions-workspace">
           <div class="questions-content">
             <div class="questions-list">
-              @for (question of quiz().questions; track question.id) {
+              @for (question of quiz().questions; track question.id; let index = $index) {
                 <div
                   class="question"
                   [id]="question.id"
@@ -66,16 +83,42 @@ import { QuizMetadata } from './quiz-metadata';
                   animate.enter="element-enter"
                   animate.leave="element-leave"
                 >
-                  <app-question-header [index]="$index" [question]="question">
-                    <ng-container
-                      [ngComponentOutlet]="quizService.getSuitableQuestionTag(question.type)"
-                    >
-                    </ng-container>
+                  <app-question-header
+                    [index]="index"
+                    [question]="question"
+                    (deleteQuestion)="createQuizStore.removeQuestion($event)"
+                    (marksChange)="
+                      createQuizStore.updateQuestionMarks($event.questionId, $event.marks)
+                    "
+                  >
+                    @switch (question.type) {
+                      @case ('mcq') {
+                        <app-mcq-tag></app-mcq-tag>
+                      }
+                      @case ('tf') {
+                        <app-tf-tag></app-tf-tag>
+                      }
+                    }
                   </app-question-header>
-                  <ng-container
-                    [ngComponentOutlet]="quizService.getSuitableQuestionComponent(question.type)"
-                    [ngComponentOutletInputs]="{ index: $index }"
-                  ></ng-container>
+
+                  @switch (question.type) {
+                    @case ('mcq') {
+                      <app-mcq-form
+                        [initialData]="question"
+                        (formReady)="createQuizStore.registerForm($event)"
+                        (formDestroyed)="createQuizStore.unregisterForm($event)"
+                        (blurEvent)="createQuizStore.updateQuestion($event)"
+                      ></app-mcq-form>
+                    }
+                    @case ('tf') {
+                      <app-tf-form
+                        [initialData]="question"
+                        (formReady)="createQuizStore.registerForm($event)"
+                        (formDestroyed)="createQuizStore.unregisterForm($event)"
+                        (blurEvent)="createQuizStore.updateQuestion($event)"
+                      ></app-tf-form>
+                    }
+                  }
                 </div>
               }
             </div>
@@ -85,12 +128,17 @@ import { QuizMetadata } from './quiz-metadata';
               (visible)="onAddQuestionButtonVisible($event)"
               appObserveVisibility
             >
-              <app-add-question></app-add-question>
+              <app-add-question
+                [quizId]="quiz().id"
+                (questionAdded)="createQuizStore.addQuestion($event)"
+              ></app-add-question>
             </div>
             @if (!isAddQuestionButtonVisible()) {
               <div class="add-question-sticky-container">
                 <app-add-question
                   class="pill-style"
+                  [quizId]="quiz().id"
+                  (questionAdded)="createQuizStore.addQuestion($event)"
                   animate.leave="float-add-question-button-leave"
                   animate.enter="float-add-question-button-enter"
                 >
@@ -210,10 +258,12 @@ import { QuizMetadata } from './quiz-metadata';
       gap: 1.5rem;
       min-width: 0;
     }
+
     .btn.btn-green:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+
     @media (width >= 1024px) {
       app-questions-outline {
         position: sticky;
@@ -320,5 +370,9 @@ export class CreateQuiz {
     }
 
     this.createQuizStore.setCurrentQuestionId(questionId);
+  }
+
+  protected getInvalidFormsCount(): number {
+    return this.createQuizStore.registeredForms().filter((form) => form.invalid).length;
   }
 }

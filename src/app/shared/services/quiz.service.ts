@@ -3,6 +3,7 @@ import { inject, Injectable, type Type } from '@angular/core';
 
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
+import { type QuizMetadataValue } from '@Features/instructor/shared/quiz-metadata-form';
 import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 import { Observable } from 'rxjs';
 
@@ -10,16 +11,12 @@ import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
 import {
-  CREATE_QUESTION_COMPONENT_MAP,
+  QUESTION_FORM_COMPONENT_MAP,
   QUESTION_ATTEMPT_COMPONENT_MAP,
   QUESTION_TAG_MAP,
 } from '@shared/models/quiz/question-component-map';
-import {
-  QuestionAttemptContract,
-  CreateQuestionContract,
-  QuestionTagContract,
-} from '@shared/models/quiz/question-component.contracts';
-import { QuestionType } from '@shared/models/quiz/question.model';
+import { QuestionAttemptContract, QuestionFormContract, QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { QuizCount } from '@shared/models/quiz/quiz-count.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
 
@@ -28,8 +25,8 @@ export class QuizService {
   private readonly appSettings = inject(APP_SETTINGS);
   private readonly http = inject(HttpClient);
 
-  getSuitableQuestionComponent(questionType: QuestionType): Type<CreateQuestionContract> | null {
-    return CREATE_QUESTION_COMPONENT_MAP[questionType] || null;
+  getSuitableQuestionFormComponent(questionType: QuestionType): Type<QuestionFormContract> | null {
+    return QUESTION_FORM_COMPONENT_MAP[questionType] || null;
   }
 
   getSuitableQuestionTag(questionType: QuestionType): Type<QuestionTagContract> | null {
@@ -43,7 +40,10 @@ export class QuizService {
   }
 
   createQuiz(quiz: CreateQuiz): Observable<Quiz> {
-    return this.http.post<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes`, quiz);
+    return this.http.post<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes`, {
+      ...quiz,
+      questions: quiz.questions.map((question) => this.withTypeDiscriminatorFirst(question)),
+    });
   }
 
   getAllQuizzes(
@@ -77,5 +77,35 @@ export class QuizService {
     return this.http.get<QuizCount>(
       `${this.appSettings.apiBaseUrl}/quizzes/count?instructorId=${instructorId}`,
     );
+  }
+
+  // --- Incremental Edit Endpoints (To be implemented in backend) ---
+
+  updateQuizMetadata(quizId: string, metadata: QuizMetadataValue): Observable<void> {
+    return this.http.put<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/metadata`, metadata);
+  }
+
+  addQuestion(quizId: string, question: Question): Observable<Question> {
+    return this.http.post<Question>(
+      `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions`,
+      this.withTypeDiscriminatorFirst(question),
+    );
+  }
+
+  updateQuestion(quizId: string, questionId: string, question: Question): Observable<void> {
+    return this.http.put<void>(
+      `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`,
+      this.withTypeDiscriminatorFirst(question),
+    );
+  }
+
+  removeQuestion(quizId: string, questionId: string): Observable<void> {
+    return this.http.delete<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`);
+  }
+
+  private withTypeDiscriminatorFirst(question: Question): Question {
+    const { type, ...questionBody } = question;
+
+    return { type, ...questionBody } as Question;
   }
 }

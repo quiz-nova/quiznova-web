@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, input, output, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -12,7 +12,6 @@ import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Question } from '@shared/models/quiz/question.model';
 
-import { CreateQuizStore } from './create-quiz.store';
 
 type QuestionHeaderFormGroup = FormGroup<{
   marks: FormControl<number>;
@@ -40,15 +39,18 @@ type QuestionHeaderFormGroup = FormGroup<{
               min="1"
               max="5"
               step="1"
+              (blur)="onBlur()"
+              [attr.aria-invalid]="marksControl.invalid && marksControl.touched ? 'true' : null"
+              aria-describedby="marks-is-required-error marks-must-be-between-1-and-5-error"
             />
           </div>
         </form>
-        <app-delete-button (deleteButtonClicked)="onDelete()" ariaLabel="Delete question" />
+        <app-delete-button (deleteButtonClicked)="deleteQuestion.emit(question().id)" ariaLabel="Delete question" />
         @if (marksControl.invalid && marksControl.touched) {
           @if (marksControl.hasError('required')) {
-            <app-field-error errorText="Marks is required." />
+            <app-field-error id="marks-is-required-error">Marks is required.</app-field-error>
           } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
-            <app-field-error errorText="Marks must be between 1 and 5." />
+            <app-field-error id="marks-must-be-between-1-and-5-error">Marks must be between 1 and 5.</app-field-error>
           }
         }
       </div>
@@ -114,7 +116,11 @@ type QuestionHeaderFormGroup = FormGroup<{
 export class QuestionHeader implements OnInit {
   readonly index = input.required<number>();
   readonly question = input.required<Question>();
-  private readonly createQuizStore = inject(CreateQuizStore);
+  
+  readonly deleteQuestion = output<string>();
+  readonly marksChange = output<{questionId: string, marks: number}>();
+  readonly blurEvent = output<{questionId: string, marks: number}>();
+
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly fb = inject(NonNullableFormBuilder);
@@ -126,10 +132,6 @@ export class QuestionHeader implements OnInit {
     return this.form.controls.marks;
   }
 
-  onDelete(): void {
-    this.createQuizStore.removeQuestion(this.question().id);
-  }
-
   ngOnInit(): void {
     this.marksControl.setValue(this.question().marks);
     this.marksControl.valueChanges
@@ -139,7 +141,13 @@ export class QuestionHeader implements OnInit {
           return;
         }
 
-        this.createQuizStore.updateQuestionMarks(this.question().id, newValue);
+        this.marksChange.emit({ questionId: this.question().id, marks: newValue });
       });
+  }
+
+  protected onBlur() {
+    if (this.form.valid) {
+      this.blurEvent.emit({ questionId: this.question().id, marks: this.marksControl.value });
+    }
   }
 }

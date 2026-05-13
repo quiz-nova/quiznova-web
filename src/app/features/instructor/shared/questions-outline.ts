@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-
-import { CreateQuizStore } from './create-quiz.store';
 
 @Component({
   selector: 'app-questions-outline',
@@ -12,7 +10,7 @@ import { CreateQuizStore } from './create-quiz.store';
     <aside class="questions-outline" aria-label="Questions outline">
       <header class="questions-outline__header">
         <h2>Questions</h2>
-        <span class="questions-outline__counter">{{ numberOfQuestions() }}</span>
+        <span class="questions-outline__counter">{{ questions().length }}</span>
       </header>
 
       <ol class="questions-outline__list">
@@ -184,15 +182,14 @@ import { CreateQuizStore } from './create-quiz.store';
   `,
 })
 export class QuestionsOutline {
-  private readonly createQuizStore = inject(CreateQuizStore);
-  protected readonly questions = this.createQuizStore.questions;
-  protected readonly numberOfQuestions = this.createQuizStore.numberOfQuestions;
-  protected readonly activeQuestionId = computed(
-    () => this.createQuizStore.activeQuestionId() ?? this.questions()[0]?.id ?? null,
-  );
+  readonly questions = input.required<Question[]>();
+  readonly activeQuestionId = input.required<string | null>();
+  
+  readonly questionSelect = output<string>();
 
   protected onQuestionSelect(questionId: string): void {
-    this.createQuizStore.setCurrentQuestionId(questionId);
+    this.questionSelect.emit(questionId);
+    
     document.getElementById(questionId)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',

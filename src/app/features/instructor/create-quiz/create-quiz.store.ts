@@ -52,7 +52,15 @@ export const CreateQuizStore = signalStore(
     totalMarks: computed(() =>
       store.quiz().questions.reduce((sum, question) => sum + question.marks, 0),
     ),
-    isEntireQuizValid: computed(() => store.registeredForms().every((form) => form.valid)),
+    isEntireQuizValid: computed(() => {
+      const quiz = store.quiz();
+
+      return (
+        quiz.questions.length > 0 &&
+        quiz.startsAtUtc < quiz.endsAtUtc &&
+        store.registeredForms().every((form) => form.valid)
+      );
+    }),
   })),
   withMethods((store) => ({
     setHeaderMetadata(payload: {
@@ -119,6 +127,19 @@ export const CreateQuizStore = signalStore(
           questions: updatedQuestions,
         },
         activeQuestionId: nextActiveQuestionId,
+      });
+    },
+
+    updateQuestion(updatedQuestion: Question): void {
+      patchState(store, {
+        quiz: {
+          ...store.quiz(),
+          questions: store
+            .quiz()
+            .questions.map((question) =>
+              question.id === updatedQuestion.id ? updatedQuestion : question,
+            ),
+        },
       });
     },
 

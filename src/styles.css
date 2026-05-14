@@ -251,9 +251,9 @@
     &:disabled {
       background-color: var(--clr-gray-100);
       color: var(--clr-gray-500);
-      border-color: var(--clr-gray-200);
-      cursor: not-allowed;
       opacity: 0.6;
+      cursor: not-allowed;
+      border-color: var(--clr-gray-200);
     }
   }
 

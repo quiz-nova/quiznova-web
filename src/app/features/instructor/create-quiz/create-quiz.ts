@@ -136,6 +136,7 @@ import { QuizService } from '@shared/services/quiz.service';
                 [quizId]="quiz().id"
                 [disabled]="!createQuizStore.canAddMoreQuestions()"
                 [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
+                [nextDisplayOrder]="numberOfQuestions()"
                 (questionAdded)="createQuizStore.addQuestion($event)"
               ></app-add-question>
             </div>
@@ -146,6 +147,7 @@ import { QuizService } from '@shared/services/quiz.service';
                   [quizId]="quiz().id"
                   [disabled]="!createQuizStore.canAddMoreQuestions()"
                   [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
+                  [nextDisplayOrder]="numberOfQuestions()"
                   (questionAdded)="createQuizStore.addQuestion($event)"
                   animate.leave="float-add-question-button-leave"
                   animate.enter="float-add-question-button-enter"

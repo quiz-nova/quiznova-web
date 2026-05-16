@@ -93,6 +93,7 @@ export class AddQuestion {
   readonly quizId = input.required<string>();
   readonly disabled = input<boolean>(false);
   readonly remainingMarks = input.required<number>();
+  readonly nextDisplayOrder = input.required<number>();
   readonly questionAdded = output<Question>();
 
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
@@ -112,6 +113,7 @@ export class AddQuestion {
     const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
       quizId: this.quizId(),
       remainingMarks: this.remainingMarks(),
+      displayOrder: this.nextDisplayOrder(),
     });
     if (question) {
       this.questionAdded.emit(question);

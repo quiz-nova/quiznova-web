@@ -6,6 +6,8 @@ export interface CreateQuestionContext {
   quizId: string;
   questionId?: string;
   remainingMarks: number;
+  /** Zero-based position this question will occupy (passed by the caller). */
+  displayOrder: number;
 }
 
 type QuestionMapper = (context: CreateQuestionContext) => Question | null;
@@ -47,6 +49,7 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
       quizId: context.quizId,
       questionText: '',
       marks,
+      displayOrder: context.displayOrder,
       type: QuestionType.Mcq,
       numberOfChoices: 2,
       correctChoiceId: '',
@@ -64,6 +67,7 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
       quizId: context.quizId,
       questionText: '',
       marks,
+      displayOrder: context.displayOrder,
       type: QuestionType.Tf,
       correctChoice: true,
     };

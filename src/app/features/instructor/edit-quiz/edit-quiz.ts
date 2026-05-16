@@ -126,6 +126,7 @@ import { EditQuizStore } from './edit-quiz.store';
                   [quizId]="store.quizId()"
                   [disabled]="!store.canAddMoreQuestions()"
                   [remainingMarks]="store.effectiveRemainingMarks() ?? 0"
+                  [nextDisplayOrder]="store.numberOfQuestions()"
                   (questionAdded)="store.addQuestion($event)"
                 ></app-add-question>
               </div>

@@ -10,5 +10,6 @@ export interface Question {
   quizId: string;
   questionText: string;
   marks: number;
+  displayOrder: number;
   type: QuestionType;
 }

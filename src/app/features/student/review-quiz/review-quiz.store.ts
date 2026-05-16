@@ -22,6 +22,8 @@ import { MCQ } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { Tf } from '@shared/models/quiz/tf.model';
 import {
+  AutoGradedAnswer,
+  ManuallyGradedAnswer,
   McqAnswer,
   QuestionAnswer,
   TfAnswer,
@@ -73,13 +75,19 @@ export function isTf(question: Question): question is Tf {
 }
 
 export function isMcqAnswer(answer: QuestionAnswer | null): answer is McqAnswer {
-  return !!answer && answer.answerType === QuestionType.Mcq;
+  return !!answer && answer.answerType === 'auto' && (answer as AutoGradedAnswer).autoAnswerType === 'mcq';
 }
 
 export function isTfAnswer(
   answer: QuestionAnswer | null,
 ): answer is TfAnswer {
-  return !!answer && answer.answerType === QuestionType.Tf;
+  return !!answer && answer.answerType === 'auto' && (answer as AutoGradedAnswer).autoAnswerType === 'tf';
+}
+
+export function isManuallyGradedAnswer(
+  answer: QuestionAnswer | null,
+): answer is ManuallyGradedAnswer {
+  return !!answer && answer.answerType === 'manual';
 }
 
 function getElapsedMinutes(

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
-import {TfNotAnswered} from '@Features/student/review-quiz/tf-not-answered';
+import { TfNotAnswered } from '@Features/student/review-quiz/tf-not-answered';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { McqAnswerReview } from './mcq-answer-review';

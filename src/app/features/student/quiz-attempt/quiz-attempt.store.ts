@@ -29,12 +29,7 @@ import {
   SubmitTfAnswer,
 } from './models/SubmitQuizAttempt.model';
 
-export interface QuestionWithStatus {
-  id: string;
-  quizId: string;
-  questionText: string;
-  marks: number;
-  type: QuestionType;
+export interface QuestionWithStatus extends Question {
   isSolved: boolean;
   isFlagged: boolean;
 }

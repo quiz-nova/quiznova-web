@@ -53,14 +53,14 @@ import { QuizService } from '@shared/services/quiz.service';
             <h1 class="title">Create Quiz</h1>
             <p class="subtitle">Build your quiz by adding questions below</p>
           </div>
-          <button
-            class="btn btn-green"
-            [disabled]="!createQuizStore.isEntireQuizValid()"
-            (click)="onPublishQuiz()"
-            type="button"
-          >
-            Publish Quiz
-          </button>
+            <button
+              class="btn btn-green"
+              [disabled]="!createQuizStore.isEntireQuizValid()"
+              (click)="onPublishQuiz()"
+              type="button"
+            >
+              Publish Quiz
+            </button>
         </header>
         <app-quiz-metadata-form
           (formReady)="createQuizStore.registerForm($event)"
@@ -111,6 +111,8 @@ import { QuizService } from '@shared/services/quiz.service';
                         [initialData]="question"
                         (formReady)="createQuizStore.registerForm($event)"
                         (formDestroyed)="createQuizStore.unregisterForm($event)"
+                        (valueChange)="createQuizStore.updateQuestion($event)"
+                        (questionTextBlur)="createQuizStore.updateQuestionText($event.questionId, $event.text)"
                         (blurEvent)="createQuizStore.updateQuestion($event)"
                       ></app-mcq-form>
                     }
@@ -119,6 +121,8 @@ import { QuizService } from '@shared/services/quiz.service';
                         [initialData]="question"
                         (formReady)="createQuizStore.registerForm($event)"
                         (formDestroyed)="createQuizStore.unregisterForm($event)"
+                        (valueChange)="createQuizStore.updateQuestion($event)"
+                        (questionTextBlur)="createQuizStore.updateQuestionText($event.questionId, $event.text)"
                         (blurEvent)="createQuizStore.updateQuestion($event)"
                       ></app-tf-form>
                     }
@@ -133,7 +137,6 @@ import { QuizService } from '@shared/services/quiz.service';
               appObserveVisibility
             >
               <app-add-question
-                [quizId]="quiz().id"
                 [disabled]="!createQuizStore.canAddMoreQuestions()"
                 [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
                 [nextDisplayOrder]="numberOfQuestions()"
@@ -144,7 +147,6 @@ import { QuizService } from '@shared/services/quiz.service';
               <div class="add-question-sticky-container">
                 <app-add-question
                   class="pill-style"
-                  [quizId]="quiz().id"
                   [disabled]="!createQuizStore.canAddMoreQuestions()"
                   [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
                   [nextDisplayOrder]="numberOfQuestions()"

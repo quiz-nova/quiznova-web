@@ -242,10 +242,7 @@ export class AddInstructorModal {
     this.submitSuccess.set(false);
 
     this.instructorService
-      .createInstructor({
-        id: crypto.randomUUID(),
-        ...this.AddInstructorForm.getRawValue(),
-      })
+      .createInstructor(this.AddInstructorForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

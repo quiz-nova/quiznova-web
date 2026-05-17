@@ -17,7 +17,6 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { CoursesService } from '@shared/services/courses.service';
 
 const createInitialQuiz = (): CreateQuiz => ({
-  id: crypto.randomUUID(),
   title: '',
   courseId: '',
   instructorId: '',
@@ -48,7 +47,6 @@ export const CreateQuizStore = signalStore(
   { providedIn: 'root' },
   withState<CreateQuizState>(initialState),
   withComputed((store) => ({
-    quizId: computed(() => store.quiz().id),
     questions: computed(() => store.quiz().questions),
     numberOfQuestions: computed(() => store.quiz().questions.length),
     totalMarks: computed(() =>
@@ -69,26 +67,51 @@ export const CreateQuizStore = signalStore(
       const totalMarks = store.quiz().questions.reduce((sum, question) => sum + question.marks, 0);
       return rm - totalMarks > 0;
     }),
+    validationSummary: computed(() => {
+      const quiz = store.quiz();
+      const forms = store.registeredForms();
+
+      return {
+        hasQuestions: quiz.questions.length > 0,
+        validDates: quiz.startsAtUtc < quiz.endsAtUtc,
+        hasInstructor: quiz.instructorId !== '',
+        hasCourse: quiz.courseId !== '',
+        hasTitle: quiz.title.trim().length > 0,
+        allFormsValid: forms.length > 0 && forms.every((f) => f.valid),
+        formsCount: forms.length,
+        invalidForms: forms.filter((f) => f.invalid).map((f) => f.value),
+      };
+    }),
+
     isEntireQuizValid: computed(() => {
       const quiz = store.quiz();
-
+      const forms = store.registeredForms();
       return (
         quiz.questions.length > 0 &&
         quiz.startsAtUtc < quiz.endsAtUtc &&
-        store.registeredForms().every((form) => form.valid)
+        forms.length > 0 &&
+        forms.every((f) => f.valid) &&
+        quiz.title.trim().length > 0 &&
+        quiz.courseId !== ''
       );
     }),
   })),
   withMethods((store, coursesService = inject(CoursesService)) => ({
-    setHeaderMetadata(payload: { title: string; startsAtUtc: Date; endsAtUtc: Date }): void {
-      patchState(store, {
+    setHeaderMetadata(payload: {
+      title: string;
+      courseId: string;
+      startsAtUtc: Date;
+      endsAtUtc: Date;
+    }): void {
+      patchState(store, (state) => ({
         quiz: {
-          ...store.quiz(),
+          ...state.quiz,
           title: payload.title,
+          courseId: payload.courseId,
           startsAtUtc: payload.startsAtUtc,
           endsAtUtc: payload.endsAtUtc,
         },
-      });
+      }));
     },
 
     updateCourseId(courseId: string): void {
@@ -124,9 +147,10 @@ export const CreateQuizStore = signalStore(
     },
 
     registerForm(form: FormGroup): void {
-      patchState(store, {
-        registeredForms: [...store.registeredForms(), form],
-      });
+      if (store.registeredForms().includes(form)) return;
+      patchState(store, (state) => ({
+        registeredForms: [...state.registeredForms, form],
+      }));
     },
 
     unregisterForm(form: FormGroup): void {

@@ -90,7 +90,6 @@ type AddQuestionFormGroup = FormGroup<{
 export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);
 
-  readonly quizId = input.required<string>();
   readonly disabled = input<boolean>(false);
   readonly remainingMarks = input.required<number>();
   readonly nextDisplayOrder = input.required<number>();
@@ -111,7 +110,6 @@ export class AddQuestion {
 
   onAddQuestion(): void {
     const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
-      quizId: this.quizId(),
       remainingMarks: this.remainingMarks(),
       displayOrder: this.nextDisplayOrder(),
     });

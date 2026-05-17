@@ -44,7 +44,7 @@ type McqFormGroup = FormGroup<{
       <form class="mcq-question-form" [formGroup]="mcqForm">
         <app-question-title
           [control]="questionTextControl"
-          (blurEvent)="onBlur()"
+          (titleBlur)="onTitleBlur($event)"
         ></app-question-title>
         <fieldset class="radio-group" formArrayName="choices">
           <legend class="sr-only">Multiple Choice Options</legend>
@@ -175,6 +175,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly formDestroyed = output<FormGroup>();
   readonly valueChange = output<Question>();
   readonly blurEvent = output<Question>();
+  readonly questionTextBlur = output<{ questionId: string; text: string }>();
 
   protected readonly mcq = () => this.initialData() as MCQ;
   private choiceIds: string[] = [];
@@ -256,6 +257,11 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     if (choiceId === currentCorrectId) {
       this.correctChoiceControl.setValue(null);
     }
+    this.onBlur();
+  }
+
+  protected onTitleBlur(text: string) {
+    this.questionTextBlur.emit({ questionId: this.initialData().id, text });
     this.onBlur();
   }
 

@@ -14,7 +14,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
         id="questionText"
         [formControl]="control()"
         [attr.aria-invalid]="control().invalid && control().touched ? 'true' : null"
-        (blur)="blurEvent.emit()"
+        (blur)="titleBlur.emit(control().value)"
         placeholder="Enter question text..."
         aria-describedby="question-text-is-required-error"
       ></textarea>
@@ -52,5 +52,5 @@ import { FieldError } from '@shared/components/field-error/field-error';
 })
 export class QuestionTitle {
   readonly control = input.required<FormControl<string>>();
-  readonly blurEvent = output();
+  readonly titleBlur = output<string>();
 }

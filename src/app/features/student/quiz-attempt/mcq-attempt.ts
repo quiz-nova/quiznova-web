@@ -135,7 +135,6 @@ export class McqAttempt implements QuestionAttemptContract, OnInit {
         if (!choiceId) return;
 
         const answer: SubmitMcqAnswer = {
-          id: crypto.randomUUID(),
           questionId: this.question().id,
           selectedChoiceId: choiceId,
           type: QuestionType.Mcq,

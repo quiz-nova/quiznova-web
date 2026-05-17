@@ -242,10 +242,7 @@ export class AddStudentModal {
     this.submitSuccess.set(false);
 
     this.studentService
-      .createStudent({
-        id: crypto.randomUUID(),
-        ...this.AddStudentForm.getRawValue(),
-      })
+      .createStudent(this.AddStudentForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

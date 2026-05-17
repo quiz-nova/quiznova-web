@@ -250,10 +250,7 @@ export class AddAdminModal {
     this.submitSuccess.set(false);
 
     this.adminService
-      .createAdmin({
-        id: crypto.randomUUID(),
-        ...this.AddAdminForm.getRawValue(),
-      })
+      .createAdmin(this.AddAdminForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

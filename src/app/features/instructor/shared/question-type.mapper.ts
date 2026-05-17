@@ -3,7 +3,7 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { Tf } from '@shared/models/quiz/tf.model';
 
 export interface CreateQuestionContext {
-  quizId: string;
+  quizId?: string;
   questionId?: string;
   remainingMarks: number;
   /** Zero-based position this question will occupy (passed by the caller). */
@@ -46,7 +46,7 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
 
     return {
       id: questionId,
-      quizId: context.quizId,
+      quizId: context.quizId ?? '',
       questionText: '',
       marks,
       displayOrder: context.displayOrder,
@@ -64,7 +64,7 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
 
     return {
       id: context.questionId ?? crypto.randomUUID(),
-      quizId: context.quizId,
+      quizId: context.quizId ?? '',
       questionText: '',
       marks,
       displayOrder: context.displayOrder,

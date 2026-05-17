@@ -107,12 +107,14 @@ import { EditQuizStore } from './edit-quiz.store';
                       @case ('mcq') {
                         <app-mcq-form
                           [initialData]="question"
+                          (questionTextBlur)="store.updateQuestionText($event.questionId, $event.text)"
                           (blurEvent)="store.updateQuestion($event)"
                         ></app-mcq-form>
                       }
                       @case ('tf') {
                         <app-tf-form
                           [initialData]="question"
+                          (questionTextBlur)="store.updateQuestionText($event.questionId, $event.text)"
                           (blurEvent)="store.updateQuestion($event)"
                         ></app-tf-form>
                       }
@@ -123,7 +125,6 @@ import { EditQuizStore } from './edit-quiz.store';
 
               <div class="add-question-main">
                 <app-add-question
-                  [quizId]="store.quizId()"
                   [disabled]="!store.canAddMoreQuestions()"
                   [remainingMarks]="store.effectiveRemainingMarks() ?? 0"
                   [nextDisplayOrder]="store.numberOfQuestions()"

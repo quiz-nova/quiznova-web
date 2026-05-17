@@ -148,7 +148,6 @@ export const QuizAttemptStore = signalStore(
       SubmitQuiz(): void {
         const studentId = store.studentId();
         const request: SubmitQuizAttempt = {
-          id: store.quizAttemptId(),
           quizId: store.quizId(),
           startedAt: new Date().toISOString(), // Track from start in real implementation
           submittedAt: new Date().toISOString(),

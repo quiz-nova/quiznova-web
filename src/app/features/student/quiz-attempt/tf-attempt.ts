@@ -135,7 +135,6 @@ export class TfAttempt implements QuestionAttemptContract, OnInit {
         }
 
         const answer: SubmitTfAnswer = {
-          id: crypto.randomUUID(),
           questionId: this.question().id,
           studentChoice: selectedValue,
           type: QuestionType.Tf,

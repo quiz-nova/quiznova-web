@@ -235,6 +235,18 @@ export const EditQuizStore = signalStore(
       })
     ),
 
+    updateQuestionText(questionId: string, questionText: string): void {
+      // TODO we must call the backend to update the state there
+      patchState(store, (state) => ({
+        quiz: state.quiz ? {
+          ...state.quiz,
+          questions: state.quiz.questions.map((question) =>
+            question.id === questionId ? { ...question, questionText } : question,
+          ),
+        } : null,
+      }));
+    },
+
     removeQuestion: rxMethod<string>(
       concatMap((questionId) => {
         const quizId = store.quizId();

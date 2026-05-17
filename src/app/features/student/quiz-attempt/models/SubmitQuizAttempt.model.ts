@@ -1,5 +1,4 @@
 export interface SubmitQuestionAnswer {
-  id: string;
   questionId: string;
   type: 'mcq' | 'tf';
 }
@@ -15,7 +14,6 @@ export interface SubmitTfAnswer extends SubmitQuestionAnswer {
 }
 
 export interface SubmitQuizAttempt {
-  id: string;
   quizId: string;
   startedAt: string;
   submittedAt: string;

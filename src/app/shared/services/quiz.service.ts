@@ -42,7 +42,7 @@ export class QuizService {
   createQuiz(quiz: CreateQuiz): Observable<Quiz> {
     return this.http.post<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes`, {
       ...quiz,
-      questions: quiz.questions.map((question) => this.withTypeDiscriminatorFirst(question)),
+      questions: quiz.questions.map((question) => this.stripCreationIds(this.withTypeDiscriminatorFirst(question))),
     });
   }
 
@@ -88,14 +88,14 @@ export class QuizService {
   addQuestion(quizId: string, question: Question): Observable<Question> {
     return this.http.post<Question>(
       `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions`,
-      this.withTypeDiscriminatorFirst(question),
+      this.stripCreationIds(this.withTypeDiscriminatorFirst(question)),
     );
   }
 
   updateQuestion(quizId: string, questionId: string, question: Question): Observable<void> {
     return this.http.put<void>(
       `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`,
-      this.withTypeDiscriminatorFirst(question),
+      this.stripCreationIds(this.withTypeDiscriminatorFirst(question)),
     );
   }
 
@@ -111,5 +111,21 @@ export class QuizService {
     const { type, ...questionBody } = question;
 
     return { type, ...questionBody } as Question;
+  }
+
+  private stripCreationIds(question: Question): Record<string, unknown> {
+    const rest = { ...question } as Record<string, unknown>;
+    delete rest['id'];
+    delete rest['quizId'];
+
+    if (rest['type'] === 'mcq' && Array.isArray(rest['choices'])) {
+      rest['choices'] = rest['choices'].map((c: Record<string, unknown>) => {
+        const choiceRest = { ...c };
+        delete choiceRest['questionId'];
+        return choiceRest;
+      });
+    }
+
+    return rest;
   }
 }

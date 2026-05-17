@@ -41,7 +41,7 @@ type TfFormGroup = FormGroup<{
       <form [formGroup]="tfForm">
         <app-question-title 
           [control]="questionTextControl"
-          (blurEvent)="onBlur()"
+          (titleBlur)="onTitleBlur($event)"
         ></app-question-title>
         <p>Correct Answer:</p>
         <fieldset class="tf-options">
@@ -114,6 +114,7 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly formDestroyed = output<FormGroup>();
   readonly valueChange = output<Question>();
   readonly blurEvent = output<Question>();
+  readonly questionTextBlur = output<{ questionId: string; text: string }>();
 
   protected readonly tf = () => this.initialData() as Tf;
 
@@ -152,6 +153,11 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.formDestroyed.emit(this.tfForm);
+  }
+
+  protected onTitleBlur(text: string) {
+    this.questionTextBlur.emit({ questionId: this.initialData().id, text });
+    this.onBlur();
   }
 
   protected onBlur() {

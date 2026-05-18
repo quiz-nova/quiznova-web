@@ -10,7 +10,7 @@ import { CreateCourse } from '@shared/models/course/create-course.model';
 import { UpdateCourseInstructor } from '@shared/models/course/update-course-instructor.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
-import { StudentCourse } from '@shared/models/student-course/student-course.model';
+import { Enrollment } from '@shared/models/student-course/student-course.model';
 
 @Injectable({
   providedIn: 'root',
@@ -27,11 +27,11 @@ export class CoursesService {
       .pipe(map((response) => response.items));
   }
 
-  getStudentCourses(studentId: string): Observable<StudentCourse[]> {
+  getEnrollments(studentId: string): Observable<Enrollment[]> {
     const params = new HttpParams().set('studentId', studentId);
 
     return this.http
-      .get<PaginatedList<StudentCourse>>(`${this.appSettings.apiBaseUrl}/courses`, { params })
+      .get<PaginatedList<Enrollment>>(`${this.appSettings.apiBaseUrl}/courses`, { params })
       .pipe(map((response) => response.items));
   }
 
@@ -100,7 +100,7 @@ export class CoursesService {
     return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });
   }
 
-  getStudentCoursesCount(studentId: string): Observable<CourseCount> {
+  getEnrollmentsCount(studentId: string): Observable<CourseCount> {
     const params = new HttpParams().set('studentId', studentId);
 
     return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });

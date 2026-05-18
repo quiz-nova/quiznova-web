@@ -1,4 +1,4 @@
-export interface StudentCourse {
+export interface Enrollment {
   courseId: string;
   courseName: string;
   instructorName: string;

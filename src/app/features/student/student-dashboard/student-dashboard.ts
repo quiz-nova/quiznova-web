@@ -160,7 +160,7 @@ export class StudentDashboard {
       }
 
       return forkJoin({
-        courses: this.coursesService.getStudentCoursesCount(studentId),
+        courses: this.coursesService.getEnrollmentsCount(studentId),
         quizAttempts: this.quizAttemptsService.getStudentQuizAttemptsCount(studentId),
       });
     },

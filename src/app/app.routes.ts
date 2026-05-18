@@ -111,7 +111,7 @@ export const routes: Routes = [
         path: 'my-courses',
         loadComponent: () =>
           import('@Features/student/student-courses/student-courses').then(
-            (m) => m.StudentCourses,
+            (m) => m.Enrollments,
           ),
       },
       {

@@ -196,7 +196,7 @@ import { CoursesService } from '@shared/services/courses.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StudentCourses {
+export class Enrollments {
   private readonly authService = inject(AuthService);
   private readonly coursesService = inject(CoursesService);
 
@@ -210,7 +210,7 @@ export class StudentCourses {
         return of([]);
       }
 
-      return this.coursesService.getStudentCourses(studentId);
+      return this.coursesService.getEnrollments(studentId);
     },
     defaultValue: [],
   });

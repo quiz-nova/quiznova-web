@@ -1,7 +1,5 @@
-export interface CreateAdmin {
-  name: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
+import { Admin } from '@shared/models/admin/admin.model';
+
+export type CreateAdmin = Omit<Admin, 'adminId'> & {
   role: string;
-}
+};

@@ -254,10 +254,7 @@ export class AddCourseModal {
     this.submitError.set(false);
 
     this.coursesService
-      .createCourse({
-        id: crypto.randomUUID(),
-        ...this.addCourseForm.getRawValue(),
-      })
+      .createCourse(this.addCourseForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

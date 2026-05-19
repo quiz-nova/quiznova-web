@@ -1,7 +1,10 @@
-export interface CreateCourse {
-  id: string;
+import { Course } from './course.model';
+
+export type CreateCourse = Omit<
+  Course,
+  'courseId' | 'courseName' | 'instructorName' | 'enrolledStudentsCount' | 'quizzesCount' | 'remainingMarks'
+> & {
   name: string;
-  instructorId: string | null;
   minimumPassingMarks: number;
   maximumMarks: number;
-}
+};

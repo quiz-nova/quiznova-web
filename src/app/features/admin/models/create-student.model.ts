@@ -1,7 +1,5 @@
-export interface CreateStudent {
-  name: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
+import { Student } from '@shared/models/student/student.model';
+
+export type CreateStudent = Omit<Student, 'studentId' | 'enrolledCoursesCount'> & {
   role: string;
-}
+};

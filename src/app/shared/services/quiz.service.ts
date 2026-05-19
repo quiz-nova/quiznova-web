@@ -16,6 +16,7 @@ import {
   QUESTION_TAG_MAP,
 } from '@shared/models/quiz/question-component-map';
 import { QuestionAttemptContract, QuestionFormContract, QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
+import { isMcq } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { QuizCount } from '@shared/models/quiz/quiz-count.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
@@ -113,17 +114,16 @@ export class QuizService {
     return { type, ...questionBody } as Question;
   }
 
-  private stripCreationIds(question: Question): Record<string, unknown> {
-    const rest = { ...question } as Record<string, unknown>;
-    delete rest['id'];
-    delete rest['quizId'];
+  private stripCreationIds(question: Question) {
+    const { id, quizId, ...rest } = question;
 
-    if (rest['type'] === 'mcq' && Array.isArray(rest['choices'])) {
-      rest['choices'] = rest['choices'].map((c: Record<string, unknown>) => {
-        const choiceRest = { ...c };
-        delete choiceRest['questionId'];
-        return choiceRest;
-      });
+    if (isMcq(question)) {
+      const choices = question.choices?.map(({ questionId, ...choiceRest }) => choiceRest) ?? [];
+
+      return {
+        ...rest,
+        choices,
+      };
     }
 
     return rest;

@@ -14,5 +14,4 @@ export interface QuizAttempt {
   score: number;
   questions: Question[];
   answers: QuestionAnswer[];
-  isPassed: boolean;
 }

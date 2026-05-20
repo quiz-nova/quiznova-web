@@ -52,46 +52,30 @@ export const CreateQuizStore = signalStore(
     totalMarks: computed(() =>
       store.quiz().questions.reduce((sum, question) => sum + question.marks, 0),
     ),
+  })),
+  withComputed((store) => ({
     effectiveRemainingMarks: computed(() => {
       const rm = store.remainingMarks();
       if (rm === null) {
         return null;
       }
-      return rm - store.quiz().questions.reduce((sum, question) => sum + question.marks, 0);
+      return rm - store.totalMarks();
     }),
     canAddMoreQuestions: computed(() => {
       const rm = store.remainingMarks();
       if (rm === null) {
         return false;
       }
-      const totalMarks = store.quiz().questions.reduce((sum, question) => sum + question.marks, 0);
-      return rm - totalMarks > 0;
+      return rm - store.totalMarks() > 0;
     }),
-    validationSummary: computed(() => {
-      const quiz = store.quiz();
-      const forms = store.registeredForms();
-
-      return {
-        hasQuestions: quiz.questions.length > 0,
-        validDates: quiz.startsAtUtc < quiz.endsAtUtc,
-        hasInstructor: quiz.instructorId !== '',
-        hasCourse: quiz.courseId !== '',
-        hasTitle: quiz.title.trim().length > 0,
-        allFormsValid: forms.length > 0 && forms.every((f) => f.valid),
-        formsCount: forms.length,
-        invalidForms: forms.filter((f) => f.invalid).map((f) => f.value),
-      };
-    }),
-
     isEntireQuizValid: computed(() => {
       const quiz = store.quiz();
       const forms = store.registeredForms();
       return (
-        quiz.questions.length > 0 &&
+        quiz.questions.length >= 3 &&
         quiz.startsAtUtc < quiz.endsAtUtc &&
-        forms.length > 0 &&
         forms.every((f) => f.valid) &&
-        quiz.title.trim().length > 0 &&
+        quiz.title.trim().length >= 3 &&
         quiz.courseId !== ''
       );
     }),
@@ -294,24 +278,6 @@ export const CreateQuizStore = signalStore(
       });
     },
 
-    updateNumberOfChoices(questionId: string, numberOfChoices: number): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
-              return question;
-            }
-
-            return {
-              ...question,
-              numberOfChoices,
-            } as MCQ;
-          }),
-        },
-      });
-    },
-
     validateAll(): boolean {
       store.registeredForms().forEach((form) => {
         form.markAllAsTouched();
@@ -320,18 +286,6 @@ export const CreateQuizStore = signalStore(
 
       return store.isEntireQuizValid();
     },
-
-    resetDraft(): void {
-      patchState(store, {
-        quiz: createInitialQuiz(),
-        registeredForms: [],
-        loading: false,
-        error: null,
-        activeQuestionId: null,
-        remainingMarks: null,
-      });
-    },
-
     setCurrentQuestionId(questionId: string): void {
       patchState(store, {
         activeQuestionId: questionId,

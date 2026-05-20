@@ -8,28 +8,22 @@ import {ReviewQuizStore} from './review-quiz.store';
   template: `
     <section
       class="result-banner"
-      [class.result-banner--pass]="isPassed"
-      [class.result-banner--fail]="!isPassed"
       aria-label="Attempt result summary"
     >
       <div class="result-banner__icon" aria-hidden="true">
-        {{ isPassed ? '✓' : '↘' }}
+        📊
       </div>
 
       <div class="result-banner__content">
         <div class="result-banner__head">
           <p class="result-banner__score">{{ scorePercentage() }}%</p>
-          <span class="result-banner__badge" [class.result-banner__badge--pass]="isPassed">
-            {{ isPassed ? 'PASSED' : 'FAILED' }}
+          <span class="result-banner__badge">
+            COMPLETED
           </span>
         </div>
 
         <p class="result-banner__message">
-          @if (isPassed) {
-            Great work — you passed this attempt.
-          } @else {
-            You needed 60% to pass. Keep practicing — you have got this!
-          }
+          Great work on completing your quiz attempt! Keep reviewing to improve your understanding.
         </p>
 
         <div class="result-banner__progress" role="presentation">
@@ -54,13 +48,8 @@ import {ReviewQuizStore} from './review-quiz.store';
       gap: 1rem;
       padding: 1rem;
       border-radius: 0.85rem;
-      border: 1px solid var(--clr-review-danger-200);
-      background: var(--clr-review-danger-50);
-    }
-
-    .result-banner--pass {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border: 1px solid var(--clr-blue-200);
+      background: var(--clr-blue-50);
     }
 
     .result-banner__icon {
@@ -69,14 +58,10 @@ import {ReviewQuizStore} from './review-quiz.store';
       width: 4rem;
       height: 4rem;
       border-radius: 999px;
-      background: var(--clr-review-danger-500);
+      background: var(--clr-blue-500);
       color: var(--clr-white);
       font-size: 1.5rem;
       font-weight: 700;
-    }
-
-    .result-banner--pass .result-banner__icon {
-      background: var(--clr-review-success-500);
     }
 
     .result-banner__content {
@@ -101,16 +86,12 @@ import {ReviewQuizStore} from './review-quiz.store';
 
     .result-banner__badge {
       border-radius: 999px;
-      background: var(--clr-review-danger-500);
+      background: var(--clr-blue-600);
       color: var(--clr-white);
       font-size: 0.72rem;
       letter-spacing: 0.02em;
       font-weight: 700;
       padding: 0.2rem 0.6rem;
-    }
-
-    .result-banner__badge--pass {
-      background: var(--clr-review-success-500);
     }
 
     .result-banner__message {
@@ -133,7 +114,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       display: block;
       height: 100%;
       border-radius: inherit;
-      background: var(--clr-review-success-500);
+      background: var(--clr-blue-500);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -141,5 +122,4 @@ import {ReviewQuizStore} from './review-quiz.store';
 export class ResultBanner {
   private readonly reviewQuizStore = inject(ReviewQuizStore);
   protected readonly scorePercentage = this.reviewQuizStore.scorePercentage;
-  protected readonly isPassed = this.reviewQuizStore.quizAttempt()?.isPassed;
 }

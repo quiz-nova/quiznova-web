@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, type Type } from '@angular/core';
 
-
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { type QuizMetadataValue } from '@Features/instructor/shared/quiz-metadata-form';
 import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
@@ -10,13 +9,17 @@ import { Observable } from 'rxjs';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
+import { isMcq } from '@shared/models/quiz/mcq.model';
 import {
   QUESTION_FORM_COMPONENT_MAP,
   QUESTION_ATTEMPT_COMPONENT_MAP,
   QUESTION_TAG_MAP,
 } from '@shared/models/quiz/question-component-map';
-import { QuestionAttemptContract, QuestionFormContract, QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
-import { isMcq } from '@shared/models/quiz/mcq.model';
+import {
+  QuestionAttemptContract,
+  QuestionFormContract,
+  QuestionTagContract,
+} from '@shared/models/quiz/question-component.contracts';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { QuizCount } from '@shared/models/quiz/quiz-count.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
@@ -43,13 +46,13 @@ export class QuizService {
   createQuiz(quiz: CreateQuiz): Observable<Quiz> {
     return this.http.post<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes`, {
       ...quiz,
-      questions: quiz.questions.map((question) => this.stripCreationIds(this.withTypeDiscriminatorFirst(question))),
+      questions: quiz.questions.map((question) =>
+        this.stripCreationIds(this.withTypeDiscriminatorFirst(question)),
+      ),
     });
   }
 
-  getAllQuizzes(
-    query: PaginatedQuery & { marks?: number },
-  ): Observable<PaginatedList<Quiz>> {
+  getAllQuizzes(query: PaginatedQuery & { marks?: number }): Observable<PaginatedList<Quiz>> {
     let params = new HttpParams();
 
     if (query.searchTerm) {
@@ -83,7 +86,10 @@ export class QuizService {
   // --- Incremental Edit Endpoints (To be implemented in backend) ---
 
   updateQuizMetadata(quizId: string, metadata: QuizMetadataValue): Observable<void> {
-    return this.http.put<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/metadata`, metadata);
+    return this.http.put<void>(
+      `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/metadata`,
+      metadata,
+    );
   }
 
   addQuestion(quizId: string, question: Question): Observable<Question> {
@@ -101,11 +107,15 @@ export class QuizService {
   }
 
   removeQuestion(quizId: string, questionId: string): Observable<void> {
-    return this.http.delete<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`);
+    return this.http.delete<void>(
+      `${this.appSettings.apiBaseUrl}/quizzes/${quizId}/questions/${questionId}`,
+    );
   }
 
   updateQuizCourseId(quizId: string, courseId: string): Observable<void> {
-    return this.http.put<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/course`, { courseId });
+    return this.http.put<void>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}/course`, {
+      courseId,
+    });
   }
 
   private withTypeDiscriminatorFirst(question: Question): Question {
@@ -118,7 +128,10 @@ export class QuizService {
     const { id, quizId, ...rest } = question;
 
     if (isMcq(question)) {
-      const choices = question.choices?.map(({ questionId, ...choiceRest }) => choiceRest) ?? [];
+      const choices =
+        question.choices?.map(({ questionId, ...choiceRest }) => {
+          return choiceRest;
+        }) ?? [];
 
       return {
         ...rest,

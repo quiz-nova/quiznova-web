@@ -8,9 +8,9 @@ import { CourseCount } from '@shared/models/course/course-count.model';
 import { Course } from '@shared/models/course/course.model';
 import { CreateCourse } from '@shared/models/course/create-course.model';
 import { UpdateCourseInstructor } from '@shared/models/course/update-course-instructor.model';
+import { Enrollment } from '@shared/models/enrollment/enrollment.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
-import { Enrollment } from '@shared/models/enrollment/enrollment.model';
 
 @Injectable({
   providedIn: 'root',

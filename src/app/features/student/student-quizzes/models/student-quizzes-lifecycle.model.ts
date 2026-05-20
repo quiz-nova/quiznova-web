@@ -15,7 +15,6 @@ export interface CompletedStudentQuiz {
   courseName: string;
   questionsCount: number;
   score: number;
-  isPassed: boolean;
   submittedAtUtc: string;
 }
 

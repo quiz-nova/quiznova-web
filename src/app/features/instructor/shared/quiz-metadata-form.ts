@@ -45,7 +45,14 @@ type QuizHeaderFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-quiz-metadata-form',
-  imports: [ReactiveFormsModule, SelectModule, DatePicker, InputText, FieldError, ConfirmActionModal],
+  imports: [
+    ReactiveFormsModule,
+    SelectModule,
+    DatePicker,
+    InputText,
+    FieldError,
+    ConfirmActionModal,
+  ],
   template: `
     <form class="metadata-form" [formGroup]="quizHeaderForm">
       <div class="field-group">
@@ -53,19 +60,29 @@ type QuizHeaderFormGroup = FormGroup<{
         <input
           class="focus-green-ring"
           id="quiz-title"
-          pInputText
           [formControl]="titleControl"
           [attr.aria-invalid]="titleControl.invalid && titleControl.touched ? 'true' : null"
           (blur)="emitValue()"
+          pInputText
           type="text"
           placeholder="e.g. Week 8 Assessment"
-          aria-describedby="quiz-title-is-required-error"
+          aria-describedby="quiz-title-is-required-error quiz-title-minlength-error quiz-title-maxlength-error"
         />
 
         @if (titleControl.invalid && titleControl.touched) {
           @if (titleControl.hasError('required')) {
             <app-field-error id="quiz-title-is-required-error"
               >Quiz title is required.</app-field-error
+            >
+          }
+          @if (titleControl.hasError('minlength')) {
+            <app-field-error id="quiz-title-minlength-error"
+              >Quiz title must be at least 3 characters.</app-field-error
+            >
+          }
+          @if (titleControl.hasError('maxlength')) {
+            <app-field-error id="quiz-title-maxlength-error"
+              >Quiz title cannot exceed 30 characters.</app-field-error
             >
           }
         }
@@ -149,12 +166,12 @@ type QuizHeaderFormGroup = FormGroup<{
 
     @if (showConfirmModal()) {
       <app-confirm-action-modal
+        (confirmed)="confirmCourseChange()"
+        (cancelled)="cancelCourseChange()"
         title="Change Course"
         warningMessage="This action is irreversible. All questions you have added will be permanently removed."
         confirmationPhrase="change course"
         confirmButtonText="I understand, change course"
-        (confirmed)="confirmCourseChange()"
-        (cancelled)="cancelCourseChange()"
       />
     }
   `,
@@ -183,8 +200,6 @@ type QuizHeaderFormGroup = FormGroup<{
       color: var(--clr-red-500);
       font-size: var(--fs-300);
     }
-
-
   `,
 })
 export class QuizMetadataForm implements OnInit, OnDestroy {
@@ -209,7 +224,10 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
   );
 
   protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group({
-    title: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
+    title: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(30)],
+    ],
     courseId: ['', Validators.required],
     startsAtUtc: [this.getDefaultStartsAt(), Validators.required],
     endsAtUtc: [this.getDefaultEndsAt(), Validators.required],

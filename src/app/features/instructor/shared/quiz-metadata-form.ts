@@ -27,6 +27,7 @@ import { of, startWith, switchMap } from 'rxjs';
 import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { CoursesService } from '@shared/services/courses.service';
+import { CustomValidators } from '@shared/validators/custom-validators';
 
 export interface QuizMetadataValue {
   title: string;
@@ -208,7 +209,7 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
   );
 
   protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group({
-    title: ['', Validators.required],
+    title: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     courseId: ['', Validators.required],
     startsAtUtc: [this.getDefaultStartsAt(), Validators.required],
     endsAtUtc: [this.getDefaultEndsAt(), Validators.required],

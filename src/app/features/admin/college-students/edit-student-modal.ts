@@ -16,6 +16,7 @@ import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Student } from '@shared/models/student/student.model';
 import { StudentService } from '@shared/services/student.service';
+import { CustomValidators } from '@shared/validators/custom-validators';
 
 type EditStudentFormGroup = FormGroup<{
   name: FormControl<string>;
@@ -51,12 +52,17 @@ type EditStudentFormGroup = FormGroup<{
               type="text"
               formControlName="name"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
-              aria-describedby="name-is-required-error"
+              aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="edit-student-name">Name</label>
           </p-floatlabel>
           @if (nameControl.invalid && nameControl.touched) {
-            <app-field-error id="name-is-required-error">Name is required.</app-field-error>
+            @if (nameControl.hasError('required')) {
+              <app-field-error id="name-is-required-error">Name is required.</app-field-error>
+            }
+            @if (nameControl.hasError('minlength')) {
+              <app-field-error id="name-minlength-error">Name must be at least 3 characters.</app-field-error>
+            }
           }
         </div>
 
@@ -91,12 +97,17 @@ type EditStudentFormGroup = FormGroup<{
               inputId="edit-student-password"
               formControlName="password"
               [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched ? 'true' : null"
-              aria-describedby="password-is-required-error"
+              aria-describedby="password-is-required-error password-minlength-error"
             />
             <label for="edit-student-password">Password</label>
           </p-floatlabel>
           @if (passwordControl.invalid && passwordControl.touched) {
-            <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+            @if (passwordControl.hasError('required')) {
+              <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+            }
+            @if (passwordControl.hasError('minlength')) {
+              <app-field-error id="password-minlength-error">Password must be at least 8 characters.</app-field-error>
+            }
           }
         </div>
 
@@ -109,12 +120,20 @@ type EditStudentFormGroup = FormGroup<{
               type="text"
               formControlName="phoneNumber"
               [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null"
-              aria-describedby="phone-number-is-required-error"
+              aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="edit-student-phone">Phone Number</label>
           </p-floatlabel>
           @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
-            <app-field-error id="phone-number-is-required-error">Phone number is required.</app-field-error>
+            @if (phoneNumberControl.hasError('required')) {
+              <app-field-error id="phone-number-is-required-error">Phone number is required.</app-field-error>
+            }
+            @if (phoneNumberControl.hasError('minlength')) {
+              <app-field-error id="phone-minlength-error">Phone number must be at least 7 characters.</app-field-error>
+            }
+            @if (phoneNumberControl.hasError('maxlength')) {
+              <app-field-error id="phone-maxlength-error">Phone number cannot exceed 15 characters.</app-field-error>
+            }
           }
         </div>
 
@@ -169,10 +188,10 @@ export class EditStudentModal {
   protected readonly submitError = signal(false);
 
   protected readonly EditStudentForm: EditStudentFormGroup = this.fb.group({
-    name: ['', [Validators.required]],
+    name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    phoneNumber: ['', [Validators.required]],
+    password: ['', [Validators.required, CustomValidators.trimMinLength(8)]],
+    phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
   });
 
   protected get nameControl() {

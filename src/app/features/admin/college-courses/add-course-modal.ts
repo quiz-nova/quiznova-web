@@ -18,6 +18,8 @@ import { Instructor } from '@shared/models/instructor/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 
+import { CustomValidators } from '@shared/validators/custom-validators';
+
 type AddCourseFormGroup = FormGroup<{
   name: FormControl<string>;
   instructorId: FormControl<string | null>;
@@ -57,14 +59,26 @@ type AddCourseFormGroup = FormGroup<{
               type="text" 
               formControlName="name"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
-              aria-describedby="course-name-is-required-error"
+              aria-describedby="course-name-is-required-error course-name-minlength-error course-name-maxlength-error"
             />
             <label for="course-name">Course Name</label>
           </p-floatlabel>
           @if (nameControl.invalid && nameControl.touched) {
-            <app-field-error id="course-name-is-required-error"
-              >Course name is required.</app-field-error
-            >
+            @if (nameControl.hasError('required')) {
+              <app-field-error id="course-name-is-required-error"
+                >Course name is required.</app-field-error
+              >
+            }
+            @if (nameControl.hasError('minlength')) {
+              <app-field-error id="course-name-minlength-error"
+                >Course name must be at least 3 characters.</app-field-error
+              >
+            }
+            @if (nameControl.hasError('maxlength')) {
+              <app-field-error id="course-name-maxlength-error"
+                >Course name cannot exceed 30 characters.</app-field-error
+              >
+            }
           }
         </div>
 
@@ -179,7 +193,7 @@ export class AddCourseModal {
   protected readonly instructors = signal<Instructor[]>([]);
 
   protected readonly addCourseForm: AddCourseFormGroup = this.fb.group({
-    name: ['', [Validators.required]],
+    name: ['', [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(30)]],
     instructorId: this.fb.control<string | null>(null),
     minimumPassingMarks: [1, [Validators.required, Validators.min(1)]],
     maximumMarks: [1, [Validators.required, Validators.min(1)]],

@@ -15,6 +15,7 @@ import { Password } from 'primeng/password';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { UserRole } from '@shared/models/user/user-role.model';
 import { AdminService } from '@shared/services/admin.service';
+import { CustomValidators } from '@shared/validators/custom-validators';
 
 type AddAdminFormGroup = FormGroup<{
   name: FormControl<string>;
@@ -48,12 +49,17 @@ type AddAdminFormGroup = FormGroup<{
               pInputText
               type="text"
               formControlName="name"
-              aria-describedby="name-is-required-error"
+              aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="admin-name">Name</label>
           </p-floatlabel>
           @if (nameControl.invalid && nameControl.touched) {
-            <app-field-error id="name-is-required-error">Name is required.</app-field-error>
+            @if (nameControl.hasError('required')) {
+              <app-field-error id="name-is-required-error">Name is required.</app-field-error>
+            }
+            @if (nameControl.hasError('minlength')) {
+              <app-field-error id="name-minlength-error">Name must be at least 3 characters.</app-field-error>
+            }
           }
         </div>
 
@@ -92,12 +98,17 @@ type AddAdminFormGroup = FormGroup<{
               "
               inputId="admin-password"
               formControlName="password"
-              aria-describedby="password-is-required-error"
+              aria-describedby="password-is-required-error password-minlength-error"
             />
             <label for="admin-password">Password</label>
           </p-floatlabel>
           @if (passwordControl.invalid && passwordControl.touched) {
-            <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+            @if (passwordControl.hasError('required')) {
+              <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+            }
+            @if (passwordControl.hasError('minlength')) {
+              <app-field-error id="password-minlength-error">Password must be at least 8 characters.</app-field-error>
+            }
           }
         </div>
 
@@ -112,7 +123,7 @@ type AddAdminFormGroup = FormGroup<{
               pInputText
               type="text"
               formControlName="phoneNumber"
-              aria-describedby="phone-number-is-required-error"
+              aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="admin-phone">Phone Number</label>
           </p-floatlabel>
@@ -184,10 +195,10 @@ export class AddAdminModal {
   protected readonly submitSuccess = signal(false);
 
   protected readonly AddAdminForm: AddAdminFormGroup = this.fb.group({
-    name: ['', [Validators.required]],
+    name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    phoneNumber: ['', [Validators.required]],
+    password: ['', [Validators.required, CustomValidators.trimMinLength(8)]],
+    phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
     role: [UserRole.admin, [Validators.required]],
   });
 

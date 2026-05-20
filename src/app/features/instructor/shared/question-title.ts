@@ -16,13 +16,23 @@ import { FieldError } from '@shared/components/field-error/field-error';
         [attr.aria-invalid]="control().invalid && control().touched ? 'true' : null"
         (blur)="titleBlur.emit(control().value)"
         placeholder="Enter question text..."
-        aria-describedby="question-text-is-required-error"
+        aria-describedby="question-text-is-required-error question-text-minlength-error question-text-maxlength-error"
       ></textarea>
 
       @if (control().invalid && control().touched) {
         @if (control().hasError('required')) {
           <app-field-error id="question-text-is-required-error"
             >Question text is required.</app-field-error
+          >
+        }
+        @if (control().hasError('minlength')) {
+          <app-field-error id="question-text-minlength-error"
+            >Question text must be at least 3 characters.</app-field-error
+          >
+        }
+        @if (control().hasError('maxlength')) {
+          <app-field-error id="question-text-maxlength-error"
+            >Question text cannot exceed 500 characters.</app-field-error
           >
         }
       }

@@ -26,6 +26,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
 import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
+import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
 
@@ -78,7 +79,7 @@ type McqFormGroup = FormGroup<{
                   (blur)="onBlur()"
                   type="text"
                   placeholder="Enter choice text..."
-                  aria-describedby="choice-text-is-required-error"
+                  aria-describedby="choice-text-is-required-error choice-text-minlength-error choice-text-maxlength-error"
                 />
               </div>
 
@@ -94,6 +95,16 @@ type McqFormGroup = FormGroup<{
               @if (choiceControl.hasError('required')) {
                 <app-field-error id="choice-text-is-required-error"
                   >Choice text is required.</app-field-error
+                >
+              }
+              @if (choiceControl.hasError('minlength')) {
+                <app-field-error id="choice-text-minlength-error"
+                  >Choice text must be at least 3 characters.</app-field-error
+                >
+              }
+              @if (choiceControl.hasError('maxlength')) {
+                <app-field-error id="choice-text-maxlength-error"
+                  >Choice text cannot exceed 100 characters.</app-field-error
                 >
               }
             }
@@ -181,7 +192,10 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   private choiceIds: string[] = [];
 
   protected readonly mcqForm: McqFormGroup = this.fb.group({
-    questionText: ['', [Validators.required]],
+    questionText: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(500)],
+    ],
     choices: this.fb.array<FormControl<string>>([]),
     correctChoiceId: [null as string | null, [Validators.required]],
   });
@@ -230,9 +244,16 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
 
     mcq.choices.forEach((choice: Choice) => {
       this.choiceIds.push(choice.id);
-      this.choicesArray.push(this.fb.control(choice.text, Validators.required), {
-        emitEvent: false,
-      });
+      this.choicesArray.push(
+        this.fb.control(choice.text, [
+          Validators.required,
+          CustomValidators.trimMinLength(3),
+          CustomValidators.trimMaxLength(100),
+        ]),
+        {
+          emitEvent: false,
+        }
+      );
     });
   }
 
@@ -243,7 +264,13 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   protected onAddChoice() {
     const newId = crypto.randomUUID();
     this.choiceIds.push(newId);
-    this.choicesArray.push(this.fb.control('', Validators.required));
+    this.choicesArray.push(
+      this.fb.control('', [
+        Validators.required,
+        CustomValidators.trimMinLength(3),
+        CustomValidators.trimMaxLength(100),
+      ])
+    );
     this.onBlur();
   }
 

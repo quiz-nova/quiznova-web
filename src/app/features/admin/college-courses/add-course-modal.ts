@@ -17,7 +17,6 @@ import { FieldError } from '@shared/components/field-error/field-error';
 import { Instructor } from '@shared/models/instructor/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
-
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 type AddCourseFormGroup = FormGroup<{

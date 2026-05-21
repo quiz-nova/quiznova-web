@@ -10,7 +10,6 @@ import {
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
-import { Password } from 'primeng/password';
 
 import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
@@ -21,13 +20,12 @@ import { CustomValidators } from '@shared/validators/custom-validators';
 type EditAdminFormGroup = FormGroup<{
   name: FormControl<string>;
   email: FormControl<string>;
-  password: FormControl<string>;
   phoneNumber: FormControl<string>;
 }>;
 
 @Component({
   selector: 'app-edit-admin-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, Password, EditButton, FieldError],
+  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError],
   template: `
     <app-edit-button (editButtonClicked)="openDialog()" ariaLabel="Edit admin"></app-edit-button>
 
@@ -81,29 +79,6 @@ type EditAdminFormGroup = FormGroup<{
               <app-field-error id="email-is-required-error">Email is required.</app-field-error>
             } @else if (emailControl.hasError('email')) {
               <app-field-error id="please-enter-a-valid-email-address-error">Please enter a valid email address.</app-field-error>
-            }
-          }
-        </div>
-
-        <div class="form-field">
-          <p-floatlabel variant="on">
-            <p-password
-              [feedback]="false"
-              [toggleMask]="true"
-              [fluid]="true"
-              inputId="edit-admin-password"
-              formControlName="password"
-              [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched ? 'true' : null"
-              aria-describedby="password-is-required-error password-minlength-error"
-            />
-            <label for="edit-admin-password">Password</label>
-          </p-floatlabel>
-          @if (passwordControl.invalid && passwordControl.touched) {
-            @if (passwordControl.hasError('required')) {
-              <app-field-error id="password-is-required-error">Password is required.</app-field-error>
-            }
-            @if (passwordControl.hasError('minlength')) {
-              <app-field-error id="password-minlength-error">Password must be at least 8 characters.</app-field-error>
             }
           }
         </div>
@@ -187,7 +162,6 @@ export class EditAdminModal {
   protected readonly EditAdminForm: EditAdminFormGroup = this.fb.group({
     name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, CustomValidators.trimMinLength(8)]],
     phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
   });
 
@@ -199,10 +173,6 @@ export class EditAdminModal {
     return this.EditAdminForm.controls.email;
   }
 
-  protected get passwordControl() {
-    return this.EditAdminForm.controls.password;
-  }
-
   protected get phoneNumberControl() {
     return this.EditAdminForm.controls.phoneNumber;
   }
@@ -211,7 +181,6 @@ export class EditAdminModal {
     this.EditAdminForm.reset({
       name: this.admin().name,
       email: this.admin().email,
-      password: this.admin().password,
       phoneNumber: this.admin().phoneNumber,
     });
     this.EditAdminForm.markAsPristine();

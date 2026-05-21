@@ -72,11 +72,7 @@ export const CreateQuizStore = signalStore(
       const quiz = store.quiz();
       const forms = store.registeredForms();
       return (
-        quiz.questions.length >= 3 &&
-        quiz.startsAtUtc < quiz.endsAtUtc &&
-        forms.every((f) => f.valid) &&
-        quiz.title.trim().length >= 3 &&
-        quiz.courseId !== ''
+        quiz.startsAtUtc < quiz.endsAtUtc && forms.every((f) => f.valid) && quiz.courseId !== ''
       );
     }),
   })),

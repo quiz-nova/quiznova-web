@@ -1,0 +1,206 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  output,
+  OnDestroy,
+  OnInit,
+  effect,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+
+import { FieldError } from '@shared/components/field-error/field-error';
+import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
+import { Question } from '@shared/models/quiz/question.model';
+import { CustomValidators } from '@shared/validators/custom-validators';
+
+import { QuestionTitle } from './question-title';
+import { Essay } from '@shared/models/quiz/questions/essay.model';
+
+type EssayFormGroup = FormGroup<{
+  questionText: FormControl<string>;
+  answerReference: FormControl<string | null>;
+}>;
+
+@Component({
+  selector: 'app-essay-form',
+  imports: [ReactiveFormsModule, QuestionTitle, FieldError],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="essay-question-container">
+      <form class="essay-question-form" [formGroup]="essayForm">
+        <app-question-title
+          [control]="questionTextControl"
+          (titleBlur)="onTitleBlur($event)"
+        ></app-question-title>
+
+        <div class="field-container">
+          <label class="field-label" for="answerReference">Expected Answer (for grading reference)</label>
+          <textarea
+            class="answer-input"
+            id="answerReference"
+            formControlName="answerReference"
+            [attr.aria-invalid]="answerReferenceControl.invalid && answerReferenceControl.touched ? 'true' : null"
+            placeholder="Enter the expected answer or keywords for grading..."
+            (blur)="onBlur()"
+            rows="4"
+          ></textarea>
+          <p class="field-help-text">This will be shown to the grader as a reference answer.</p>
+
+          @if (answerReferenceControl.invalid && answerReferenceControl.touched) {
+            @if (answerReferenceControl.hasError('minlength')) {
+              <app-field-error id="answer-reference-minlength-error"
+                >Reference answer must be at least 3 characters long.</app-field-error
+              >
+            }
+            @if (answerReferenceControl.hasError('maxlength')) {
+              <app-field-error id="answer-reference-maxlength-error"
+                >Reference answer cannot exceed 1000 characters.</app-field-error
+              >
+            }
+          }
+        </div>
+      </form>
+    </div>
+  `,
+  styles: `
+    .essay-question-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .essay-question-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .field-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .field-label {
+      font-weight: 600;
+      color: var(--clr-gray-700);
+      font-size: 0.9rem;
+    }
+
+    .answer-input {
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--clr-gray-500);
+      border-radius: 1rem;
+      background: var(--clr-gray-50);
+      color: var(--clr-blue-900);
+      width: 100%;
+      resize: vertical;
+      min-height: 4.75rem;
+
+      &:focus {
+        outline: none;
+        border-color: var(--clr-green-500);
+        background: var(--clr-white);
+      }
+    }
+
+    .field-help-text {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--clr-gray-500);
+    }
+  `,
+})
+export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(NonNullableFormBuilder);
+
+  readonly initialData = input.required<Question>();
+
+  readonly formReady = output<FormGroup>();
+  readonly formDestroyed = output<FormGroup>();
+  readonly valueChange = output<Question>();
+  readonly blurEvent = output<Question>();
+  readonly questionTextBlur = output<{ questionId: string; text: string }>();
+
+  protected readonly essay = () => this.initialData() as Essay;
+
+  protected readonly essayForm: EssayFormGroup = this.fb.group({
+    questionText: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(500)],
+    ],
+    answerReference: [
+      null as string | null,
+      [CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
+    ],
+  });
+
+  constructor() {
+    effect(() => {
+      this.populateForm(this.essay());
+    });
+  }
+
+  protected get questionTextControl() {
+    return this.essayForm.controls.questionText;
+  }
+
+  protected get answerReferenceControl() {
+    return this.essayForm.controls.answerReference;
+  }
+
+  ngOnInit() {
+    this.essayForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.valueChange.emit(this.getLatestEssayData());
+    });
+
+    this.formReady.emit(this.essayForm);
+  }
+
+  ngOnDestroy(): void {
+    this.formDestroyed.emit(this.essayForm);
+  }
+
+  private populateForm(essay: Essay) {
+    this.essayForm.patchValue(
+      {
+        questionText: essay.questionText,
+        answerReference: essay.answerReference,
+      },
+      { emitEvent: false },
+    );
+  }
+
+  protected onTitleBlur(text: string) {
+    this.questionTextBlur.emit({ questionId: this.initialData().id, text });
+    this.onBlur();
+  }
+
+  protected onBlur() {
+    if (this.essayForm.valid) {
+      this.blurEvent.emit(this.getLatestEssayData());
+    }
+  }
+
+  private getLatestEssayData(): Essay {
+    const formValue = this.essayForm.getRawValue();
+    const originalEssay = this.essay();
+
+    return {
+      ...originalEssay,
+      questionText: formValue.questionText,
+      answerReference: formValue.answerReference,
+    };
+  }
+}

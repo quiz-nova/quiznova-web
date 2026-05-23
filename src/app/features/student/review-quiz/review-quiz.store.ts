@@ -18,21 +18,18 @@ import {
 } from '@StoreFeatures/with-request-status.feature';
 import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
 
-import { MCQ } from '@shared/models/quiz/mcq.model';
-import { Question, QuestionType } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/tf.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
+import { Question } from '@shared/models/quiz/question.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 import {
-  AutoGradedAnswer,
-  ManuallyGradedAnswer,
-  McqAnswer,
   QuestionAnswer,
-  TfAnswer,
 } from '@shared/models/quiz-attempt/question-answer.model';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 
 
-type ReviewQuestion = MCQ | Tf;
+type ReviewQuestion = Mcq | Tf | Essay;
 type MaybeOriginalQuestionAnswer = QuestionAnswer & { originalQuestionId?: string };
 
 export interface QuestionReviewItem {
@@ -64,30 +61,6 @@ function createAnswerMap(answers: QuestionAnswer[]): Map<string, QuestionAnswer>
   }
 
   return map;
-}
-
-export function isMcqQuestion(question: Question): question is MCQ {
-  return question.type === QuestionType.Mcq;
-}
-
-export function isTf(question: Question): question is Tf {
-  return question.type === QuestionType.Tf;
-}
-
-export function isMcqAnswer(answer: QuestionAnswer | null): answer is McqAnswer {
-  return !!answer && answer.answerType === 'auto' && (answer as AutoGradedAnswer).autoAnswerType === 'mcq';
-}
-
-export function isTfAnswer(
-  answer: QuestionAnswer | null,
-): answer is TfAnswer {
-  return !!answer && answer.answerType === 'auto' && (answer as AutoGradedAnswer).autoAnswerType === 'tf';
-}
-
-export function isManuallyGradedAnswer(
-  answer: QuestionAnswer | null,
-): answer is ManuallyGradedAnswer {
-  return !!answer && answer.answerType === 'manual';
 }
 
 function getElapsedMinutes(
@@ -166,7 +139,7 @@ export const ReviewQuizStore = signalStore(
       const answerMap = store.answerMap();
       const questions = store.quizAttempt()?.questions ?? [];
       const reviewQuestions = questions.filter((question: Question): question is ReviewQuestion => {
-        return isMcqQuestion(question) || isTf(question);
+        return isMcq(question) || isTf(question) || isEssay(question);
       });
 
       return reviewQuestions.map((question) => ({
@@ -204,7 +177,7 @@ export const ReviewQuizStore = signalStore(
       const authService = inject(AuthService);
       const currentUser = authService.currentUser();
       if (currentUser) {
-        store.setStudentId(currentUser.userId);
+        store.setStudentId(currentUser.id);
       }
     },
   })),

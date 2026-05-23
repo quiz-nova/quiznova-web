@@ -103,13 +103,13 @@ import { ManageCourseStore } from './manage-course.store';
               Enrolled students ({{ store.enrolledStudents().length }})
             </p>
             @if (store.enrolledStudents().length) {
-              @for (student of store.enrolledStudents(); track student.studentId) {
+              @for (student of store.enrolledStudents(); track student.id) {
                 <div class="student-row">
                   <span>{{ student.name }}</span>
-                  <span class="student-id">{{ student.studentId.slice(0, 8) }}</span>
+                  <span class="student-id">{{ student.id.slice(0, 8) }}</span>
                   <app-delete-button
                     ariaLabel="Remove student from course"
-                    (deleteButtonClicked)="onRemoveStudent(student.studentId)"
+                    (deleteButtonClicked)="onRemoveStudent(student.id)"
                   />
                 </div>
               }

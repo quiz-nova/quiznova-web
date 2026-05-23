@@ -13,7 +13,7 @@ import { InputText } from 'primeng/inputtext';
 
 import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
-import { Admin } from '@shared/models/admin/admin.model';
+import { Admin } from '@shared/models/users/admin.model';
 import { AdminService } from '@shared/services/admin.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
@@ -212,7 +212,7 @@ export class EditAdminModal {
     this.submitError.set(false);
 
     this.adminService
-      .updateAdmin(this.admin().adminId, this.EditAdminForm.getRawValue())
+      .updateAdmin(this.admin().id, this.EditAdminForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

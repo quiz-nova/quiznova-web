@@ -1,5 +1,5 @@
-import { Student } from '@shared/models/student/student.model';
+import { Student } from '@shared/models/users/student.model';
 
-export type CreateStudent = Omit<Student, 'studentId' | 'enrolledCoursesCount'> & {
+export type CreateStudent = Omit<Student, 'id' | 'enrolledCoursesCount'> & {
   role: string;
 };

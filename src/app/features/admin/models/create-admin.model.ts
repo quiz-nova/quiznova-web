@@ -1,5 +1,5 @@
-import { Admin } from '@shared/models/admin/admin.model';
+import { Admin } from '@shared/models/users/admin.model';
 
-export type CreateAdmin = Omit<Admin, 'adminId'> & {
+export type CreateAdmin = Omit<Admin, 'id'> & {
   role: string;
 };

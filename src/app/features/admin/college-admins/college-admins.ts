@@ -9,6 +9,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { AdminService } from '@shared/services/admin.service';
 
 import { AddAdminModal } from './add-admin-modal';
@@ -26,15 +27,15 @@ import { EditAdminModal } from './edit-admin-modal';
     InputText,
     InputNumber,
     NavigationButtons,
+    RoleDashboardHeader,
   ],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Admins</p>
-          <h1>Admin Directory</h1>
-          <p class="description">Manage administrative users and access ownership.</p>
-        </div>
+        <app-role-dashboard-header
+          title="Admin Directory"
+          description="Manage administrative users and access ownership."
+        />
         <app-add-admin-modal (created)="reloadAdmins()"></app-add-admin-modal>
       </header>
 
@@ -94,7 +95,7 @@ import { EditAdminModal } from './edit-admin-modal';
                 </td>
               </tr>
             } @else {
-              @for (admin of adminsResource.value()?.items ?? []; track admin.adminId) {
+              @for (admin of adminsResource.value()?.items ?? []; track admin.id) {
                 <tr>
                   <td>{{ admin.name }}</td>
                   <td>{{ admin.email }}</td>

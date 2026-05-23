@@ -3,7 +3,7 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
-import { Admin } from '@shared/models/admin/admin.model';
+import { Admin } from '@shared/models/users/admin.model';
 import { AdminService } from '@shared/services/admin.service';
 
 @Component({
@@ -94,7 +94,7 @@ export class DeleteAdminModal {
     this.isSubmitting.set(true);
     this.submitError.set(false);
 
-    this.adminService.deleteAdmin(this.admin().adminId).subscribe({
+    this.adminService.deleteAdmin(this.admin().id).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.deleted.emit();

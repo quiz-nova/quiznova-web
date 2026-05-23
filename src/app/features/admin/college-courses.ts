@@ -19,7 +19,8 @@ import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
-import { Instructor } from '@shared/models/instructor/instructor.model';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { Instructor } from '@shared/models/users/instructor.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
@@ -40,15 +41,15 @@ import { ManageCourseModal } from './college-courses/manage-course-modal';
     InputNumber,
     SelectModule,
     NavigationButtons,
+    RoleDashboardHeader,
   ],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Courses</p>
-          <h1>Course Status</h1>
-          <p class="description">Each row shows ownership, enrollment, and quiz coverage.</p>
-        </div>
+        <app-role-dashboard-header
+          title="Course Status"
+          description="Each row shows ownership, enrollment, and quiz coverage."
+        />
         <app-add-course-modal (created)="reloadCourses()" />
       </header>
 
@@ -252,23 +253,23 @@ export class CollegeCourses {
     stream: (shouldFetch) =>
       shouldFetch
         ? this.instructorService.getAllInstructors({
-            pageNumber: 1,
-            pageSize: 10,
-          })
+          pageNumber: 1,
+          pageSize: 10,
+        })
         : of({
-            items: [],
-            pageNumber: 1,
-            pageSize: 10,
-            totalPages: 1,
-            totalCount: 0,
-            hasPreviousPage: false,
-            hasNextPage: false,
-          } as PaginatedList<Instructor>),
+          items: [],
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 1,
+          totalCount: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        } as PaginatedList<Instructor>),
   });
 
   protected readonly instructorOptions = computed(() =>
     (this.instructorsResource.value()?.items ?? []).map((instructor: Instructor) => ({
-      id: instructor.instructorId,
+      id: instructor.id,
       name: instructor.name,
     })),
   );

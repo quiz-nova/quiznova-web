@@ -1,5 +1,5 @@
-import { Instructor } from '@shared/models/instructor/instructor.model';
+import { Instructor } from '@shared/models/users/instructor.model';
 
-export type CreateInstructor = Omit<Instructor, 'instructorId' | 'coursesCount' | 'quizzesCount'> & {
+export type CreateInstructor = Omit<Instructor, 'id' | 'coursesCount' | 'quizzesCount'> & {
   role: string;
 };

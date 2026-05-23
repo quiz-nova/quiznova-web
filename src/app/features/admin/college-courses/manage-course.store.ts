@@ -11,8 +11,8 @@ import {
 import { EMPTY, catchError, exhaustMap, forkJoin, switchMap, tap } from 'rxjs';
 
 import { Course } from '@shared/models/course/course.model';
-import { Instructor } from '@shared/models/instructor/instructor.model';
-import { Student } from '@shared/models/student/student.model';
+import { Instructor } from '@shared/models/users/instructor.model';
+import { Student } from '@shared/models/users/student.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 import { StudentService } from '@shared/services/student.service';
@@ -39,13 +39,13 @@ export const ManageCourseStore = signalStore(
   withComputed((store) => ({
     instructorOptions: computed(() =>
       store.instructors().map((instructor) => ({
-        id: instructor.instructorId,
+        id: instructor.id,
         name: instructor.name,
       })),
     ),
     availableStudentOptions: computed(() =>
       store.availableStudents().map((student) => ({
-        id: student.studentId,
+        id: student.id,
         name: student.name,
       })),
     ),
@@ -114,8 +114,8 @@ export const ManageCourseStore = signalStore(
           }
 
           const instructorName = instructorId
-            ? (store.instructors().find((instructor) => instructor.instructorId === instructorId)
-                ?.name ?? '')
+            ? (store.instructors().find((instructor) => instructor.id === instructorId)
+              ?.name ?? '')
             : '';
 
           patchState(store, {
@@ -141,7 +141,7 @@ export const ManageCourseStore = signalStore(
       enrollStudent: rxMethod<string>(
         exhaustMap((studentId) => {
           const course = store.course();
-          const student = store.availableStudents().find((item) => item.studentId === studentId);
+          const student = store.availableStudents().find((item) => item.id === studentId);
           if (!course || !student) {
             return EMPTY;
           }
@@ -150,7 +150,7 @@ export const ManageCourseStore = signalStore(
           const previousEnrolledStudents = store.enrolledStudents();
 
           patchState(store, {
-            availableStudents: previousAvailableStudents.filter((item) => item.studentId !== studentId),
+            availableStudents: previousAvailableStudents.filter((item) => item.id !== studentId),
             enrolledStudents: [...previousEnrolledStudents, student],
             course: {
               ...course,
@@ -176,7 +176,7 @@ export const ManageCourseStore = signalStore(
       removeStudent: rxMethod<string>(
         exhaustMap((studentId) => {
           const course = store.course();
-          const student = store.enrolledStudents().find((item) => item.studentId === studentId);
+          const student = store.enrolledStudents().find((item) => item.id === studentId);
           if (!course || !student) {
             return EMPTY;
           }
@@ -186,7 +186,7 @@ export const ManageCourseStore = signalStore(
 
           patchState(store, {
             availableStudents: [...previousAvailableStudents, student],
-            enrolledStudents: previousEnrolledStudents.filter((item) => item.studentId !== studentId),
+            enrolledStudents: previousEnrolledStudents.filter((item) => item.id !== studentId),
             course: {
               ...course,
               enrolledStudentsCount: Math.max(0, course.enrolledStudentsCount - 1),

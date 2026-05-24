@@ -13,6 +13,7 @@ import { InputText } from 'primeng/inputtext';
 
 import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
+import { Button } from '@shared/components/button/button';
 import { Admin } from '@shared/models/users/admin.model';
 import { AdminService } from '@shared/services/admin.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
@@ -25,7 +26,7 @@ type EditAdminFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-admin-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError],
+  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError, Button],
   template: `
     <app-edit-button (editButtonClicked)="openDialog()" ariaLabel="Edit admin"></app-edit-button>
 
@@ -114,8 +115,8 @@ type EditAdminFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
+          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>

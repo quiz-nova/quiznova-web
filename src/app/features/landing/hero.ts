@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-hero',
-  imports: [FadeInOnScrollDirective],
+  imports: [FadeInOnScrollDirective, Button],
   template: `
     <div class="container">
       <main>
@@ -22,8 +23,8 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           powerful multi-tenant platform built for scale.
         </p>
         <div class="buttons" [delay]="250" appFadeInOnScroll>
-          <button class="btn btn-green" appFadeInOnScroll>Start free trial</button>
-          <button class="btn btn-gray" appFadeInOnScroll>See how it works</button>
+          <button appButton variant="green" appFadeInOnScroll>Start free trial</button>
+          <button appButton variant="gray" appFadeInOnScroll>See how it works</button>
         </div>
       </main>
     </div>

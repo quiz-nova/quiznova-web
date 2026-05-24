@@ -1,19 +1,22 @@
-import { Component, inject, signal, Signal } from '@angular/core';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, effect, inject, signal, Signal, viewChildren } from '@angular/core';
 
+import { CreateQuiz as CreateQuizModel } from '@Features/instructor/create-quiz/create-quiz.model';
 import { CreateQuizStore } from '@Features/instructor/create-quiz/create-quiz.store';
 import { AddQuestion } from '@Features/instructor/shared/add-question';
-import { McqForm } from '@Features/instructor/shared/mcq-form';
 import { NoQuestions } from '@Features/instructor/shared/no-questions';
 import { QuestionHeader } from '@Features/instructor/shared/question-header';
 import { QuestionsOutline } from '@Features/instructor/shared/questions-outline';
 import { QuizHeader } from '@Features/instructor/shared/quiz-header';
 import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
-import { TfForm } from '@Features/instructor/shared/tf-form';
 
 import { McqTag } from '@shared/components/questions-tags/mcq-tag';
 import { TfTag } from '@shared/components/questions-tags/tf-tag';
+import { EssayTag } from '@shared/components/questions-tags/essay-tag';
+import { Button } from '@shared/components/button/button';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
-import { CreateQuiz as CreateQuizModel } from '@shared/models/quiz/create-quiz.model';
+import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
@@ -26,10 +29,12 @@ import { QuizService } from '@shared/services/quiz.service';
     QuizMetadataForm,
     ObserveVisibilityDirective,
     QuestionsOutline,
-    McqForm,
-    TfForm,
+    NgComponentOutlet,
     McqTag,
     TfTag,
+    EssayTag,
+    RoleDashboardHeader,
+    Button,
   ],
   template: `
     <section class="create-quiz">
@@ -49,18 +54,19 @@ import { QuizService } from '@shared/services/quiz.service';
       </div>
       <main class="main">
         <header class="header">
-          <div class="content">
-            <h1 class="title">Create Quiz</h1>
-            <p class="subtitle">Build your quiz by adding questions below</p>
-          </div>
-            <button
-              class="btn btn-green"
-              [disabled]="!createQuizStore.isEntireQuizValid()"
-              (click)="onPublishQuiz()"
-              type="button"
-            >
-              Publish Quiz
-            </button>
+          <app-role-dashboard-header
+            title="Create Quiz"
+            description="Build your quiz by adding questions below"
+          />
+          <button
+            appButton
+            variant="green"
+            [disabled]="!createQuizStore.isEntireQuizValid()"
+            (click)="onPublishQuiz()"
+            type="button"
+          >
+            Publish Quiz
+          </button>
         </header>
         <app-quiz-metadata-form
           (formReady)="createQuizStore.registerForm($event)"
@@ -91,9 +97,7 @@ import { QuizService } from '@shared/services/quiz.service';
                     [question]="question"
                     [maxMarks]="getMaxMarksForQuestion(question.marks)"
                     (deleteQuestion)="createQuizStore.removeQuestion($event)"
-                    (marksChange)="
-                      createQuizStore.updateQuestionMarks($event.questionId, $event.marks)
-                    "
+                    (marksChange)="createQuizStore.updateQuestionMarks($event.questionId, $event.marks)"
                   >
                     @switch (question.type) {
                       @case ('mcq') {
@@ -102,31 +106,16 @@ import { QuizService } from '@shared/services/quiz.service';
                       @case ('tf') {
                         <app-tf-tag></app-tf-tag>
                       }
+                      @case ('essay') {
+                        <app-essay-tag></app-essay-tag>
+                      }
                     }
                   </app-question-header>
 
-                  @switch (question.type) {
-                    @case ('mcq') {
-                      <app-mcq-form
-                        [initialData]="question"
-                        (formReady)="createQuizStore.registerForm($event)"
-                        (formDestroyed)="createQuizStore.unregisterForm($event)"
-                        (valueChange)="createQuizStore.updateQuestion($event)"
-                        (questionTextBlur)="createQuizStore.updateQuestionText($event.questionId, $event.text)"
-                        (blurEvent)="createQuizStore.updateQuestion($event)"
-                      ></app-mcq-form>
-                    }
-                    @case ('tf') {
-                      <app-tf-form
-                        [initialData]="question"
-                        (formReady)="createQuizStore.registerForm($event)"
-                        (formDestroyed)="createQuizStore.unregisterForm($event)"
-                        (valueChange)="createQuizStore.updateQuestion($event)"
-                        (questionTextBlur)="createQuizStore.updateQuestionText($event.questionId, $event.text)"
-                        (blurEvent)="createQuizStore.updateQuestion($event)"
-                      ></app-tf-form>
-                    }
-                  }
+                  <ng-container
+                    [ngComponentOutlet]="quizService.getSuitableQuestionFormComponent(question.type)"
+                    [ngComponentOutletInputs]="{ initialData: question }"
+                  ></ng-container>
                 </div>
               }
             </div>
@@ -172,11 +161,15 @@ import { QuizService } from '@shared/services/quiz.service';
 
     .create-quiz {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 1.5rem;
       width: 100%;
       background-color: var(--clr-gray-50);
-      padding: 2rem;
+      padding: clamp(1rem, 3vw, 2rem);
+
+      @media (width >= 1024px) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      }
     }
 
     .main {
@@ -203,23 +196,6 @@ import { QuizService } from '@shared/services/quiz.service';
       gap: 1rem;
       padding: 1.5rem;
       min-width: 0;
-
-      .content {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-
-        .title {
-          font-family: var(--ff-heading), sans-serif;
-          font-size: clamp(2rem, 4vw, var(--fs-700));
-          font-weight: 700;
-        }
-
-        .subtitle {
-          color: var(--clr-gray-600);
-          font-size: var(--fs-500);
-        }
-      }
 
       @media (width < 640px) {
         .header {
@@ -269,11 +245,6 @@ import { QuizService } from '@shared/services/quiz.service';
       flex-direction: column;
       gap: 1.5rem;
       min-width: 0;
-    }
-
-    .btn.btn-green:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
 
     .question {
@@ -349,6 +320,52 @@ export class CreateQuiz {
   protected readonly numberOfQuestions: Signal<number> = this.createQuizStore
     .numberOfQuestions as Signal<number>;
   protected readonly isAddQuestionButtonVisible = signal(true);
+
+  private readonly formOutlets = viewChildren(NgComponentOutlet);
+
+  constructor() {
+    effect((onCleanup) => {
+      const activeOutlets = this.formOutlets();
+      const activeSubscriptions: { unsubscribe(): void }[] = [];
+
+      activeOutlets.forEach((outlet) => {
+        const instance = outlet.componentInstance as QuestionFormContract | null;
+        if (instance) {
+          if (instance.formReady) {
+            activeSubscriptions.push(
+              instance.formReady.subscribe((form) => this.createQuizStore.registerForm(form))
+            );
+          }
+          if (instance.formDestroyed) {
+            activeSubscriptions.push(
+              instance.formDestroyed.subscribe((form) => this.createQuizStore.unregisterForm(form))
+            );
+          }
+          if (instance.valueChange) {
+            activeSubscriptions.push(
+              instance.valueChange.subscribe((q) => this.createQuizStore.updateQuestion(q))
+            );
+          }
+          if (instance.blurEvent) {
+            activeSubscriptions.push(
+              instance.blurEvent.subscribe((q) => this.createQuizStore.updateQuestion(q))
+            );
+          }
+          if (instance.questionTextBlur) {
+            activeSubscriptions.push(
+              instance.questionTextBlur.subscribe((event) =>
+                this.createQuizStore.updateQuestionText(event.questionId, event.text)
+              )
+            );
+          }
+        }
+      });
+
+      onCleanup(() => {
+        activeSubscriptions.forEach((sub) => sub.unsubscribe());
+      });
+    });
+  }
 
   protected onPublishQuiz() {
     if (this.createQuizStore.validateAll()) {

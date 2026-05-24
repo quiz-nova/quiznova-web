@@ -9,6 +9,7 @@ import {
 import { mapQuestionTypeToQuestion } from '@Features/instructor/shared/question-type.mapper';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { Button } from '@shared/components/button/button';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
@@ -18,7 +19,7 @@ type AddQuestionFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-add-question',
-  imports: [ReactiveFormsModule, SelectModule, ButtonModule],
+  imports: [ReactiveFormsModule, SelectModule, ButtonModule, Button],
   template: `
     <div class="add-question">
       <div class="question-type-group">
@@ -33,7 +34,7 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button class="btn btn-green" [disabled]="disabled()" (click)="onAddQuestion()" type="button">
+      <button appButton variant="green" [disabled]="disabled()" (click)="onAddQuestion()" type="button">
         +Add Question
       </button>
     </div>
@@ -98,6 +99,7 @@ export class AddQuestion {
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
     { label: 'Multiple Choice', value: QuestionType.Mcq },
     { label: 'True/False', value: QuestionType.Tf },
+    { label: 'Essay', value: QuestionType.Essay },
   ];
 
   protected readonly addQuestionForm: AddQuestionFormGroup = this.fb.group({

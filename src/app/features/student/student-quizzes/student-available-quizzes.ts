@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
 import { RouterLink } from '@angular/router';
 
 import { QuizCountdownTag } from '@shared/components/quiz-countdown-tag/quiz-countdown-tag';
+import { Button } from '@shared/components/button/button';
 
 import { StudentQuizApiDto } from './models/student-quizzes.model';
 
 @Component({
   selector: 'app-student-available-quizzes',
-  imports: [RouterLink, QuizCountdownTag],
+  imports: [RouterLink, QuizCountdownTag, Button],
   template: `
     <section class="quiz-section" aria-labelledby="available-heading">
       <h2 id="available-heading">Available Now</h2>
@@ -42,10 +43,11 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                   </td>
                   <td>
                     <a
-                      class="btn btn-green start-btn"
+                      appButton
+                      variant="green"
+                      class="start-btn"
                       [routerLink]="['/student/quiz-attempt', quiz.quizId]"
-                      [class.start-btn--disabled]="isQuizExpired(quiz.quizId)"
-                      [attr.aria-disabled]="isQuizExpired(quiz.quizId)"
+                      [disabled]="isQuizExpired(quiz.quizId)"
                       [tabIndex]="isQuizExpired(quiz.quizId) ? -1 : 0"
                       >Start Quiz</a
                     >

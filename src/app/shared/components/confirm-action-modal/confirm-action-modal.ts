@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-confirm-action-modal',
-  imports: [FormsModule],
+  imports: [FormsModule, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -43,7 +44,7 @@ import { FormsModule } from '@angular/forms';
           />
         </div>
         <div class="modal-actions">
-          <button class="btn btn-gray" (click)="onCancel()" type="button">Cancel</button>
+          <button appButton variant="gray" (click)="onCancel()" type="button">Cancel</button>
           <button
             class="btn btn-danger"
             [disabled]="confirmationInput !== confirmationPhrase()"

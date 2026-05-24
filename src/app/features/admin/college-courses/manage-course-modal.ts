@@ -6,20 +6,25 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
-import { ManageButton } from '@shared/components/manage-button/manage-button';
+import { Button } from '@shared/components/button/button';
 import { Course } from '@shared/models/course/course.model';
 
 import { ManageCourseStore } from './manage-course.store';
 
 @Component({
   selector: 'app-manage-course-modal',
-  imports: [DeleteButton, DialogModule, FormsModule, ManageButton, ProgressSpinner, SelectModule],
+  imports: [DeleteButton, DialogModule, FormsModule, ProgressSpinner, SelectModule, Button],
   providers: [ManageCourseStore],
   template: `
-    <app-manage-button
-      [ariaLabel]="'Manage ' + course().courseName"
-      (manageButtonClicked)="openDialog()"
-    />
+    <button
+      appButton
+      variant="gray"
+      [attr.aria-label]="'Manage ' + course().courseName"
+      (click)="openDialog()"
+      type="button"
+    >
+      Manage
+    </button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -61,7 +66,8 @@ import { ManageCourseStore } from './manage-course.store';
                 appendTo="body"
               ></p-select>
               <button
-                class="btn btn-green"
+                appButton
+                variant="green"
                 [disabled]="!hasInstructorChange()"
                 (click)="onUpdateInstructor()"
                 type="button"
@@ -88,12 +94,14 @@ import { ManageCourseStore } from './manage-course.store';
                 appendTo="body"
               ></p-select>
               <button
-                class="btn btn-green"
+                appButton
+                variant="green"
+                [loading]="store.isPending()('enrollStudent')"
                 [disabled]="!selectedStudentId()"
                 (click)="onEnrollStudent()"
                 type="button"
               >
-                Enroll
+                @if(store.isPending()('enrollStudent')) { Enrolling... } @else { Enroll }
               </button>
             </div>
           </div>

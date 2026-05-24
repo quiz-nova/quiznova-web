@@ -3,12 +3,13 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { Button } from '@shared/components/button/button';
 import { Admin } from '@shared/models/users/admin.model';
 import { AdminService } from '@shared/services/admin.service';
 
 @Component({
   selector: 'app-delete-admin-modal',
-  imports: [DialogModule, DeleteButton],
+  imports: [DialogModule, DeleteButton, Button],
   template: `
     <app-delete-button
       (deleteButtonClicked)="openDialog()"
@@ -33,8 +34,8 @@ import { AdminService } from '@shared/services/admin.service';
       }
 
       <div class="actions">
-        <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-        <button class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()" type="button">
+        <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+        <button appButton variant="red" [loading]="isSubmitting()" (click)="onDelete()" type="button">
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>

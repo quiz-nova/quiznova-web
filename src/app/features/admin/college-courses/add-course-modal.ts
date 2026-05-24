@@ -14,6 +14,7 @@ import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
 import { FieldError } from '@shared/components/field-error/field-error';
+import { Button } from '@shared/components/button/button';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
@@ -36,9 +37,10 @@ type AddCourseFormGroup = FormGroup<{
     InputText,
     ReactiveFormsModule,
     SelectModule,
+    Button,
   ],
   template: `
-    <button class="btn btn-green" (click)="openDialog()" type="button">Add Course</button>
+    <button appButton variant="green" (click)="openDialog()" type="button">Add Course</button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -139,8 +141,8 @@ type AddCourseFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
+          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Course' }}
           </button>
         </div>

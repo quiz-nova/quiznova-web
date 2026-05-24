@@ -13,7 +13,8 @@ import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
 import { FieldError } from '@shared/components/field-error/field-error';
-import { UserRole } from '@shared/models/user/user-role.model';
+import { Button } from '@shared/components/button/button';
+import { UserRole } from '@shared/models/users/user-role.model';
 import { AdminService } from '@shared/services/admin.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
@@ -27,9 +28,9 @@ type AddAdminFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-add-admin-modal',
-  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError],
+  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError, Button],
   template: `
-    <button class="btn btn-green" (click)="openDialog()" type="button">Add Admin</button>
+    <button appButton variant="green" (click)="openDialog()" type="button">Add Admin</button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -58,7 +59,9 @@ type AddAdminFormGroup = FormGroup<{
               <app-field-error id="name-is-required-error">Name is required.</app-field-error>
             }
             @if (nameControl.hasError('minlength')) {
-              <app-field-error id="name-minlength-error">Name must be at least 3 characters.</app-field-error>
+              <app-field-error id="name-minlength-error"
+                >Name must be at least 3 characters.</app-field-error
+              >
             }
           }
         </div>
@@ -98,16 +101,26 @@ type AddAdminFormGroup = FormGroup<{
               "
               inputId="admin-password"
               formControlName="password"
-              aria-describedby="password-is-required-error password-minlength-error"
+              aria-describedby="password-is-required-error password-minlength-error password-strong-error"
             />
             <label for="admin-password">Password</label>
           </p-floatlabel>
           @if (passwordControl.invalid && passwordControl.touched) {
             @if (passwordControl.hasError('required')) {
-              <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+              <app-field-error id="password-is-required-error"
+                >Password is required.</app-field-error
+              >
             }
             @if (passwordControl.hasError('minlength')) {
-              <app-field-error id="password-minlength-error">Password must be at least 8 characters.</app-field-error>
+              <app-field-error id="password-minlength-error"
+                >Password must be at least 8 characters.</app-field-error
+              >
+            }
+            @if (passwordControl.hasError('strongPassword')) {
+              <app-field-error id="password-strong-error"
+                >Password must contain uppercase, lowercase, number, and special
+                character.</app-field-error
+              >
             }
           }
         </div>
@@ -143,8 +156,8 @@ type AddAdminFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
+          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Admin' }}
           </button>
         </div>
@@ -197,8 +210,14 @@ export class AddAdminModal {
   protected readonly AddAdminForm: AddAdminFormGroup = this.fb.group({
     name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, CustomValidators.trimMinLength(8)]],
-    phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
+    password: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(8), CustomValidators.strongPassword()],
+    ],
+    phoneNumber: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)],
+    ],
     role: [UserRole.admin, [Validators.required]],
   });
 
@@ -260,19 +279,17 @@ export class AddAdminModal {
     this.submitError.set(false);
     this.submitSuccess.set(false);
 
-    this.adminService
-      .createAdmin(this.AddAdminForm.getRawValue())
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.submitSuccess.set(true);
-          this.created.emit();
-          this.closeDialog();
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-          this.submitError.set(true);
-        },
-      });
+    this.adminService.createAdmin(this.AddAdminForm.getRawValue()).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.submitSuccess.set(true);
+        this.created.emit();
+        this.closeDialog();
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        this.submitError.set(true);
+      },
+    });
   }
 }

@@ -15,8 +15,9 @@ import { Password } from 'primeng/password';
 
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Logo } from '@shared/components/logo/logo';
-import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '@shared/models/user/user-role.model';
-import { User } from '@shared/models/user/user.model';
+import { Button } from '@shared/components/button/button';
+import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '@shared/models/users/user-role.model';
+import { User } from '@shared/models/users/user.model';
 
 type LoginFormGroup = FormGroup<{
   email: FormControl<string>;
@@ -33,6 +34,7 @@ type LoginFormGroup = FormGroup<{
     InputText,
     Password,
     FieldError,
+    Button,
   ],
   template: `
     <section class="auth-page">
@@ -116,20 +118,15 @@ type LoginFormGroup = FormGroup<{
             <legend class="sr-only">Select your account role</legend>
             <div class="roles">
               @for (role of userRoles; track role.id) {
-                <label class="btn btn-gray role-box">
+                <label class="role-box">
                   <input [value]="role.value" type="radio" formControlName="role" />
                   <span>{{ role.label }}</span>
                 </label>
               }
             </div>
           </fieldset>
-          <button class="btn btn-green auth-submit" [disabled]="isLogging()" type="submit">
-            @if (isLogging()) {
-              <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
-              <span>Signing in...</span>
-            } @else {
-              <span>Sign in</span>
-            }
+          <button appButton variant="green" [loading]="isLogging()" class="auth-submit" type="submit">
+            <span>{{ isLogging() ? 'Signing in...' : 'Sign in' }}</span>
           </button>
         </form>
       </div>
@@ -252,16 +249,22 @@ type LoginFormGroup = FormGroup<{
     }
 
     .role-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      border: 1px solid var(--clr-gray-600);
+      border-radius: var(--radius-md);
+      background-color: var(--clr-gray-50);
+      color: var(--clr-blue-900);
       flex: 1;
       min-height: 60px;
       padding: 0.5rem;
-      color: var(--clr-gray-600);
       text-align: center;
       transition:
         background-color 0.25s ease,
         color 0.25s ease,
         border-color 0.25s ease;
-      border-color: var(--clr-gray-600);
 
       input {
         position: absolute;

@@ -3,12 +3,13 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
-import { Student } from '@shared/models/student/student.model';
+import { Button } from '@shared/components/button/button';
+import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
 
 @Component({
   selector: 'app-delete-student-modal',
-  imports: [DialogModule, DeleteButton],
+  imports: [DialogModule, DeleteButton, Button],
   template: `
     <app-delete-button
       (deleteButtonClicked)="openDialog()"
@@ -33,8 +34,8 @@ import { StudentService } from '@shared/services/student.service';
       }
 
       <div class="actions">
-        <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-        <button class="btn btn-red" [disabled]="isSubmitting()" (click)="onDelete()" type="button">
+        <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+        <button appButton variant="red" [loading]="isSubmitting()" (click)="onDelete()" type="button">
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>
@@ -94,7 +95,7 @@ export class DeleteStudentModal {
     this.isSubmitting.set(true);
     this.submitError.set(false);
 
-    this.studentService.deleteStudent(this.student().studentId).subscribe({
+    this.studentService.deleteStudent(this.student().id).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.deleted.emit();

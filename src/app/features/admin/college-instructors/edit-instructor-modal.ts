@@ -13,7 +13,8 @@ import { InputText } from 'primeng/inputtext';
 
 import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
-import { Instructor } from '@shared/models/instructor/instructor.model';
+import { Button } from '@shared/components/button/button';
+import { Instructor } from '@shared/models/users/instructor.model';
 import { InstructorService } from '@shared/services/instructor.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
@@ -25,7 +26,7 @@ type EditInstructorFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-instructor-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError],
+  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError, Button],
   template: `
     <app-edit-button
       (editButtonClicked)="openDialog()"
@@ -115,8 +116,8 @@ type EditInstructorFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
+          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
@@ -213,7 +214,7 @@ export class EditInstructorModal {
     this.submitError.set(false);
 
     this.instructorService
-      .updateInstructor(this.instructor().instructorId, this.EditInstructorForm.getRawValue())
+      .updateInstructor(this.instructor().id, this.EditInstructorForm.getRawValue())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

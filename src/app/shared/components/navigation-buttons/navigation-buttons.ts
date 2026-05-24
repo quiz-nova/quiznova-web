@@ -1,12 +1,14 @@
 import { Component, input, output } from '@angular/core';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-navigation-buttons',
-  imports: [],
+  imports: [Button],
   template: `
     <nav class="nav-actions" [attr.aria-label]="ariaLabel()">
       <button
-        class="btn btn-gray"
+        appButton
+        variant="gray"
         [disabled]="!canGoPrevious()"
         type="button"
         (click)="previousButtonClicked.emit()"
@@ -14,7 +16,8 @@ import { Component, input, output } from '@angular/core';
         {{ previousLabel() }}
       </button>
       <button
-        class="btn btn-green"
+        appButton
+        variant="green"
         [disabled]="!canGoNext()"
         type="button"
         (click)="nextButtonClicked.emit()"

@@ -23,9 +23,10 @@ import { RadioButton } from 'primeng/radiobutton';
 
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
-import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
+import { Button } from '@shared/components/button/button';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
+import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
@@ -38,7 +39,7 @@ type McqFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-mcq-form',
-  imports: [ReactiveFormsModule, QuestionTitle, DeleteButton, FieldError, RadioButton],
+  imports: [ReactiveFormsModule, QuestionTitle, DeleteButton, FieldError, RadioButton, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mcq-question-container">
@@ -120,7 +121,7 @@ type McqFormGroup = FormGroup<{
         }
       </form>
       @if (choicesArray.length < 5) {
-        <button class="btn btn-gray" (click)="onAddChoice()" type="button">+Add Choice</button>
+        <button appButton variant="gray" (click)="onAddChoice()" type="button">+Add Choice</button>
       }
     </div>
   `,
@@ -188,7 +189,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly blurEvent = output<Question>();
   readonly questionTextBlur = output<{ questionId: string; text: string }>();
 
-  protected readonly mcq = () => this.initialData() as MCQ;
+  protected readonly mcq = () => this.initialData() as Mcq;
   private choiceIds: string[] = [];
 
   protected readonly mcqForm: McqFormGroup = this.fb.group({
@@ -230,7 +231,27 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     this.formDestroyed.emit(this.mcqForm);
   }
 
-  private populateForm(mcq: MCQ) {
+  private populateForm(mcq: Mcq) {
+    // Check if the form is already in sync with the incoming MCQ data.
+    // If it is, do not clear and recreate, which completely prevents the infinite keystroke loop!
+    const currentQuestionText = this.mcqForm.controls.questionText.value;
+    const currentCorrectChoiceId = this.mcqForm.controls.correctChoiceId.value;
+    const currentChoices = this.choicesArray.controls.map((c) => c.value);
+    const incomingChoices = mcq.choices.map((c) => c.text);
+
+    const choicesMatch = currentChoices.every((val, i) => val === incomingChoices[i]);
+
+    const idsMatch = this.choiceIds.every((id, i) => id === mcq.choices[i].id);
+
+    if (
+      currentQuestionText === mcq.questionText &&
+      currentCorrectChoiceId === mcq.correctChoiceId &&
+      choicesMatch &&
+      idsMatch
+    ) {
+      return;
+    }
+
     this.mcqForm.patchValue(
       {
         questionText: mcq.questionText,
@@ -298,7 +319,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     }
   }
 
-  private getLatestMcqData(): MCQ {
+  private getLatestMcqData(): Mcq {
     const formValue = this.mcqForm.getRawValue();
     const originalMcq = this.mcq();
 

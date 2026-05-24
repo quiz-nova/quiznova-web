@@ -13,7 +13,8 @@ import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
 import { FieldError } from '@shared/components/field-error/field-error';
-import { UserRole } from '@shared/models/user/user-role.model';
+import { Button } from '@shared/components/button/button';
+import { UserRole } from '@shared/models/users/user-role.model';
 import { StudentService } from '@shared/services/student.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
@@ -27,9 +28,9 @@ type AddStudentFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-add-student-modal',
-  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError],
+  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError, Button],
   template: `
-    <button class="btn btn-green" (click)="openDialog()" type="button">Add Student</button>
+    <button appButton variant="green" (click)="openDialog()" type="button">Add Student</button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -42,13 +43,13 @@ type AddStudentFormGroup = FormGroup<{
       <form class="add-form" [formGroup]="AddStudentForm" (ngSubmit)="onSubmit()">
         <div class="form-field">
           <p-floatlabel variant="on">
-            <input 
-              id="student-name" 
-              [fluid]="true" 
-              pInputText 
-              type="text" 
-              formControlName="name"
+            <input
+              id="student-name"
+              [fluid]="true"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
+              pInputText
+              type="text"
+              formControlName="name"
               aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="student-name">Name</label>
@@ -58,7 +59,9 @@ type AddStudentFormGroup = FormGroup<{
               <app-field-error id="name-is-required-error">Name is required.</app-field-error>
             }
             @if (nameControl.hasError('minlength')) {
-              <app-field-error id="name-minlength-error">Name must be at least 3 characters.</app-field-error>
+              <app-field-error id="name-minlength-error"
+                >Name must be at least 3 characters.</app-field-error
+              >
             }
           }
         </div>
@@ -68,10 +71,10 @@ type AddStudentFormGroup = FormGroup<{
             <input
               id="student-email"
               [fluid]="true"
+              [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
               pInputText
               type="email"
               formControlName="email"
-              [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
               aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
             <label for="student-email">Email</label>
@@ -80,7 +83,9 @@ type AddStudentFormGroup = FormGroup<{
             @if (emailControl.hasError('required')) {
               <app-field-error id="email-is-required-error">Email is required.</app-field-error>
             } @else if (emailControl.hasError('email')) {
-              <app-field-error id="please-enter-a-valid-email-address-error">Please enter a valid email address.</app-field-error>
+              <app-field-error id="please-enter-a-valid-email-address-error"
+                >Please enter a valid email address.</app-field-error
+              >
             }
           }
         </div>
@@ -91,19 +96,31 @@ type AddStudentFormGroup = FormGroup<{
               [feedback]="false"
               [toggleMask]="true"
               [fluid]="true"
+              [attr.aria-invalid]="
+                passwordControl.invalid && passwordControl.touched ? 'true' : null
+              "
               inputId="student-password"
               formControlName="password"
-              [attr.aria-invalid]="passwordControl.invalid && passwordControl.touched ? 'true' : null"
-              aria-describedby="password-is-required-error password-minlength-error"
+              aria-describedby="password-is-required-error password-minlength-error password-strong-error"
             />
             <label for="student-password">Password</label>
           </p-floatlabel>
           @if (passwordControl.invalid && passwordControl.touched) {
             @if (passwordControl.hasError('required')) {
-              <app-field-error id="password-is-required-error">Password is required.</app-field-error>
+              <app-field-error id="password-is-required-error"
+                >Password is required.</app-field-error
+              >
             }
             @if (passwordControl.hasError('minlength')) {
-              <app-field-error id="password-minlength-error">Password must be at least 8 characters.</app-field-error>
+              <app-field-error id="password-minlength-error"
+                >Password must be at least 8 characters.</app-field-error
+              >
+            }
+            @if (passwordControl.hasError('strongPassword')) {
+              <app-field-error id="password-strong-error"
+                >Password must contain uppercase, lowercase, number, and special
+                character.</app-field-error
+              >
             }
           }
         </div>
@@ -113,23 +130,31 @@ type AddStudentFormGroup = FormGroup<{
             <input
               id="student-phone"
               [fluid]="true"
+              [attr.aria-invalid]="
+                phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null
+              "
               pInputText
               type="text"
               formControlName="phoneNumber"
-              [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null"
               aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="student-phone">Phone Number</label>
           </p-floatlabel>
           @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
             @if (phoneNumberControl.hasError('required')) {
-              <app-field-error id="phone-number-is-required-error">Phone number is required.</app-field-error>
+              <app-field-error id="phone-number-is-required-error"
+                >Phone number is required.</app-field-error
+              >
             }
             @if (phoneNumberControl.hasError('minlength')) {
-              <app-field-error id="phone-minlength-error">Phone number must be at least 7 characters.</app-field-error>
+              <app-field-error id="phone-minlength-error"
+                >Phone number must be at least 7 characters.</app-field-error
+              >
             }
             @if (phoneNumberControl.hasError('maxlength')) {
-              <app-field-error id="phone-maxlength-error">Phone number cannot exceed 15 characters.</app-field-error>
+              <app-field-error id="phone-maxlength-error"
+                >Phone number cannot exceed 15 characters.</app-field-error
+              >
             }
           }
         </div>
@@ -143,8 +168,8 @@ type AddStudentFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button class="btn btn-gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button class="btn btn-green" [disabled]="isSubmitting()" type="submit">
+          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
+          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Student' }}
           </button>
         </div>
@@ -197,8 +222,14 @@ export class AddStudentModal {
   protected readonly AddStudentForm: AddStudentFormGroup = this.fb.group({
     name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, CustomValidators.trimMinLength(8)]],
-    phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
+    password: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(8), CustomValidators.strongPassword()],
+    ],
+    phoneNumber: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)],
+    ],
     role: [UserRole.student, [Validators.required]],
   });
 
@@ -260,19 +291,17 @@ export class AddStudentModal {
     this.submitError.set(false);
     this.submitSuccess.set(false);
 
-    this.studentService
-      .createStudent(this.AddStudentForm.getRawValue())
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.submitSuccess.set(true);
-          this.created.emit();
-          this.closeDialog();
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-          this.submitError.set(true);
-        },
-      });
+    this.studentService.createStudent(this.AddStudentForm.getRawValue()).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.submitSuccess.set(true);
+        this.created.emit();
+        this.closeDialog();
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        this.submitError.set(true);
+      },
+    });
   }
 }

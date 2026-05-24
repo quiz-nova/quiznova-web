@@ -2,10 +2,11 @@ import { Component, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-top-bar',
-  imports: [],
+  imports: [Button],
   template: `
     <header class="dashboard-top-bar">
       <button
@@ -20,7 +21,9 @@ import { AuthService } from '@Features/auth/auth.service';
       </button>
 
       <button
-        class="dashboard-top-bar__logout btn btn-gray focus-green-ring"
+        appButton
+        variant="gray"
+        class="dashboard-top-bar__logout focus-green-ring"
         (click)="onLogout()"
         type="button"
         aria-label="Logout"

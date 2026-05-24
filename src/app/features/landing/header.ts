@@ -9,6 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 
 import { Logo } from '@shared/components/logo/logo';
+import { Button } from '@shared/components/button/button';
 
 export interface HeaderLink {
   id: number;
@@ -24,7 +25,7 @@ export const headerLinks: HeaderLink[] = [
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, Logo],
+  imports: [RouterLink, Logo, Button],
   template: `
     <div class="container">
       <header>
@@ -50,8 +51,8 @@ export const headerLinks: HeaderLink[] = [
           class="buttons header__panel"
           [class.menu-open]="activateBurgerIcon() && menuClicked()"
         >
-          <button class="btn btn-gray" type="button" routerLink="/auth/login">Log in</button>
-          <button class="btn btn-green" type="button" routerLink="/auth/register">
+          <button appButton variant="gray" type="button" routerLink="/auth/login">Log in</button>
+          <button appButton variant="green" type="button" routerLink="/auth/register">
             Get Started
           </button>
         </div>

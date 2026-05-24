@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
-
+import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-about',
-  imports: [FadeInOnScrollDirective],
+  imports: [FadeInOnScrollDirective, Button],
   template: `
     <section class="about" id="about">
       <article class="section-heading">
@@ -18,7 +18,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           without compromising on experience or security.
         </p>
       </article>
-      <button class="btn btn-green" type="button" appFadeInOnScroll>Join QuizNova today</button>
+      <button appButton variant="green" type="button" appFadeInOnScroll>Join QuizNova today</button>
     </section>
   `,
   styleUrls: ['./shared/landing-shared.css'],

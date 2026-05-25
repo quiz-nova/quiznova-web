@@ -82,7 +82,7 @@ export const ManageCourseStore = signalStore(
             availableStudents: [],
             actionError: null,
           });
-          patchState(store, setPending());
+          patchState(store, setPending('loadCourse'));
 
           return forkJoin({
             course: coursesService.getCourseById(courseId),
@@ -96,10 +96,10 @@ export const ManageCourseStore = signalStore(
                 enrolledStudents: students.enrolledStudents.items,
                 availableStudents: students.availableStudents.items,
               });
-              patchState(store, setFulfilled());
+              patchState(store, setFulfilled('loadCourse'));
             }),
             catchError(() => {
-              patchState(store, setError('Failed to load course management data.'));
+              patchState(store, setError('loadCourse', 'Failed to load course management data.'));
               return EMPTY;
             }),
           );
@@ -190,18 +190,17 @@ export const ManageCourseStore = signalStore(
             course: {
               ...course,
               enrolledStudentsCount: Math.max(0, course.enrolledStudentsCount - 1),
-            },
-            actionError: null,
-          });
+            }
+          }, setPending('removeStudent'));
 
           return coursesService.removeStudent(course.courseId, studentId).pipe(
+            tap(() => patchState(store, setFulfilled('removeStudent'))),
             catchError(() => {
               patchState(store, {
                 availableStudents: previousAvailableStudents,
                 enrolledStudents: previousEnrolledStudents,
-                course,
-                actionError: 'Failed to remove student.',
-              });
+                course
+              }, setError('removeStudent', 'Failed to remove student.'));
               return EMPTY;
             }),
           );

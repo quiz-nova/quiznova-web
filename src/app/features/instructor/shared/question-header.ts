@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, input, output, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -112,6 +112,7 @@ type QuestionHeaderFormGroup = FormGroup<{
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionHeader implements OnInit {
   readonly index = input.required<number>();

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { QuizAttemptStore } from './quiz-attempt.store';
 
@@ -120,6 +120,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       background: var(--clr-yellow-500);
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionsNavigator {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);

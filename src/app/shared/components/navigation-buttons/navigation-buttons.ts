@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 import { Button } from '@shared/components/button/button';
 
@@ -49,6 +49,7 @@ import { Button } from '@shared/components/button/button';
       opacity: 0.5;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationButtons {
   readonly canGoPrevious = input.required<boolean>();

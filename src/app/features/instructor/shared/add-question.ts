@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -87,6 +87,7 @@ type AddQuestionFormGroup = FormGroup<{
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);

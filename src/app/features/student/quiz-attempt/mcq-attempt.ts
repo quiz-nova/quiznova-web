@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -103,6 +103,7 @@ export type McqAttemptForm = FormGroup<{
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class McqAttempt implements QuestionAttemptContract, OnInit {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);

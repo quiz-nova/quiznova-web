@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { QuizService } from '@shared/services/quiz.service';
@@ -85,6 +85,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizAttempt implements OnInit {
   protected readonly quizService = inject(QuizService);

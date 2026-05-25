@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -151,6 +151,7 @@ type EditStudentFormGroup = FormGroup<{
       margin-top: 0.5rem;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditStudentModal {
   private readonly fb = inject(NonNullableFormBuilder);

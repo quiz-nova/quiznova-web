@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -148,6 +148,7 @@ type EditAdminFormGroup = FormGroup<{
       margin-top: 0.5rem;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditAdminModal {
   private readonly fb = inject(NonNullableFormBuilder);

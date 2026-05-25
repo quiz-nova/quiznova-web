@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, effect, inject, signal, Signal, viewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal, Signal, viewChildren } from '@angular/core';
 
 import { CreateQuiz as CreateQuizModel } from '@Features/instructor/create-quiz/create-quiz.model';
 import { CreateQuizStore } from '@Features/instructor/create-quiz/create-quiz.store';
@@ -311,6 +311,7 @@ import { QuizService } from '@shared/services/quiz.service';
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateQuiz {
   protected readonly quizService = inject(QuizService);

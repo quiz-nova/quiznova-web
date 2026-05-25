@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-edit-button',
@@ -47,6 +47,7 @@ import { Component, input, output } from '@angular/core';
       cursor: not-allowed;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditButton {
   readonly ariaLabel = input.required<string>();

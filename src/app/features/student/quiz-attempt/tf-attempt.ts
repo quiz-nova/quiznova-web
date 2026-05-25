@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -105,6 +105,7 @@ export type TfAttemptForm = FormGroup<{
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TfAttempt implements QuestionAttemptContract, OnInit {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);

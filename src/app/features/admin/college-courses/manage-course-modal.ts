@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { DialogModule } from 'primeng/dialog';
@@ -222,6 +222,7 @@ import { ManageCourseStore } from './manage-course.store';
       font-weight: 600;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageCourseModal {
   readonly course = input.required<Course>();

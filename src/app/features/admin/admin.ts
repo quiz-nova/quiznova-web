@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { BaseLayout } from '@Core/layout/base-layout/base-layout';
 
@@ -7,5 +7,6 @@ import { BaseLayout } from '@Core/layout/base-layout/base-layout';
   imports: [BaseLayout],
   template: ` <app-base-layout></app-base-layout> `,
   styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Admin {}

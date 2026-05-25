@@ -1,14 +1,4 @@
-import {
-  Component,
-  DestroyRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  input,
-  output,
-  effect,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, input, output, effect, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -201,6 +191,7 @@ type QuizHeaderFormGroup = FormGroup<{
       font-size: var(--fs-300);
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizMetadataForm implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);

@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import { QuestionType } from '@shared/models/quiz/question.model';
 import { QuizService } from '@shared/services/quiz.service';
@@ -59,6 +59,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       color: var(--clr-red-500);
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionAttemptHeader {
   protected readonly quizService = inject(QuizService);

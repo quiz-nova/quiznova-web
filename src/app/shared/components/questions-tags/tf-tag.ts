@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { QuestionTagContract } from '@shared/models/quiz/question-component.contracts';
 import { QuestionType } from '@shared/models/quiz/question.model';
@@ -21,6 +21,7 @@ import { QuestionType } from '@shared/models/quiz/question.model';
       line-height: 1;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TfTag implements QuestionTagContract {
   readonly tag = signal(QuestionType.Tf).asReadonly();

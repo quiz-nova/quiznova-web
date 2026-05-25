@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 
@@ -59,6 +59,7 @@ import { CoursesService } from '@shared/services/courses.service';
       margin-top: 1.25rem;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteCourseModal {
   private readonly coursesService = inject(CoursesService);

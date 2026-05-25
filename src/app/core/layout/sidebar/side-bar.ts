@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
 import { Tab } from '@Core/layout/sidebar/tab';
 import { TabGroup } from '@Core/layout/sidebar/tab-group';
@@ -52,6 +52,7 @@ import { User } from '@shared/models/users/user.model';
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SideBar {
   private readonly authService = inject(AuthService);

@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, effect, inject, OnInit, viewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit, viewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { AddQuestion } from '@Features/instructor/shared/add-question';
@@ -247,6 +247,7 @@ import { EditQuizStore } from './edit-quiz.store';
       border-radius: var(--radius-md);
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditQuiz implements OnInit {
   protected readonly store = inject(EditQuizStore);

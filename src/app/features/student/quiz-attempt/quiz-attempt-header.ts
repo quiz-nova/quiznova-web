@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { toObservable, toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Subscription, switchMap, timer } from 'rxjs';
@@ -81,6 +81,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizAttemptHeader implements OnInit {
   private readonly destroyRef = inject(DestroyRef);

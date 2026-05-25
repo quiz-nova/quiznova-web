@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -104,6 +104,7 @@ export type EssayAttemptForm = FormGroup<{
       margin-top: 0.5rem;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EssayAttempt implements QuestionAttemptContract, OnInit {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);

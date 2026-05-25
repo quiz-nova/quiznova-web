@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
@@ -75,6 +75,7 @@ import { Button } from '@shared/components/button/button';
       font-weight: 600;
     }
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopBar {
   private readonly authService = inject(AuthService);

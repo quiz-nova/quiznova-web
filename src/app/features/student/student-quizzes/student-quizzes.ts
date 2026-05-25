@@ -61,7 +61,7 @@ export class StudentQuizzes {
   private readonly authService = inject(AuthService);
   private readonly quizService = inject(QuizService);
 
-  protected readonly studentId = computed(() => this.authService.currentUser()?.userId ?? null);
+  protected readonly studentId = computed(() => this.authService.currentUser()?.id ?? null);
 
   protected readonly quizzesResource = rxResource({
     stream: () => {

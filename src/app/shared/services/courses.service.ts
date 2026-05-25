@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 
 import { CourseCount } from '@shared/models/course/course-count.model';
 import { Course } from '@shared/models/course/course.model';
@@ -20,6 +20,9 @@ export class CoursesService {
   private readonly appSettings = inject(APP_SETTINGS);
 
   getInstructorCourses(instructorId: string): Observable<Course[]> {
+    if (!instructorId || instructorId === 'undefined' || instructorId === 'null') {
+      return of([]);
+    }
     const params = new HttpParams().set('instructorId', instructorId);
 
     return this.http
@@ -28,6 +31,9 @@ export class CoursesService {
   }
 
   getEnrollments(studentId: string): Observable<Enrollment[]> {
+    if (!studentId || studentId === 'undefined' || studentId === 'null') {
+      return of([]);
+    }
     const params = new HttpParams().set('studentId', studentId);
 
     return this.http
@@ -95,12 +101,18 @@ export class CoursesService {
   }
 
   getInstructorCoursesCount(instructorId: string): Observable<CourseCount> {
+    if (!instructorId || instructorId === 'undefined' || instructorId === 'null') {
+      return of({ coursesCount: 0 });
+    }
     const params = new HttpParams().set('instructorId', instructorId);
 
     return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });
   }
 
   getEnrollmentsCount(studentId: string): Observable<CourseCount> {
+    if (!studentId || studentId === 'undefined' || studentId === 'null') {
+      return of({ coursesCount: 0 });
+    }
     const params = new HttpParams().set('studentId', studentId);
 
     return this.http.get<CourseCount>(`${this.appSettings.apiBaseUrl}/courses/count`, { params });

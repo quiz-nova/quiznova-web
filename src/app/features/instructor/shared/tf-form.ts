@@ -23,7 +23,7 @@ import { RadioButton } from 'primeng/radiobutton';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/tf.model';
+import { Tf } from '@shared/models/quiz/questions/tf.model';
 
 import { QuestionTitle } from './question-title';
 
@@ -109,7 +109,7 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   private readonly fb = inject(NonNullableFormBuilder);
 
   readonly initialData = input.required<Question>();
-  
+
   readonly formReady = output<FormGroup>();
   readonly formDestroyed = output<FormGroup>();
   readonly valueChange = output<Question>();
@@ -173,7 +173,7 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
     return {
       ...originalTf,
       questionText: formValue.text,
-      correctChoice: formValue.answer ?? true 
+      correctChoice: formValue.answer ?? true
     };
   }
 }

@@ -358,6 +358,13 @@ export class CreateQuiz {
               )
             );
           }
+          if (instance.deleteChoice) {
+            activeSubscriptions.push(
+              instance.deleteChoice.subscribe((event) =>
+                this.createQuizStore.deleteChoiceFromMcq(event.questionId, event.choiceId)
+              )
+            );
+          }
         }
       });
 

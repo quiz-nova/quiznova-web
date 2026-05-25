@@ -1,12 +1,6 @@
 import { computed, inject } from '@angular/core';
 
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
   setError,
@@ -67,217 +61,232 @@ export const EditQuizStore = signalStore(
         title: quiz.title,
         courseId: quiz.courseId,
         startsAtUtc: new Date(quiz.startsAtUtc),
-        endsAtUtc: new Date(quiz.endsAtUtc)
+        endsAtUtc: new Date(quiz.endsAtUtc),
       };
-    })
+    }),
   })),
-  withMethods((store, quizService = inject(QuizService), coursesService = inject(CoursesService)) => ({
-    loadQuiz: rxMethod<{ quizId: string }>(
-      exhaustMap(({ quizId }) => {
-        patchState(store, setPending());
-        return quizService.getQuizById(quizId).pipe(
-          switchMap((quiz) => {
-            patchState(store, { quiz, activeQuestionId: quiz.questions[0]?.id ?? null });
-            patchState(store, setFulfilled());
+  withMethods(
+    (store, quizService = inject(QuizService), coursesService = inject(CoursesService)) => ({
+      loadQuiz: rxMethod<{ quizId: string }>(
+        exhaustMap(({ quizId }) => {
+          patchState(store, setPending('loadQuiz'));
+          return quizService.getQuizById(quizId).pipe(
+            switchMap((quiz) => {
+              patchState(store, { quiz, activeQuestionId: quiz.questions[0]?.id ?? null });
+              patchState(store, setFulfilled('loadQuiz'));
 
-            return coursesService.getCourseById(quiz.courseId).pipe(
-              tap((course) => {
-                patchState(store, { remainingMarks: course.remainingMarks });
-              }),
-              catchError((err) => {
-                console.error('Failed to fetch course details', err);
-                return EMPTY;
-              })
-            );
-          }),
-          catchError(() => {
-            patchState(store, setError('Failed to load quiz.'));
-            return EMPTY;
-          })
-        );
-      })
-    ),
+              return coursesService.getCourseById(quiz.courseId).pipe(
+                tap((course) => {
+                  patchState(store, { remainingMarks: course.remainingMarks });
+                }),
+                catchError((err) => {
+                  console.error('Failed to fetch course details', err);
+                  return EMPTY;
+                }),
+              );
+            }),
+            catchError(() => {
+              patchState(store, setError('loadQuiz', 'Failed to load quiz.'));
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
 
-    setCurrentQuestionId(questionId: string): void {
-      patchState(store, { activeQuestionId: questionId });
-    },
+      setCurrentQuestionId(questionId: string): void {
+        patchState(store, { activeQuestionId: questionId });
+      },
 
+      updateMetadata: rxMethod<QuizMetadataValue>(
+        concatMap((metadata) => {
+          const quizId = store.quizId();
+          if (!quizId) return EMPTY;
 
+          // Optimistically update UI
+          patchState(store, (state) => ({
+            quiz: state.quiz
+              ? {
+                  ...state.quiz,
+                  title: metadata.title,
+                  courseId: metadata.courseId,
+                  startsAtUtc: metadata.startsAtUtc.toISOString(),
+                  endsAtUtc: metadata.endsAtUtc.toISOString(),
+                }
+              : null,
+          }));
 
-    updateMetadata: rxMethod<QuizMetadataValue>(
-      concatMap((metadata) => {
-        const quizId = store.quizId();
-        if (!quizId) return EMPTY;
+          return quizService.updateQuizMetadata(quizId, metadata).pipe(
+            catchError((err) => {
+              console.error('Failed to update metadata', err);
+              // In a real app, we'd revert the optimistic update here
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
 
-        // Optimistically update UI
-        patchState(store, (state) => ({
-          quiz: state.quiz ? {
-            ...state.quiz,
-            title: metadata.title,
-            courseId: metadata.courseId,
-            startsAtUtc: metadata.startsAtUtc.toISOString(),
-            endsAtUtc: metadata.endsAtUtc.toISOString()
-          } : null
-        }));
+      updateCourseId: rxMethod<string>(
+        concatMap((newCourseId) => {
+          const quizId = store.quizId();
+          if (!quizId) return EMPTY;
 
-        return quizService.updateQuizMetadata(quizId, metadata).pipe(
-          catchError((err) => {
-            console.error('Failed to update metadata', err);
-            // In a real app, we'd revert the optimistic update here
-            return EMPTY;
-          })
-        );
-      })
-    ),
+          return quizService.updateQuizCourseId(quizId, newCourseId).pipe(
+            switchMap(() => {
+              // After backend clears questions, update local state
+              patchState(store, (state) => ({
+                quiz: state.quiz
+                  ? {
+                      ...state.quiz,
+                      courseId: newCourseId,
+                      questions: [],
+                    }
+                  : null,
+                activeQuestionId: null,
+                remainingMarks: null,
+              }));
 
-    updateCourseId: rxMethod<string>(
-      concatMap((newCourseId) => {
-        const quizId = store.quizId();
-        if (!quizId) return EMPTY;
+              // Fetch new course's remaining marks
+              return coursesService.getCourseById(newCourseId).pipe(
+                tap((course) => {
+                  patchState(store, { remainingMarks: course.remainingMarks });
+                }),
+                catchError((err) => {
+                  console.error('Failed to fetch new course details', err);
+                  return EMPTY;
+                }),
+              );
+            }),
+            catchError((err) => {
+              console.error('Failed to update course ID', err);
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
 
-        return quizService.updateQuizCourseId(quizId, newCourseId).pipe(
-          switchMap(() => {
-            // After backend clears questions, update local state
-            patchState(store, (state) => ({
-              quiz: state.quiz ? {
-                ...state.quiz,
-                courseId: newCourseId,
-                questions: [],
-              } : null,
-              activeQuestionId: null,
-              remainingMarks: null,
-            }));
+      addQuestion: rxMethod<Question>(
+        concatMap((question) => {
+          const quizId = store.quizId();
+          if (!quizId) return EMPTY;
 
-            // Fetch new course's remaining marks
-            return coursesService.getCourseById(newCourseId).pipe(
-              tap((course) => {
-                patchState(store, { remainingMarks: course.remainingMarks });
-              }),
-              catchError((err) => {
-                console.error('Failed to fetch new course details', err);
-                return EMPTY;
-              })
-            );
-          }),
-          catchError((err) => {
-            console.error('Failed to update course ID', err);
-            return EMPTY;
-          })
-        );
-      })
-    ),
+          return quizService.addQuestion(quizId, question).pipe(
+            tap((savedQuestion) => {
+              patchState(store, (state) => ({
+                quiz: state.quiz
+                  ? {
+                      ...state.quiz,
+                      questions: [...state.quiz.questions, savedQuestion],
+                    }
+                  : null,
+                activeQuestionId: savedQuestion.id,
+              }));
 
-    addQuestion: rxMethod<Question>(
-      concatMap((question) => {
-        const quizId = store.quizId();
-        if (!quizId) return EMPTY;
+              // Decrement remaining marks
+              patchState(store, (state) => ({
+                remainingMarks:
+                  state.remainingMarks !== null ? state.remainingMarks - savedQuestion.marks : null,
+              }));
+            }),
+            catchError((err) => {
+              console.error('Failed to add question', err);
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
+      // TODO we want to think can we combine it with update question text or not
+      updateQuestion: rxMethod<Question>(
+        concatMap((updatedQuestion) => {
+          const quizId = store.quizId();
+          if (!quizId) return EMPTY;
 
-        return quizService.addQuestion(quizId, question).pipe(
-          tap((savedQuestion) => {
-            patchState(store, (state) => ({
-              quiz: state.quiz ? {
-                ...state.quiz,
-                questions: [...state.quiz.questions, savedQuestion]
-              } : null,
-              activeQuestionId: savedQuestion.id
-            }));
-
-            // Decrement remaining marks
-            patchState(store, (state) => ({
-              remainingMarks: state.remainingMarks !== null
-                ? state.remainingMarks - savedQuestion.marks
-                : null,
-            }));
-          }),
-          catchError((err) => {
-            console.error('Failed to add question', err);
-            return EMPTY;
-          })
-        );
-      })
-    ),
-
-    updateQuestion: rxMethod<Question>(
-      concatMap((updatedQuestion) => {
-        const quizId = store.quizId();
-        if (!quizId) return EMPTY;
-
-        // Check marks change against remaining
-        const currentQuestion = (store.quiz()?.questions ?? []).find(q => q.id === updatedQuestion.id);
-        if (currentQuestion && store.remainingMarks() !== null) {
-          const marksDiff = updatedQuestion.marks - currentQuestion.marks;
-          if (marksDiff > 0 && marksDiff > (store.remainingMarks() ?? 0)) {
-            console.warn('Cannot increase marks beyond remaining.');
-            return EMPTY;
+          // Check marks change against remaining
+          const currentQuestion = (store.quiz()?.questions ?? []).find(
+            (q) => q.id === updatedQuestion.id,
+          );
+          if (currentQuestion && store.remainingMarks() !== null) {
+            const marksDiff = updatedQuestion.marks - currentQuestion.marks;
+            if (marksDiff > 0 && marksDiff > (store.remainingMarks() ?? 0)) {
+              console.warn('Cannot increase marks beyond remaining.');
+              return EMPTY;
+            }
           }
-        }
 
-        // Optimistically update UI
-        const oldMarks = currentQuestion?.marks ?? 0;
-        const marksDiff = updatedQuestion.marks - oldMarks;
+          // Optimistically update UI
+          const oldMarks = currentQuestion?.marks ?? 0;
+          const marksDiff = updatedQuestion.marks - oldMarks;
 
+          patchState(store, (state) => ({
+            quiz: state.quiz
+              ? {
+                  ...state.quiz,
+                  questions: state.quiz.questions.map((q) =>
+                    q.id === updatedQuestion.id ? updatedQuestion : q,
+                  ),
+                }
+              : null,
+            remainingMarks: state.remainingMarks !== null ? state.remainingMarks - marksDiff : null,
+          }));
+
+          return quizService.updateQuestion(quizId, updatedQuestion.id, updatedQuestion).pipe(
+            catchError((err) => {
+              console.error('Failed to update question', err);
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
+
+      updateQuestionText(questionId: string, questionText: string): void {
+        // TODO we must call the backend to update the state there
         patchState(store, (state) => ({
-          quiz: state.quiz ? {
-            ...state.quiz,
-            questions: state.quiz.questions.map(q => q.id === updatedQuestion.id ? updatedQuestion : q)
-          } : null,
-          remainingMarks: state.remainingMarks !== null
-            ? state.remainingMarks - marksDiff
+          quiz: state.quiz
+            ? {
+                ...state.quiz,
+                questions: state.quiz.questions.map((question) =>
+                  question.id === questionId ? { ...question, questionText } : question,
+                ),
+              }
             : null,
         }));
+      },
 
-        return quizService.updateQuestion(quizId, updatedQuestion.id, updatedQuestion).pipe(
-          catchError((err) => {
-            console.error('Failed to update question', err);
-            return EMPTY;
-          })
-        );
-      })
-    ),
+      removeQuestion: rxMethod<string>(
+        concatMap((questionId) => {
+          const quizId = store.quizId();
+          if (!quizId) return EMPTY;
 
-    updateQuestionText(questionId: string, questionText: string): void {
-      // TODO we must call the backend to update the state there
-      patchState(store, (state) => ({
-        quiz: state.quiz ? {
-          ...state.quiz,
-          questions: state.quiz.questions.map((question) =>
-            question.id === questionId ? { ...question, questionText } : question,
-          ),
-        } : null,
-      }));
-    },
+          // Get the marks of the question being removed
+          const removedQuestion = (store.quiz()?.questions ?? []).find((q) => q.id === questionId);
+          const removedMarks = removedQuestion?.marks ?? 0;
 
-    removeQuestion: rxMethod<string>(
-      concatMap((questionId) => {
-        const quizId = store.quizId();
-        if (!quizId) return EMPTY;
+          // Optimistically update UI
+          patchState(store, (state) => {
+            if (!state.quiz) return {};
+            const filteredQuestions = state.quiz.questions.filter((q) => q.id !== questionId);
+            const nextActiveId =
+              state.activeQuestionId === questionId
+                ? (filteredQuestions[0]?.id ?? null)
+                : state.activeQuestionId;
 
-        // Get the marks of the question being removed
-        const removedQuestion = (store.quiz()?.questions ?? []).find(q => q.id === questionId);
-        const removedMarks = removedQuestion?.marks ?? 0;
+            return {
+              quiz: { ...state.quiz, questions: filteredQuestions },
+              activeQuestionId: nextActiveId,
+              remainingMarks:
+                state.remainingMarks !== null ? state.remainingMarks + removedMarks : null,
+            };
+          }, setPending('removeQuestion'));
 
-        // Optimistically update UI
-        patchState(store, (state) => {
-          if (!state.quiz) return {};
-          const filteredQuestions = state.quiz.questions.filter(q => q.id !== questionId);
-          const nextActiveId = state.activeQuestionId === questionId ? (filteredQuestions[0]?.id ?? null) : state.activeQuestionId;
-
-          return {
-            quiz: { ...state.quiz, questions: filteredQuestions },
-            activeQuestionId: nextActiveId,
-            remainingMarks: state.remainingMarks !== null
-              ? state.remainingMarks + removedMarks
-              : null,
-          };
-        });
-
-        return quizService.removeQuestion(quizId, questionId).pipe(
-          catchError((err) => {
-            console.error('Failed to remove question', err);
-            return EMPTY;
-          })
-        );
-      })
-    )
-  }))
+          return quizService.removeQuestion(quizId, questionId).pipe(
+            tap(() => patchState(store, setFulfilled('removeQuestion'))),
+            catchError((err) => {
+              console.error('Failed to remove question', err);
+              patchState(store, setError('removeQuestion', 'Failed to remove question.'));
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
+    }),
+  ),
 );

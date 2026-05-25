@@ -2,6 +2,7 @@ import { computed, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AuthService } from '@Features/auth/auth.service';
+import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
 import {
   patchState,
   signalStore,
@@ -10,10 +11,10 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
+import { withRequestStatus } from '@StoreFeatures/with-request-status.feature';
 
-import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
-import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CoursesService } from '@shared/services/courses.service';
 
 const createInitialQuiz = (): CreateQuiz => ({
@@ -28,8 +29,6 @@ const createInitialQuiz = (): CreateQuiz => ({
 export interface CreateQuizState {
   quiz: CreateQuiz;
   registeredForms: FormGroup[];
-  loading: boolean;
-  error: string | null;
   activeQuestionId: string | null;
   remainingMarks: number | null;
 }
@@ -37,15 +36,15 @@ export interface CreateQuizState {
 const initialState: CreateQuizState = {
   quiz: createInitialQuiz(),
   registeredForms: [],
-  loading: false,
-  error: null,
   activeQuestionId: null,
   remainingMarks: null,
 };
 
+
 export const CreateQuizStore = signalStore(
   { providedIn: 'root' },
   withState<CreateQuizState>(initialState),
+  withRequestStatus(),
   withComputed((store) => ({
     questions: computed(() => store.quiz().questions),
     numberOfQuestions: computed(() => store.quiz().questions.length),
@@ -231,7 +230,7 @@ export const CreateQuizStore = signalStore(
               return question;
             }
 
-            const mcq = question as MCQ;
+            const mcq = question as Mcq;
             const newChoice = {
               id: crypto.randomUUID(),
               questionId,
@@ -243,7 +242,7 @@ export const CreateQuizStore = signalStore(
               ...question,
               choices: [...mcq.choices, newChoice],
               numberOfChoices: mcq.numberOfChoices + 1,
-            } as MCQ;
+            } as Mcq;
           }),
         },
       });
@@ -258,7 +257,7 @@ export const CreateQuizStore = signalStore(
               return question;
             }
 
-            const mcq = question as MCQ;
+            const mcq = question as Mcq;
             if (mcq.choices.length <= 2) {
               return question;
             }
@@ -268,7 +267,7 @@ export const CreateQuizStore = signalStore(
               ...question,
               choices: updatedChoices,
               numberOfChoices: updatedChoices.length,
-            } as MCQ;
+            } as Mcq;
           }),
         },
       });
@@ -297,7 +296,7 @@ export const CreateQuizStore = signalStore(
       const authService = inject(AuthService);
       const currentUser = authService.currentUser();
       if (currentUser) {
-        store.setInstructorId(currentUser.userId);
+        store.setInstructorId(currentUser.id);
       }
     },
   }),

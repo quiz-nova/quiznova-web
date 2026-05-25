@@ -218,7 +218,7 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
 
   protected readonly instructorCourses = toSignal(
     toObservable(this.authService.currentUser).pipe(
-      switchMap((user) => (user ? this.coursesService.getInstructorCourses(user.userId) : of([]))),
+      switchMap((user) => (user ? this.coursesService.getInstructorCourses(user.id) : of([]))),
     ),
     { initialValue: [] },
   );

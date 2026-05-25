@@ -231,12 +231,6 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       font-weight: 600;
       opacity: 0.8;
     }
-
-    @media (width < 1024px) {
-      .questions-outline {
-        max-height: none;
-      }
-    }
   `,
 })
 export class QuestionsOutline {

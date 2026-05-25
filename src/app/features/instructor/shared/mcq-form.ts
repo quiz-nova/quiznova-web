@@ -52,7 +52,7 @@ type McqFormGroup = FormGroup<{
           <legend class="sr-only">Multiple Choice Options</legend>
           @for (
             choiceControl of choicesArray.controls;
-            track getChoiceId($index);
+            track choiceControl;
             let index = $index
           ) {
             <div class="radio-item" animate.enter="element-enter" animate.leave="element-leave">
@@ -72,7 +72,7 @@ type McqFormGroup = FormGroup<{
                 <input
                   class="choice-input"
                   [id]="'choice-' + getChoiceId(index) + 'text'"
-                  [formControlName]="index"
+                  [formControl]="choiceControl"
                   [attr.aria-invalid]="
                     choiceControl.invalid && choiceControl.touched ? 'true' : null
                   "
@@ -188,6 +188,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly valueChange = output<Question>();
   readonly blurEvent = output<Question>();
   readonly questionTextBlur = output<{ questionId: string; text: string }>();
+  readonly deleteChoice = output<{ questionId: string; choiceId: string }>();
 
   protected readonly mcq = () => this.initialData() as Mcq;
   private choiceIds: string[] = [];
@@ -305,7 +306,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     if (choiceId === currentCorrectId) {
       this.correctChoiceControl.setValue(null);
     }
-    this.onBlur();
+    this.deleteChoice.emit({ questionId: this.initialData().id, choiceId });
   }
 
   protected onTitleBlur(text: string) {

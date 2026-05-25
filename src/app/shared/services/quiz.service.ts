@@ -2,25 +2,31 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, type Type } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
+import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
 import { type QuizMetadataValue } from '@Features/instructor/shared/quiz-metadata-form';
 import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
-import { CreateQuiz } from '@shared/models/quiz/create-quiz.model';
-import { isMcq } from '@shared/models/quiz/mcq.model';
 import {
   QUESTION_FORM_COMPONENT_MAP,
   QUESTION_ATTEMPT_COMPONENT_MAP,
   QUESTION_TAG_MAP,
+  ANSWER_REVIEW_COMPONENT_MAP,
+  QUESTION_NOT_ANSWERED_COMPONENT_MAP,
+  STUDENT_ANSWER_REVIEW_COMPONENT_MAP,
 } from '@shared/models/quiz/question-component-map';
 import {
   QuestionAttemptContract,
   QuestionFormContract,
   QuestionTagContract,
+  AnswerReviewContract,
+  QuestionNotAnsweredContract,
+  StudentAnswerReviewContract,
 } from '@shared/models/quiz/question-component.contracts';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { isMcq } from '@shared/models/quiz/questions/mcq.model';
 import { QuizCount } from '@shared/models/quiz/quiz-count.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
 
@@ -41,6 +47,24 @@ export class QuizService {
     questionType: QuestionType,
   ): Type<QuestionAttemptContract> | null {
     return QUESTION_ATTEMPT_COMPONENT_MAP[questionType] || null;
+  }
+
+  getSuitableAnswerReviewComponent(
+    questionType: QuestionType,
+  ): Type<AnswerReviewContract> | null {
+    return ANSWER_REVIEW_COMPONENT_MAP[questionType] || null;
+  }
+
+  getSuitableQuestionNotAnsweredComponent(
+    questionType: QuestionType,
+  ): Type<QuestionNotAnsweredContract> | null {
+    return QUESTION_NOT_ANSWERED_COMPONENT_MAP[questionType] || null;
+  }
+
+  getSuitableStudentAnswerReviewComponent(
+    questionType: QuestionType,
+  ): Type<StudentAnswerReviewContract> | null {
+    return STUDENT_ANSWER_REVIEW_COMPONENT_MAP[questionType] || null;
   }
 
   createQuiz(quiz: CreateQuiz): Observable<Quiz> {

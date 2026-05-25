@@ -1,19 +1,22 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { NgComponentOutlet } from '@angular/common';
+import { Component, effect, inject, OnInit, viewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { AddQuestion } from '@Features/instructor/shared/add-question';
-import { McqForm } from '@Features/instructor/shared/mcq-form';
 import { NoQuestions } from '@Features/instructor/shared/no-questions';
 import { QuestionHeader } from '@Features/instructor/shared/question-header';
 import { QuestionsOutline } from '@Features/instructor/shared/questions-outline';
 import { QuizHeader } from '@Features/instructor/shared/quiz-header';
 import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
-import { TfForm } from '@Features/instructor/shared/tf-form';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
+import { EssayTag } from '@shared/components/questions-tags/essay-tag';
 import { McqTag } from '@shared/components/questions-tags/mcq-tag';
 import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
+import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
+import { QuizService } from '@shared/services/quiz.service';
 
 import { EditQuizStore } from './edit-quiz.store';
 
@@ -27,10 +30,11 @@ import { EditQuizStore } from './edit-quiz.store';
     QuizMetadataForm,
     ObserveVisibilityDirective,
     QuestionsOutline,
-    McqForm,
-    TfForm,
+    NgComponentOutlet,
     McqTag,
     TfTag,
+    EssayTag,
+    OperationFailed,
   ],
   providers: [EditQuizStore],
   template: `
@@ -100,25 +104,16 @@ import { EditQuizStore } from './edit-quiz.store';
                         @case ('tf') {
                           <app-tf-tag></app-tf-tag>
                         }
+                        @case ('essay') {
+                          <app-essay-tag></app-essay-tag>
+                        }
                       }
                     </app-question-header>
 
-                    @switch (question.type) {
-                      @case ('mcq') {
-                        <app-mcq-form
-                          [initialData]="question"
-                          (questionTextBlur)="store.updateQuestionText($event.questionId, $event.text)"
-                          (blurEvent)="store.updateQuestion($event)"
-                        ></app-mcq-form>
-                      }
-                      @case ('tf') {
-                        <app-tf-form
-                          [initialData]="question"
-                          (questionTextBlur)="store.updateQuestionText($event.questionId, $event.text)"
-                          (blurEvent)="store.updateQuestion($event)"
-                        ></app-tf-form>
-                      }
-                    }
+                    <ng-container
+                      [ngComponentOutlet]="quizService.getSuitableQuestionFormComponent(question.type)"
+                      [ngComponentOutletInputs]="{ initialData: question }"
+                    ></ng-container>
                   </div>
                 }
               </div>
@@ -137,10 +132,12 @@ import { EditQuizStore } from './edit-quiz.store';
               }
             </div>
           </div>
-        } @else if (store.isPending()) {
+        } @else if (store.isPending()('loadQuiz')) {
           <p>Loading quiz...</p>
-        } @else if (store.error() !== null) {
-          <p class="error-text">{{ store.error() }}</p>
+        } @else if (store.error()('loadQuiz') !== null) {
+          <app-operation-failed>
+            <p>{{ store.error()('loadQuiz') }}</p>
+          </app-operation-failed>
         }
       </main>
     </section>
@@ -243,9 +240,6 @@ import { EditQuizStore } from './edit-quiz.store';
       min-width: 0;
     }
 
-    @media (width >= 1024px) {
-    }
-
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
@@ -257,6 +251,38 @@ import { EditQuizStore } from './edit-quiz.store';
 export class EditQuiz implements OnInit {
   protected readonly store = inject(EditQuizStore);
   private readonly route = inject(ActivatedRoute);
+  protected readonly quizService = inject(QuizService);
+
+  private readonly formOutlets = viewChildren(NgComponentOutlet);
+
+  constructor() {
+    effect((onCleanup) => {
+      const activeOutlets = this.formOutlets();
+      const activeSubscriptions: { unsubscribe(): void }[] = [];
+
+      activeOutlets.forEach((outlet) => {
+        const instance = outlet.componentInstance as QuestionFormContract | null;
+        if (instance) {
+          if (instance.blurEvent) {
+            activeSubscriptions.push(
+              instance.blurEvent.subscribe((q) => this.store.updateQuestion(q))
+            );
+          }
+          if (instance.questionTextBlur) {
+            activeSubscriptions.push(
+              instance.questionTextBlur.subscribe((event) =>
+                this.store.updateQuestionText(event.questionId, event.text)
+              )
+            );
+          }
+        }
+      });
+
+      onCleanup(() => {
+        activeSubscriptions.forEach((sub) => sub.unsubscribe());
+      });
+    });
+  }
 
   ngOnInit() {
     // Assuming the route is configured like: 'edit/:id'

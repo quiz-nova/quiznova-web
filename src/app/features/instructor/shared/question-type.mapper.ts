@@ -1,6 +1,6 @@
-import { Choice, MCQ } from '@shared/models/quiz/mcq.model';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/tf.model';
+import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { Tf } from '@shared/models/quiz/questions/tf.model';
 
 export interface CreateQuestionContext {
   quizId?: string;
@@ -36,7 +36,7 @@ function resolveMarks(remainingMarks: number): number | null {
 }
 
 const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
-  [QuestionType.Mcq]: (context): MCQ | null => {
+  [QuestionType.Mcq]: (context): Mcq | null => {
     const marks = resolveMarks(context.remainingMarks);
     if (marks === null) {
       return null;
@@ -71,6 +71,22 @@ const QUESTION_MAPPERS: Record<QuestionType, QuestionMapper> = {
       type: QuestionType.Tf,
       correctChoice: true,
     };
+  },
+  [QuestionType.Essay]: (context): Question | null => {
+    const marks = resolveMarks(context.remainingMarks);
+    if (marks === null) {
+      return null;
+    }
+
+    return {
+      id: context.questionId ?? crypto.randomUUID(),
+      quizId: context.quizId ?? '',
+      questionText: '',
+      marks,
+      displayOrder: context.displayOrder,
+      type: QuestionType.Essay,
+      answerReference: null,
+    } as Question;
   },
 };
 

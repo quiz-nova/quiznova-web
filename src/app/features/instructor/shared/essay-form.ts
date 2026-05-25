@@ -21,10 +21,10 @@ import {
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
+import { Essay } from '@shared/models/quiz/questions/essay.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
-import { Essay } from '@shared/models/quiz/questions/essay.model';
 
 type EssayFormGroup = FormGroup<{
   questionText: FormControl<string>;

@@ -7,13 +7,13 @@ export interface Choice {
   displayOrder: number;
 }
 
-export interface MCQ extends Question {
+export interface Mcq extends Question {
   type: typeof QuestionType.Mcq;
   numberOfChoices: number;
   correctChoiceId: string;
   choices: Choice[];
 }
 
-export function isMcq(question: Question): question is MCQ {
+export function isMcq(question: Question): question is Mcq {
   return question.type === QuestionType.Mcq;
 }

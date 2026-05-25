@@ -3,7 +3,7 @@ import { CanMatchFn, Router } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
 
-import { DEFAULT_USER_ROUTE, UserRole } from '@shared/models/user/user-role.model';
+import { DEFAULT_USER_ROUTE, UserRole } from '@shared/models/users/user-role.model';
 
 
 export const roleGuard = (role: UserRole): CanMatchFn => {

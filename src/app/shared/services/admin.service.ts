@@ -7,9 +7,9 @@ import { CreateAdmin } from '@Features/admin/models/create-admin.model';
 import { UpdateAdmin } from '@Features/admin/models/update-admin.model';
 import { Observable } from 'rxjs';
 
-import { Admin } from '@shared/models/admin/admin.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
+import { Admin } from '@shared/models/users/admin.model';
 
 @Injectable({
   providedIn: 'root',

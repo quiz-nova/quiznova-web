@@ -5,8 +5,8 @@ import { TabGroup } from '@Core/layout/sidebar/tab-group';
 import { AuthService } from '@Features/auth/auth.service';
 
 import { Logo } from '@shared/components/logo/logo';
-import { ROLE_DEFINITIONS } from '@shared/models/user/user-role.model';
-import { User } from '@shared/models/user/user.model';
+import { ROLE_DEFINITIONS } from '@shared/models/users/user-role.model';
+import { User } from '@shared/models/users/user.model';
 
 
 @Component({

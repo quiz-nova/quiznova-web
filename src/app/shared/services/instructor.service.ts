@@ -7,9 +7,9 @@ import { CreateInstructor } from '@Features/admin/models/create-instructor.model
 import { UpdateInstructor } from '@Features/admin/models/update-instructor.model';
 import { Observable } from 'rxjs';
 
-import { Instructor } from '@shared/models/instructor/instructor.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
+import { Instructor } from '@shared/models/users/instructor.model';
 
 @Injectable({
   providedIn: 'root',

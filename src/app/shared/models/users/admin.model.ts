@@ -1,4 +1,3 @@
 import { User } from "./user.model";
 
-export interface Admin extends User {
-}
+export type Admin = User;

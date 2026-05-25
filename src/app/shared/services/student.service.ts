@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
-import { Student } from '@shared/models/student/student.model';
+import { Student } from '@shared/models/users/student.model';
 
 @Injectable({
   providedIn: 'root',

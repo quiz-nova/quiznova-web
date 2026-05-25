@@ -4,8 +4,8 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { map, Observable, tap } from 'rxjs';
 
-import { ROLE_DEFINITIONS, UserRole } from '@shared/models/user/user-role.model';
-import { User } from '@shared/models/user/user.model';
+import { ROLE_DEFINITIONS, UserRole } from '@shared/models/users/user-role.model';
+import { User } from '@shared/models/users/user.model';
 
 import { Auth, Token } from './models/auth.model';
 
@@ -72,11 +72,14 @@ export class AuthService {
 
   private mapUser(user: User): User {
     return {
-      userId: user.userId,
+      id: user.id,
       name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
       role: this.parseUserRole(user.role),
     };
   }
+
 
   private persistUser(user: User): void {
     localStorage.setItem(this.userKey, JSON.stringify(user));

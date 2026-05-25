@@ -9,6 +9,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { InstructorService } from '@shared/services/instructor.service';
 
 import { AddInstructorModal } from './add-instructor-modal';
@@ -26,15 +27,15 @@ import { EditInstructorModal } from './edit-instructor-modal';
     InputText,
     InputNumber,
     NavigationButtons,
+    RoleDashboardHeader,
   ],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Instructors</p>
-          <h1>Instructor Directory</h1>
-          <p class="description">A quick view of teaching assignments and quiz activity.</p>
-        </div>
+        <app-role-dashboard-header
+          title="Instructor Directory"
+          description="A quick view of teaching assignments and quiz activity."
+        />
         <app-add-instructor-modal (created)="reloadInstructors()"></app-add-instructor-modal>
       </header>
 
@@ -119,7 +120,7 @@ import { EditInstructorModal } from './edit-instructor-modal';
                 </td>
               </tr>
             } @else {
-              @for (instructor of instructorsResource.value()?.items ?? []; track instructor.instructorId) {
+              @for (instructor of instructorsResource.value()?.items ?? []; track instructor.id) {
                 <tr>
                   <td>{{ instructor.name }}</td>
                   <td>{{ instructor.coursesCount }}</td>

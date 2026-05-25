@@ -9,6 +9,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { StudentService } from '@shared/services/student.service';
 
 import { AddStudentModal } from './add-student-modal';
@@ -26,15 +27,15 @@ import { EditStudentModal } from './edit-student-modal';
     InputText,
     InputNumber,
     NavigationButtons,
+    RoleDashboardHeader,
   ],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Students</p>
-          <h1>Student Roster</h1>
-          <p class="description">A simple roster view of enrollment load.</p>
-        </div>
+        <app-role-dashboard-header
+          title="Student Roster"
+          description="A simple roster view of enrollment load."
+        />
         <app-add-student-modal (created)="reloadStudents()"></app-add-student-modal>
       </header>
 
@@ -108,7 +109,7 @@ import { EditStudentModal } from './edit-student-modal';
                 </td>
               </tr>
             } @else {
-              @for (student of studentsResource.value()?.items ?? []; track student.studentId) {
+              @for (student of studentsResource.value()?.items ?? []; track student.id) {
                 <tr>
                   <td>{{ student.name }}</td>
                   <td>{{ student.enrolledCoursesCount }}</td>

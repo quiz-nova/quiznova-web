@@ -20,8 +20,8 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
-import { Instructor } from '@shared/models/users/instructor.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
+import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 

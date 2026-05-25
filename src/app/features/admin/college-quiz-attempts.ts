@@ -9,19 +9,19 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 
 @Component({
   selector: 'app-college-quiz-attempts',
-  imports: [ProgressSpinner, FormsModule, InputText, InputNumber, NavigationButtons],
+  imports: [ProgressSpinner, FormsModule, InputText, InputNumber, NavigationButtons, RoleDashboardHeader],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Quiz Attempts</p>
-          <h1>Attempts Overview</h1>
-          <p class="description">Review student submissions, answers, and scores.</p>
-        </div>
+        <app-role-dashboard-header
+          title="Attempts Overview"
+          description="Review student submissions, answers, and scores."
+        />
       </header>
 
       <div class="filters-grid">

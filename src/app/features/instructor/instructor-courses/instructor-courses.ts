@@ -5,18 +5,21 @@ import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { of } from 'rxjs';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CoursesService } from '@shared/services/courses.service';
 
 
 @Component({
   selector: 'app-instructor-courses',
-  imports: [ProgressSpinner],
+  imports: [ProgressSpinner, RoleDashboardHeader, OperationFailed],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <h1>My Courses</h1>
-        </div>
+        <app-role-dashboard-header
+          title="My Courses"
+          description="Manage your assigned courses, view students, and configure quizzes"
+        />
       </header>
 
       @if (coursesResource.isLoading()) {
@@ -24,9 +27,9 @@ import { CoursesService } from '@shared/services/courses.service';
           <p-progress-spinner ariaLabel="Loading instructor courses" />
         </div>
       } @else if (coursesResource.error()) {
-        <div class="status-container error-state" role="alert">
+        <app-operation-failed>
           <p>Failed to load course data.</p>
-        </div>
+        </app-operation-failed>
       } @else if (!coursesResource.value().length) {
         <p class="feedback">No courses are assigned to you yet.</p>
       } @else {
@@ -79,23 +82,10 @@ import { CoursesService } from '@shared/services/courses.service';
       padding: 1.5rem;
     }
 
-    h1 {
-      margin: 0;
-      font-family: var(--ff-heading), sans-serif;
-      font-size: clamp(2rem, 4vw, var(--fs-700));
-      font-weight: 700;
-    }
-
     .status-container {
       display: grid;
       min-height: 12rem;
       place-items: center;
-    }
-
-    .error-state {
-      border: 1px solid var(--clr-red-500, #fecaca);
-      border-radius: var(--radius-md);
-      color: var(--clr-red-500, #b91c1c);
     }
 
     .feedback {
@@ -201,7 +191,7 @@ export class InstructorCourses {
   private readonly authService = inject(AuthService);
   private readonly coursesService = inject(CoursesService);
 
-  protected readonly instructorId = computed(() => this.authService.currentUser()?.userId ?? null);
+  protected readonly instructorId = computed(() => this.authService.currentUser()?.id ?? null);
 
   protected readonly coursesResource = rxResource({
     stream: () => {

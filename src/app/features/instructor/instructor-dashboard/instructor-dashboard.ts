@@ -5,6 +5,8 @@ import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { of, forkJoin } from 'rxjs';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
+import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CoursesService } from '@shared/services/courses.service';
 import { QuizService } from '@shared/services/quiz.service';
@@ -12,7 +14,7 @@ import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
   selector: 'app-instructor-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader],
+  imports: [ProgressSpinner, RoleDashboardHeader, OperationFailed, RoleDashboardCard],
   template: `
     <section class="dashboard">
       <header class="dashboard-header">
@@ -27,22 +29,18 @@ import { QuizService } from '@shared/services/quiz.service';
           <p-progress-spinner ariaLabel="Loading instructor dashboard" />
         </div>
       } @else if (summaryResource.error()) {
-        <div class="status-container error-state" role="alert">
+        <app-operation-failed>
           <p>Failed to load dashboard data.</p>
-        </div>
+        </app-operation-failed>
       } @else {
         <section class="card-grid" aria-label="Instructor summary">
           @for (card of cards(); track card.title) {
-            <article class="summary-card">
-              <div class="card-header">
-                <h2>{{ card.title }}</h2>
-                <div class="card-icon" aria-hidden="true">
-                  <i [class]="card.icon"></i>
-                </div>
-              </div>
-
-              <p class="card-value">{{ card.value }}</p>
-            </article>
+            <app-role-dashboard-card
+              [title]="card.title"
+              [value]="card.value"
+              [icon]="card.icon"
+              [theme]="card.theme"
+            />
           }
         </section>
       }
@@ -75,61 +73,10 @@ import { QuizService } from '@shared/services/quiz.service';
       place-items: center;
     }
 
-    .error-state {
-      border: 1px solid var(--clr-red-500, #fecaca);
-      border-radius: var(--radius-md);
-      color: var(--clr-red-500, #b91c1c);
-    }
-
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-
-    .summary-card {
-      display: grid;
       gap: 1.5rem;
-      min-height: 9.5rem;
-      padding: 1.5rem;
-      border: 1px solid #d9e2ec;
-      border-radius: 1rem;
-      background: var(--clr-white);
-      box-shadow: 0 12px 30px rgb(15 23 42 / 8%);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    h2 {
-      margin: 0;
-      color: #556987;
-      font-size: 1.625rem;
-      font-weight: 600;
-    }
-
-    .card-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 2.75rem;
-      height: 2.75rem;
-      border-radius: 1rem;
-      background: #e9fbf6;
-      color: #19b394;
-      font-size: 1.25rem;
-    }
-
-    .card-value {
-      margin: 0;
-      color: #0f172a;
-      font-size: clamp(2rem, 4vw, 2.5rem);
-      font-weight: 700;
-      line-height: 1;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -142,7 +89,7 @@ export class InstructorDashboard {
   protected readonly welcomeName = computed(
     () => this.authService.currentUser()?.name || 'Instructor',
   );
-  protected readonly instructorId = computed(() => this.authService.currentUser()?.userId ?? null);
+  protected readonly instructorId = computed(() => this.authService.currentUser()?.id ?? null);
 
   protected readonly summaryResource = rxResource({
     stream: () => {
@@ -182,11 +129,13 @@ export class InstructorDashboard {
         title: 'My Courses',
         value: summary.courses.coursesCount,
         icon: 'fa-solid fa-book-open',
+        theme: 'green' as const,
       },
       {
         title: 'Total Quizzes',
         value: summary.quizzes.quizzesCount,
         icon: 'fa-regular fa-clipboard',
+        theme: 'violet' as const,
       },
     ];
   });

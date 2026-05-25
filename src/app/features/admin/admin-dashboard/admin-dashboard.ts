@@ -2,15 +2,15 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { rxResource } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '@Features/auth/auth.service';
-import { FeatureCardComponent } from '@Features/landing/feature-card';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
+import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CollegeService } from '@shared/services/college.service';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [FeatureCardComponent, ProgressSpinner, RoleDashboardHeader],
+  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard],
   template: `
     <section class="page">
       <header class="page-header">
@@ -31,14 +31,13 @@ import { CollegeService } from '@shared/services/college.service';
       } @else {
         <section class="card-grid">
           @for (card of cards(); track card.title) {
-            <app-feature-card>
-              <i [class]="card.icon" aria-hidden="true"></i>
-              <h3 class="card-title">{{ card.title }}</h3>
-              <div class="card-content">
-                <strong class="metric">{{ card.value }}</strong>
-                <p>{{ card.caption }}</p>
-              </div>
-            </app-feature-card>
+            <app-role-dashboard-card
+              [title]="card.title"
+              [value]="card.value"
+              [icon]="card.icon"
+              [caption]="card.caption"
+              [theme]="card.theme"
+            />
           }
         </section>
       }
@@ -60,14 +59,8 @@ import { CollegeService } from '@shared/services/college.service';
 
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-
-    .metric {
-      display: block;
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
-      line-height: 1;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,18 +84,21 @@ export class AdminDashboard {
         value: summary?.totalStudents ?? 0,
         caption: 'Registered learners in this college',
         icon: 'fa-solid fa-users',
+        theme: 'cyan' as const,
       },
       {
         title: 'Instructors',
         value: summary?.totalInstructors ?? 0,
         caption: 'Teaching staff currently assigned',
         icon: 'fa-solid fa-chalkboard-user',
+        theme: 'violet' as const,
       },
       {
         title: 'Courses',
         value: summary?.totalCourses ?? 0,
         caption: 'Courses tracked under this college',
         icon: 'fa-solid fa-book',
+        theme: 'green' as const,
       },
     ];
   });

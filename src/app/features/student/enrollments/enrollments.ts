@@ -6,18 +6,20 @@ import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { of } from 'rxjs';
 
+import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CoursesService } from '@shared/services/courses.service';
 
 
 @Component({
   selector: 'app-student-courses',
-  imports: [ProgressSpinner, DatePipe],
+  imports: [ProgressSpinner, DatePipe, RoleDashboardHeader],
   template: `
     <section class="page">
       <header class="page-header">
-        <div>
-          <h1>My Enrolled Courses</h1>
-        </div>
+        <app-role-dashboard-header
+          title="My Enrolled Courses"
+          description="View and access the courses you are currently enrolled in"
+        />
       </header>
 
       @if (coursesResource.isLoading()) {
@@ -73,13 +75,6 @@ import { CoursesService } from '@shared/services/courses.service';
       gap: 1.5rem;
       width: 100%;
       padding: 1.5rem;
-    }
-
-    h1 {
-      margin: 0;
-      font-family: var(--ff-heading), sans-serif;
-      font-size: clamp(2rem, 4vw, var(--fs-700));
-      font-weight: 700;
     }
 
     .feedback {
@@ -200,7 +195,7 @@ export class Enrollments {
   private readonly authService = inject(AuthService);
   private readonly coursesService = inject(CoursesService);
 
-  protected readonly studentId = computed(() => this.authService.currentUser()?.userId ?? null);
+  protected readonly studentId = computed(() => this.authService.currentUser()?.id ?? null);
 
   protected readonly coursesResource = rxResource({
     stream: () => {

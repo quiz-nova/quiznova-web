@@ -1,10 +1,10 @@
-import {Routes} from '@angular/router';
+import { Routes } from '@angular/router';
 
-import {roleGuard} from '@Core/guards/role.guard';
-import {Login} from '@Features/auth/login/login';
-import {Landing} from '@Features/landing/landing';
+import { roleGuard } from '@Core/guards/role.guard';
+import { Login } from '@Features/auth/login/login';
+import { Landing } from '@Features/landing/landing';
 
-import {UserRole} from '@shared/models/user/user-role.model';
+import { UserRole } from '@shared/models/users/user-role.model';
 
 export const routes: Routes = [
   {
@@ -43,6 +43,20 @@ export const routes: Routes = [
         path: 'create-quiz',
         loadComponent: () =>
           import('@Features/instructor/create-quiz/create-quiz').then((m) => m.CreateQuiz),
+      },
+      {
+        path: 'grade',
+        loadComponent: () =>
+          import('@Features/instructor/pending-grades/pending-grades').then(
+            (m) => m.PendingGrades,
+          ),
+      },
+      {
+        path: 'grade/:attemptId',
+        loadComponent: () =>
+          import('@Features/instructor/grade-review/grade-review').then(
+            (m) => m.GradeReview,
+          ),
       },
     ],
   },

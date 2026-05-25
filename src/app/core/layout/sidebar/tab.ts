@@ -3,8 +3,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
 
-import { ROLE_DEFINITIONS } from '@shared/models/user/user-role.model';
-import { User } from '@shared/models/user/user.model';
+import { ROLE_DEFINITIONS } from '@shared/models/users/user-role.model';
+import { User } from '@shared/models/users/user.model';
 
 
 @Component({
@@ -74,6 +74,7 @@ export class Tab {
     Courses: 'fa-solid fa-book',
     Admins: 'fa-solid fa-user-shield',
     Settings: 'fa-solid fa-gear',
+    'Pending Grades': 'fa-solid fa-clipboard-check',
   };
 
   protected readonly routeLink = computed(() => {

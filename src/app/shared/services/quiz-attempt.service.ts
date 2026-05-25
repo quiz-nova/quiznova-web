@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
+import { PendingManualAnswers } from '@shared/models/quiz-attempt/pending-manual-answer.model';
 import { QuizAttemptCount } from '@shared/models/quiz-attempt/quiz-attempt-count.model';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 
@@ -60,5 +61,24 @@ export class QuizAttemptService {
     return this.http.get<PaginatedList<QuizAttempt>>(`${this.appSettings.apiBaseUrl}/quiz-attempts`, {
       params,
     });
+  }
+
+  getPendingManualAnswers(): Observable<PendingManualAnswers[]> {
+    return this.http.get<PendingManualAnswers[]>(
+      `${this.appSettings.apiBaseUrl}/quiz-attempts/manually-graded-answers`,
+    );
+  }
+
+  getQuizAttemptForGrading(attemptId: string): Observable<QuizAttempt> {
+    return this.http.get<QuizAttempt>(
+      `${this.appSettings.apiBaseUrl}/quiz-attempts/${attemptId}`,
+    );
+  }
+
+  gradeAnswer(answerId: string, score: number, feedback?: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.appSettings.apiBaseUrl}/quiz-attempts/manually-graded-answers/${answerId}`,
+      { score, feedback: feedback ?? null },
+    );
   }
 }

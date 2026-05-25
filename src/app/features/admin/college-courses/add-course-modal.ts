@@ -13,8 +13,8 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 
-import { FieldError } from '@shared/components/field-error/field-error';
 import { Button } from '@shared/components/button/button';
+import { FieldError } from '@shared/components/field-error/field-error';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';

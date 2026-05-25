@@ -21,9 +21,9 @@ import {
 
 import { RadioButton } from 'primeng/radiobutton';
 
+import { Button } from '@shared/components/button/button';
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
-import { Button } from '@shared/components/button/button';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';

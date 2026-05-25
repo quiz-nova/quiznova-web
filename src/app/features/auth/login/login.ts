@@ -13,9 +13,9 @@ import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
+import { Button } from '@shared/components/button/button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Logo } from '@shared/components/logo/logo';
-import { Button } from '@shared/components/button/button';
 import { DEFAULT_USER_ROUTE, ROLES, UserRole } from '@shared/models/users/user-role.model';
 import { User } from '@shared/models/users/user.model';
 

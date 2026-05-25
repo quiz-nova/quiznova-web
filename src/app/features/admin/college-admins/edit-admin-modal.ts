@@ -11,9 +11,9 @@ import { DialogModule } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 
+import { Button } from '@shared/components/button/button';
 import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
-import { Button } from '@shared/components/button/button';
 import { Admin } from '@shared/models/users/admin.model';
 import { AdminService } from '@shared/services/admin.service';
 import { CustomValidators } from '@shared/validators/custom-validators';

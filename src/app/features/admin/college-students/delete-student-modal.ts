@@ -2,8 +2,8 @@ import { Component, inject, input, output, signal } from '@angular/core';
 
 import { DialogModule } from 'primeng/dialog';
 
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Button } from '@shared/components/button/button';
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
 

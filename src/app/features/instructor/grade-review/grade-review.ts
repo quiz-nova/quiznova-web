@@ -12,8 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProgressSpinner } from 'primeng/progressspinner';
 
-import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { Button } from '@shared/components/button/button';
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';

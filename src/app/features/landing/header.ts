@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { Logo } from '@shared/components/logo/logo';
 import { Button } from '@shared/components/button/button';
+import { Logo } from '@shared/components/logo/logo';
 
 export interface HeaderLink {
   id: number;

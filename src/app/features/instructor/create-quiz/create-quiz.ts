@@ -10,10 +10,10 @@ import { QuestionsOutline } from '@Features/instructor/shared/questions-outline'
 import { QuizHeader } from '@Features/instructor/shared/quiz-header';
 import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
 
+import { Button } from '@shared/components/button/button';
+import { EssayTag } from '@shared/components/questions-tags/essay-tag';
 import { McqTag } from '@shared/components/questions-tags/mcq-tag';
 import { TfTag } from '@shared/components/questions-tags/tf-tag';
-import { EssayTag } from '@shared/components/questions-tags/essay-tag';
-import { Button } from '@shared/components/button/button';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';

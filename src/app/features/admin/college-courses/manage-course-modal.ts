@@ -5,8 +5,8 @@ import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Button } from '@shared/components/button/button';
+import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Course } from '@shared/models/course/course.model';
 
 import { ManageCourseStore } from './manage-course.store';

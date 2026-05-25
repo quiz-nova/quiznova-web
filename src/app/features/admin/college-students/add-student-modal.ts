@@ -12,8 +12,8 @@ import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
-import { FieldError } from '@shared/components/field-error/field-error';
 import { Button } from '@shared/components/button/button';
+import { FieldError } from '@shared/components/field-error/field-error';
 import { UserRole } from '@shared/models/users/user-role.model';
 import { StudentService } from '@shared/services/student.service';
 import { CustomValidators } from '@shared/validators/custom-validators';

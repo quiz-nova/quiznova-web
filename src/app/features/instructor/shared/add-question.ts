@@ -9,8 +9,8 @@ import {
 import { mapQuestionTypeToQuestion } from '@Features/instructor/shared/question-type.mapper';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
-import { Button } from '@shared/components/button/button';
 
+import { Button } from '@shared/components/button/button';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
 type AddQuestionFormGroup = FormGroup<{

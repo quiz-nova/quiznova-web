@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 import { Button } from '@shared/components/button/button';
+import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-hero',

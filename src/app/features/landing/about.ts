@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 
-import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 import { Button } from '@shared/components/button/button';
+import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-about',

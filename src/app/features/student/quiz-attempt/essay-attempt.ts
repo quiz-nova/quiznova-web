@@ -10,9 +10,9 @@ import {
 
 import { distinctUntilChanged, startWith } from 'rxjs';
 
+import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Essay } from '@shared/models/quiz/questions/essay.model';
-import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
 
 import { SubmitEssayAnswer } from './models/SubmitQuizAttempt.model';
 import { QuizAttemptStore } from './quiz-attempt.store';

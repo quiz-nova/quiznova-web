@@ -1,21 +1,31 @@
+import { QuestionType } from '@shared/models/quiz/question.model';
+
 export interface SubmitQuestionAnswer {
   questionId: string;
-  type: 'mcq' | 'tf';
+  type: QuestionType;
 }
 
 export interface SubmitMcqAnswer extends SubmitQuestionAnswer {
-  type: 'mcq';
+  type: typeof QuestionType.Mcq;
   selectedChoiceId: string;
 }
 
 export interface SubmitTfAnswer extends SubmitQuestionAnswer {
-  type: 'tf';
+  type: typeof QuestionType.Tf;
   studentChoice: boolean;
 }
+
+export interface SubmitEssayAnswer extends SubmitQuestionAnswer {
+  type: typeof QuestionType.Essay;
+  studentResponse: string;
+}
+
+export type SubmitQuestionAnswerType = SubmitMcqAnswer | SubmitTfAnswer | SubmitEssayAnswer;
 
 export interface SubmitQuizAttempt {
   quizId: string;
   startedAt: string;
   submittedAt: string;
-  questionAnswers: (SubmitMcqAnswer | SubmitTfAnswer)[];
+  questionAnswers: SubmitQuestionAnswerType[];
 }
+

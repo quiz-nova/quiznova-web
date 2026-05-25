@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { MCQ } from '@shared/models/quiz/mcq.model';
-import { McqAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import { StudentAnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
+import { Question } from '@shared/models/quiz/question.model';
+import { Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-mcq-answer-review',
@@ -9,8 +11,8 @@ import { McqAnswer } from '@shared/models/quiz-attempt/question-answer.model';
   template: `
     <article
       class="review-question"
-      [class.review-question--correct]="answer().isCorrect === true"
-      [class.review-question--incorrect]="answer().isCorrect === false"
+      [class.review-question--correct]="mcqAnswer().isCorrect === true"
+      [class.review-question--incorrect]="mcqAnswer().isCorrect === false"
       aria-label="Reviewed multiple choice question"
     >
       <header class="review-question__header">
@@ -20,28 +22,28 @@ import { McqAnswer } from '@shared/models/quiz-attempt/question-answer.model';
         </div>
 
         <span class="review-question__marks">
-          {{ answer().isCorrect ? '+' + question().marks : '0' }}/{{ question().marks }} pt
+          {{ mcqAnswer().isCorrect ? '+' + mcq().marks : '0' }}/{{ mcq().marks }} pt
         </span>
       </header>
 
-      <p class="review-question__text">{{ question().questionText }}</p>
+      <p class="review-question__text">{{ mcq().questionText }}</p>
 
       <div class="review-question__choices">
         @for (choice of choices(); track choice.id; let i = $index) {
           <div
             class="review-choice"
-            [class.review-choice--correct]="choice.id === question().correctChoiceId"
-            [class.review-choice--selected]="choice.id === answer().selectedChoiceId"
+            [class.review-choice--correct]="choice.id === mcq().correctChoiceId"
+            [class.review-choice--selected]="choice.id === mcqAnswer().selectedChoiceId"
             [class.review-choice--selected-wrong]="
-              choice.id === answer().selectedChoiceId && answer().isCorrect === false
+              choice.id === mcqAnswer().selectedChoiceId && mcqAnswer().isCorrect === false
             "
           >
             <span class="review-choice__prefix">{{ letter(i) }}.</span>
             <span class="review-choice__text">{{ choice.text }}</span>
 
-            @if (choice.id === answer().selectedChoiceId) {
+            @if (choice.id === mcqAnswer().selectedChoiceId) {
               <span class="review-choice__pill">your pick</span>
-            } @else if (choice.id === question().correctChoiceId) {
+            } @else if (choice.id === mcq().correctChoiceId) {
               <span class="review-choice__pill review-choice__pill--correct">correct</span>
             }
           </div>
@@ -172,13 +174,16 @@ import { McqAnswer } from '@shared/models/quiz-attempt/question-answer.model';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class McqAnswerReview {
-  readonly question = input.required<MCQ>();
-  readonly answer = input.required<McqAnswer>();
+export class McqAnswerReview implements StudentAnswerReviewContract {
+  readonly question = input.required<Question>();
+  readonly answer = input.required<QuestionAnswer>();
   readonly questionNumber = input.required<number>();
 
+  protected readonly mcq = computed(() => this.question() as Mcq);
+  protected readonly mcqAnswer = computed(() => this.answer() as McqAnswer);
+
   protected readonly choices = computed(() => {
-    return [...this.question().choices].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...this.mcq().choices].sort((a, b) => a.displayOrder - b.displayOrder);
   });
 
   protected letter(index: number): string {

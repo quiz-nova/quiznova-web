@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { MCQ } from '@shared/models/quiz/mcq.model';
+import { QuestionNotAnsweredContract } from '@shared/models/quiz/question-component.contracts';
+import { Question } from '@shared/models/quiz/question.model';
+import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
 @Component({
   selector: 'app-mcq-not-answered',
@@ -22,11 +24,11 @@ import { MCQ } from '@shared/models/quiz/mcq.model';
         @for (choice of choices(); track choice.id; let i = $index) {
           <div
             class="review-choice"
-            [class.review-choice--correct]="choice.id === question().correctChoiceId"
+            [class.review-choice--correct]="choice.id === mcq().correctChoiceId"
           >
             <span class="review-choice__prefix">{{ letter(i) }}.</span>
             <span class="review-choice__text">{{ choice.text }}</span>
-            @if (choice.id === question().correctChoiceId) {
+            @if (choice.id === mcq().correctChoiceId) {
               <span class="review-choice__pill">correct</span>
             }
           </div>
@@ -145,12 +147,13 @@ import { MCQ } from '@shared/models/quiz/mcq.model';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class McqNotAnswered {
-  readonly question = input.required<MCQ>();
+export class McqNotAnswered implements QuestionNotAnsweredContract {
+  readonly question = input.required<Question>();
+  readonly mcq = computed(() => this.question() as Mcq);
   readonly questionNumber = input.required<number>();
 
   protected readonly choices = computed(() => {
-    return [...this.question().choices].sort((a, b) => a.displayOrder - b.displayOrder);
+    return [...this.mcq().choices].sort((a, b) => a.displayOrder - b.displayOrder);
   });
 
   protected letter(index: number): string {

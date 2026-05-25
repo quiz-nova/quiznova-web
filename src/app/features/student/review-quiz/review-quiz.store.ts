@@ -18,8 +18,8 @@ import {
 } from '@StoreFeatures/with-request-status.feature';
 import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
 
-import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 import { Question } from '@shared/models/quiz/question.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 import {
@@ -111,11 +111,11 @@ export const ReviewQuizStore = signalStore(
         exhaustMap(({ attemptId }) => {
           const studentId = store.studentId();
           if (!studentId) {
-            patchState(store, setError('Student is not authenticated.'));
+            patchState(store, setError('load', 'Student is not authenticated.'));
             return EMPTY;
           }
 
-          patchState(store, setPending());
+          patchState(store, setPending('load'));
 
           return quizAttemptService.getQuizAttemptById(studentId, attemptId).pipe(
             tap((quizAttempt) => {
@@ -123,10 +123,10 @@ export const ReviewQuizStore = signalStore(
                 quizAttempt,
                 answerMap: createAnswerMap(quizAttempt.answers),
               });
-              patchState(store, setFulfilled());
+              patchState(store, setFulfilled('load'));
             }),
             catchError(() => {
-              patchState(store, setError('Failed to load quiz attempt.'));
+              patchState(store, setError('load', 'Failed to load quiz attempt.'));
               return EMPTY;
             }),
           );

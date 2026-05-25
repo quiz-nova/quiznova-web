@@ -1,21 +1,18 @@
+import { NgComponentOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
-import { TfNotAnswered } from '@Features/student/review-quiz/tf-not-answered';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
-import { McqAnswerReview } from './mcq-answer-review';
-import { McqNotAnswered } from './mcq-not-answered';
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
+import { QuizService } from '@shared/services/quiz.service';
+
 import { ResultBanner } from './result-banner';
 import { ReviewQuizHeader } from './review-quiz-header';
 import { ReviewQuizStatusCard } from './review-quiz-status-card';
 import {
-  isMcqAnswer,
-  isMcqQuestion,
-  isTfAnswer,
-  isTf,
   ReviewQuizStore,
 } from './review-quiz.store';
-import { TfAnswerReview } from './tf-answer-review';
+
 
 @Component({
   selector: 'app-review-quiz',
@@ -24,19 +21,19 @@ import { TfAnswerReview } from './tf-answer-review';
     ReviewQuizHeader,
     ResultBanner,
     ReviewQuizStatusCard,
-    McqAnswerReview,
-    TfAnswerReview,
-    McqNotAnswered,
-    TfNotAnswered,
+    NgComponentOutlet,
+    OperationFailed,
   ],
   template: `
     <section class="review-page" aria-label="Quiz attempt review">
-      @if (reviewQuizStore.isPending()) {
+      @if (reviewQuizStore.isPending()('load')) {
         <div class="spinner">
           <p-progress-spinner ariaLabel="Loading attempt review" />
         </div>
-      } @else if (reviewQuizStore.error(); as errorMessage) {
-        <div class="error" role="alert">{{ errorMessage }}</div>
+      } @else if (reviewQuizStore.error()('load'); as errorMessage) {
+        <app-operation-failed>
+          <p>{{ errorMessage }}</p>
+        </app-operation-failed>
       } @else if (reviewQuizStore.quizAttempt()) {
         <app-review-quiz-header />
 
@@ -52,29 +49,16 @@ import { TfAnswerReview } from './tf-answer-review';
               track item.question.id;
               let i = $index
             ) {
-              @if (isMcqQuestion(item.question)) {
-                @if (isMcqAnswer(item.answer)) {
-                  <app-mcq-answer-review
-                    [question]="item.question"
-                    [answer]="item.answer"
-                    [questionNumber]="i + 1"
-                  />
-                } @else {
-                  <app-mcq-not-answered [question]="item.question" [questionNumber]="i + 1" />
-                }
-              } @else if (isTf(item.question)) {
-                @if (isTfAnswer(item.answer)) {
-                  <app-tf-answer-review
-                    [question]="item.question"
-                    [answer]="item.answer"
-                    [questionNumber]="i + 1"
-                  />
-                } @else {
-                  <app-tf-question-not-answered
-                    [question]="item.question"
-                    [questionNumber]="i + 1"
-                  />
-                }
+              @if (item.answer) {
+                <ng-container
+                  [ngComponentOutlet]="quizService.getSuitableStudentAnswerReviewComponent(item.question.type)"
+                  [ngComponentOutletInputs]="{ question: item.question, answer: item.answer, questionNumber: i + 1 }"
+                ></ng-container>
+              } @else {
+                <ng-container
+                  [ngComponentOutlet]="quizService.getSuitableQuestionNotAnsweredComponent(item.question.type)"
+                  [ngComponentOutletInputs]="{ question: item.question, questionNumber: i + 1 }"
+                ></ng-container>
               }
             }
           </div>
@@ -125,10 +109,7 @@ import { TfAnswerReview } from './tf-answer-review';
 })
 export class ReviewQuiz implements OnInit {
   protected readonly reviewQuizStore = inject(ReviewQuizStore);
-  protected readonly isMcqQuestion = isMcqQuestion;
-  protected readonly isTf = isTf;
-  protected readonly isMcqAnswer = isMcqAnswer;
-  protected readonly isTfAnswer = isTfAnswer;
+  protected readonly quizService = inject(QuizService);
 
   readonly attemptId = input.required<string>();
 
@@ -136,3 +117,4 @@ export class ReviewQuiz implements OnInit {
     this.reviewQuizStore.load({ attemptId: this.attemptId() });
   }
 }
+

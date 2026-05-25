@@ -1,15 +1,15 @@
-import {Component, computed, DestroyRef, inject, input, OnInit} from '@angular/core';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import { Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
-import {distinctUntilChanged, startWith} from 'rxjs';
+import { distinctUntilChanged, startWith } from 'rxjs';
 
-import {MCQ} from '@shared/models/quiz/mcq.model';
-import {QuestionAttemptContract} from '@shared/models/quiz/question-component.contracts';
-import {Question, QuestionType} from '@shared/models/quiz/question.model';
+import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
+import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
-import {SubmitMcqAnswer} from './models/SubmitQuizAttempt.model';
-import {QuizAttemptStore} from './quiz-attempt.store';
+import { SubmitMcqAnswer } from './models/SubmitQuizAttempt.model';
+import { QuizAttemptStore } from './quiz-attempt.store';
 
 export type McqAttemptForm = FormGroup<{
   selectedChoiceId: FormControl<string | null>;
@@ -110,7 +110,7 @@ export class McqAttempt implements QuestionAttemptContract, OnInit {
 
   readonly question = input.required<Question>();
   protected readonly mcq = computed(() => {
-    return this.question() as MCQ;
+    return this.question() as Mcq;
   });
   private readonly fb = inject(FormBuilder);
 

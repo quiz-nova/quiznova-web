@@ -1,44 +1,55 @@
+export const AnswerType = {
+  Auto: 'auto',
+  Manual: 'manual',
+} as const;
+
+export type AnswerType = (typeof AnswerType)[keyof typeof AnswerType];
+
 export interface QuestionAnswer {
   answerId: string;
   questionId: string;
   questionText: string;
-  /** First-level discriminator: auto-graded vs manually graded. */
-  answerType: 'auto' | 'manual';
-  /** null only for manually-graded answers not yet graded by the instructor. */
+  answerType: AnswerType;
 }
 
-/**
- * Narrows to auto-graded answers. Mirrors backend `AutoGradedAnswer`.
- * Adds a second-level `autoAnswerType` discriminator to distinguish MCQ from TF.
- * `isCorrect` is always a concrete boolean — never null for auto-graded.
- */
 export interface AutoGradedAnswer extends QuestionAnswer {
-  answerType: 'auto';
-  /** Second-level discriminator within the auto-graded branch. */
+  answerType: typeof AnswerType.Auto;
   autoAnswerType: 'mcq' | 'tf';
   isCorrect: boolean;
 }
 
-/** MCQ answer — the student picked one of the choices. */
 export interface McqAnswer extends AutoGradedAnswer {
   autoAnswerType: 'mcq';
   selectedChoiceId: string;
 }
 
-/** True/False answer — the student picked true or false. */
 export interface TfAnswer extends AutoGradedAnswer {
   autoAnswerType: 'tf';
   studentChoice: boolean;
 }
 
-/**
- * Represents an answer to a question that requires manual grading.
- * Mirrors backend `ManuallyGradedAnswers` class.
- * `score` is null until the instructor grades the submission.
- */
+
 export interface ManuallyGradedAnswer extends QuestionAnswer {
-  answerType: 'manual';
-  /** Always null — manual answers have no automatic correction. */
-  isCorrect: null;
+  answerType: typeof AnswerType.Manual;
   score: number | null;
+  feedback: string | null;
 }
+
+export interface EssayAnswer extends ManuallyGradedAnswer {
+  studentResponse: string;
+}
+
+export type QuestionAnswerType = McqAnswer | TfAnswer | EssayAnswer;
+
+export function isMcqAnswer(answer: QuestionAnswer | null): answer is McqAnswer {
+  return !!answer && answer.answerType === AnswerType.Auto && (answer as AutoGradedAnswer).autoAnswerType === 'mcq';
+}
+
+export function isTfAnswer(answer: QuestionAnswer | null): answer is TfAnswer {
+  return !!answer && answer.answerType === AnswerType.Auto && (answer as AutoGradedAnswer).autoAnswerType === 'tf';
+} 
+
+export function isManuallyGradedAnswer(answer: QuestionAnswer | null): answer is ManuallyGradedAnswer {
+  return !!answer && answer.answerType === AnswerType.Manual;
+}
+

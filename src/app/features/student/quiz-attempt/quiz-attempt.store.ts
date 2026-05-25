@@ -23,10 +23,8 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';
 
 import {
-  SubmitMcqAnswer,
-  SubmitQuestionAnswer,
   SubmitQuizAttempt,
-  SubmitTfAnswer,
+  SubmitQuestionAnswerType,
 } from './models/SubmitQuizAttempt.model';
 
 export interface QuestionWithStatus extends Question {
@@ -35,11 +33,10 @@ export interface QuestionWithStatus extends Question {
 }
 
 export interface QuizAttemptState {
-  quizAttemptId: string;
   quizId: string;
   studentId: string;
   quizQuestions: QuestionWithStatus[];
-  questionAttempts: (SubmitMcqAnswer | SubmitTfAnswer)[];
+  questionAttempts: SubmitQuestionAnswerType[];
   currentQuestionIndex: number;
 }
 
@@ -49,7 +46,6 @@ export interface QuestionAttempt {
 }
 
 const initialState: QuizAttemptState = {
-  quizAttemptId: crypto.randomUUID(),
   quizId: '',
   studentId: '',
   quizQuestions: [],
@@ -57,16 +53,6 @@ const initialState: QuizAttemptState = {
   currentQuestionIndex: 0,
 };
 
-function isAnswerSolved(answer: SubmitQuestionAnswer): boolean {
-  switch (answer.type) {
-    case QuestionType.Mcq:
-      return (answer as SubmitMcqAnswer).selectedChoiceId.trim().length > 0;
-    case QuestionType.Tf:
-      return true;
-    default:
-      return false;
-  }
-}
 
 export const QuizAttemptStore = signalStore(
   { providedIn: 'root' },
@@ -85,7 +71,7 @@ export const QuizAttemptStore = signalStore(
       toQuestionWithStatus,
       load: rxMethod<{ quizId: string }>(
         exhaustMap(({ quizId }) => {
-          patchState(store, setPending());
+          patchState(store, setPending('load'));
 
           return quizService.getQuizById(quizId).pipe(
             tap((quiz) => {
@@ -96,10 +82,10 @@ export const QuizAttemptStore = signalStore(
                 quizId: quiz.quizId,
                 currentQuestionIndex: 0,
               });
-              patchState(store, setFulfilled());
+              patchState(store, setFulfilled('load'));
             }),
             catchError(() => {
-              patchState(store, setError('Error Occurred When we try to submit your quiz')); // TODO we well modify this to be aligned with the backend error messages
+              patchState(store, setError('load', 'Error Occurred When we try to submit your quiz')); // TODO we well modify this to be aligned with the backend error messages
               return EMPTY;
             }),
           );
@@ -125,9 +111,9 @@ export const QuizAttemptStore = signalStore(
         const currentQuestion = store.quizQuestions()[store.currentQuestionIndex()];
         return currentQuestion ? currentQuestion.isFlagged : false;
       },
-      submitAnswer(answer: SubmitMcqAnswer | SubmitTfAnswer): void {
+      submitAnswer(answer: SubmitQuestionAnswerType): void {
         patchState(store, (state) => {
-          const solved = isAnswerSolved(answer);
+          const solved = true;
 
           const exists = state.questionAttempts.some((q) => q.questionId === answer.questionId);
           // if he submits the answer before we update it else we add it to the list of attempts
@@ -154,15 +140,15 @@ export const QuizAttemptStore = signalStore(
           questionAnswers: store.questionAttempts(),
         };
 
-        patchState(store, setPending());
+        patchState(store, setPending('submit'));
         quizAttemptService
           .createQuizAttempt(studentId, request)
           .pipe(
             tap(() => {
-              patchState(store, setFulfilled());
+              patchState(store, setFulfilled('submit'));
             }),
             catchError(() => {
-              patchState(store, setError('Error occurred during submission'));
+              patchState(store, setError('submit', 'Error occurred during submission'));
               return EMPTY;
             }),
           )
@@ -188,7 +174,7 @@ export const QuizAttemptStore = signalStore(
       const authService = inject(AuthService);
       const currentUser = authService.currentUser();
       if (currentUser) {
-        store.setStudentId(currentUser.userId);
+        store.setStudentId(currentUser.id);
       }
     },
   })),

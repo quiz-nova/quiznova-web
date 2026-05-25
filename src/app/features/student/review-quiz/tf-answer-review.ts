@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { Tf } from '@shared/models/quiz/tf.model';
-import { TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import { StudentAnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
+import { Question } from '@shared/models/quiz/question.model';
+import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-tf-answer-review',
@@ -9,8 +11,8 @@ import { TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
   template: `
     <article
       class="review-question"
-      [class.review-question--correct]="answer().isCorrect === true"
-      [class.review-question--incorrect]="answer().isCorrect === false"
+      [class.review-question--correct]="tfAnswer().isCorrect === true"
+      [class.review-question--incorrect]="tfAnswer().isCorrect === false"
       aria-label="Reviewed tf question"
     >
       <header class="review-question__header">
@@ -20,11 +22,11 @@ import { TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
         </div>
 
         <span class="review-question__marks">
-          {{ answer().isCorrect ? '+' + question().marks : '0' }}/{{ question().marks }} pt
+          {{ tfAnswer().isCorrect ? '+' + tf().marks : '0' }}/{{ tf().marks }} pt
         </span>
       </header>
 
-      <p class="review-question__text">{{ question().questionText }}</p>
+      <p class="review-question__text">{{ tf().questionText }}</p>
 
       <div class="review-question__answers">
         <div class="review-answer review-answer--student">
@@ -147,15 +149,18 @@ import { TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TfAnswerReview {
-  readonly question = input.required<Tf>();
-  readonly answer = input.required<TfAnswer>();
+export class TfAnswerReview implements StudentAnswerReviewContract {
+  readonly question = input.required<Question>();
+  readonly answer = input.required<QuestionAnswer>();
   readonly questionNumber = input.required<number>();
 
+  protected readonly tf = computed(() => this.question() as Tf);
+  protected readonly tfAnswer = computed(() => this.answer() as TfAnswer);
+
   protected readonly studentAnswerLabel = computed(() =>
-    this.answer().studentChoice ? 'True' : 'False',
+    this.tfAnswer().studentChoice ? 'True' : 'False',
   );
   protected readonly correctAnswerLabel = computed(() =>
-    this.question().correctChoice ? 'True' : 'False',
+    this.tf().correctChoice ? 'True' : 'False',
   );
 }

@@ -2,17 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { QuestionNotAnsweredContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { Essay } from '@shared/models/quiz/questions/essay.model';
 
 @Component({
-  selector: 'app-tf-question-not-answered',
+  selector: 'app-essay-question-not-answered',
   imports: [],
   template: `
-    <article class="review-question" aria-label="Unanswered tf question">
+    <article class="review-question" aria-label="Unanswered essay question">
       <header class="review-question__header">
         <div class="review-question__meta">
           <span class="review-question__index">Q{{ questionNumber() }}</span>
-          <span class="review-question__type">True / False</span>
+          <span class="review-question__type">Essay</span>
         </div>
 
         <span class="review-question__marks">0/{{ question().marks }} pt</span>
@@ -21,16 +21,21 @@ import { Tf } from '@shared/models/quiz/questions/tf.model';
       <p class="review-question__text">{{ question().questionText }}</p>
       <p class="review-question__note">Not answered</p>
 
-      <div class="review-question__answers">
+      <div
+        class="review-question__answers"
+        [class.single-column]="!essay().answerReference"
+      >
         <div class="review-answer review-answer--student">
           <p class="review-answer__label">Your answer</p>
           <p class="review-answer__value">Not answered</p>
         </div>
 
-        <div class="review-answer review-answer--correct">
-          <p class="review-answer__label">Correct answer</p>
-          <p class="review-answer__value">{{ correctAnswerLabel() }}</p>
-        </div>
+        @if (essay().answerReference) {
+          <div class="review-answer review-answer--correct">
+            <p class="review-answer__label">Reference answer</p>
+            <p class="review-answer__value">{{ essay().answerReference }}</p>
+          </div>
+        }
       </div>
     </article>
   `,
@@ -106,6 +111,10 @@ import { Tf } from '@shared/models/quiz/questions/tf.model';
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .review-question__answers.single-column {
+      grid-template-columns: 1fr;
+    }
+
     .review-answer {
       border-radius: 0.6rem;
       border: 1px solid var(--clr-gray-300);
@@ -130,22 +139,21 @@ import { Tf } from '@shared/models/quiz/questions/tf.model';
       color: var(--clr-blue-900);
       font-size: 0.9rem;
       font-weight: 700;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     @media (width <= 40rem) {
       .review-question__answers {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
       }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TfNotAnswered implements QuestionNotAnsweredContract {
+export class EssayNotAnswered implements QuestionNotAnsweredContract {
   readonly question = input.required<Question>();
-  readonly tf = computed(() => this.question() as Tf);
   readonly questionNumber = input.required<number>();
 
-  protected readonly correctAnswerLabel = computed(() =>
-    this.tf().correctChoice ? 'True' : 'False',
-  );
+  protected readonly essay = computed(() => this.question() as Essay);
 }

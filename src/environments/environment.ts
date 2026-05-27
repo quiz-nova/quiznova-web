@@ -1,6 +1,6 @@
 export const environment = {
   appName: 'QuizNova',
-  production: false,
+  isProduction: false,
   apiUrl: '',
   enableDevTools: false,
 };

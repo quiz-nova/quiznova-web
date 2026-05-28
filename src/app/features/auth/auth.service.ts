@@ -4,8 +4,9 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { map, Observable, tap } from 'rxjs';
 
-import { ROLE_DEFINITIONS, UserRole } from '@shared/models/users/user-role.model';
+import { UserRole } from '@shared/models/users/user-role.model';
 import { User } from '@shared/models/users/user.model';
+import { parseUserRole } from '@shared/utils/utilities';
 
 import { Auth, Token } from './models/auth.model';
 
@@ -65,21 +66,15 @@ export class AuthService {
     this._currentUser.set(null);
   }
 
-  private parseUserRole(role: string): UserRole {
-    const normalizedRole = role.trim().toLowerCase();
-    return normalizedRole in ROLE_DEFINITIONS ? (normalizedRole as UserRole) : UserRole.student;
-  }
-
   private mapUser(user: User): User {
     return {
       id: user.id,
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
-      role: this.parseUserRole(user.role),
+      role: parseUserRole(user.role),
     };
   }
-
 
   private persistUser(user: User): void {
     localStorage.setItem(this.userKey, JSON.stringify(user));

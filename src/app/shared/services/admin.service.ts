@@ -1,6 +1,5 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CreateAdmin } from '@Features/admin/models/create-admin.model';
@@ -10,6 +9,7 @@ import { Observable } from 'rxjs';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { Admin } from '@shared/models/users/admin.model';
+import { buildParameters } from '@shared/utils/utilities';
 
 @Injectable({
   providedIn: 'root',
@@ -19,13 +19,7 @@ export class AdminService {
   private readonly http = inject(HttpClient);
 
   getAllAdmins(query: PaginatedQuery): Observable<PaginatedList<Admin>> {
-    let params = new HttpParams();
-
-    if (query.searchTerm) {
-      params = params.set('searchTerm', query.searchTerm);
-    }
-    params = params.set('pageNumber', query.pageNumber ?? 1);
-    params = params.set('pageSize', query.pageSize ?? 10);
+    const params = buildParameters(query);
 
     return this.http.get<PaginatedList<Admin>>(`${this.appSettings.apiBaseUrl}/admins`, { params });
   }

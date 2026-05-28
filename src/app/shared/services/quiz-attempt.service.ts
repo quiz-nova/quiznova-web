@@ -1,6 +1,5 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { SubmitQuizAttempt } from '@Features/student/quiz-attempt/models/SubmitQuizAttempt.model';
@@ -11,6 +10,7 @@ import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model'
 import { PendingManualAnswers } from '@shared/models/quiz-attempt/pending-manual-answer.model';
 import { QuizAttemptCount } from '@shared/models/quiz-attempt/quiz-attempt-count.model';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
+import { buildParameters } from '@shared/utils/utilities';
 
 @Injectable({
   providedIn: 'root',
@@ -47,32 +47,30 @@ export class QuizAttemptService {
   getAllQuizAttempts(
     query: PaginatedQuery & { correctAnswers?: number },
   ): Observable<PaginatedList<QuizAttempt>> {
-    let params = new HttpParams();
+    const params = buildParameters(query);
 
-    if (query.searchTerm) {
-      params = params.set('searchTerm', query.searchTerm);
-    }
-    if (query.correctAnswers !== undefined) {
-      params = params.set('correctAnswers', query.correctAnswers);
-    }
-    params = params.set('pageNumber', query.pageNumber ?? 1);
-    params = params.set('pageSize', query.pageSize ?? 10);
-
-    return this.http.get<PaginatedList<QuizAttempt>>(`${this.appSettings.apiBaseUrl}/quiz-attempts`, {
-      params,
-    });
+    return this.http.get<PaginatedList<QuizAttempt>>(
+      `${this.appSettings.apiBaseUrl}/quiz-attempts`,
+      {
+        params,
+      },
+    );
   }
 
-  getPendingManualAnswers(): Observable<PendingManualAnswers[]> {
-    return this.http.get<PendingManualAnswers[]>(
+  getPendingManualAnswers(
+    pageNumber = 1,
+    pageSize = 10,
+  ): Observable<PaginatedList<PendingManualAnswers>> {
+    const params = buildParameters({ pageNumber, pageSize });
+
+    return this.http.get<PaginatedList<PendingManualAnswers>>(
       `${this.appSettings.apiBaseUrl}/quiz-attempts/manually-graded-answers`,
+      { params },
     );
   }
 
   getQuizAttemptForGrading(attemptId: string): Observable<QuizAttempt> {
-    return this.http.get<QuizAttempt>(
-      `${this.appSettings.apiBaseUrl}/quiz-attempts/${attemptId}`,
-    );
+    return this.http.get<QuizAttempt>(`${this.appSettings.apiBaseUrl}/quiz-attempts/${attemptId}`);
   }
 
   gradeAnswer(answerId: string, score: number, feedback?: string): Observable<void> {

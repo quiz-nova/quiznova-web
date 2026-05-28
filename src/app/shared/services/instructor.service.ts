@@ -1,6 +1,5 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CreateInstructor } from '@Features/admin/models/create-instructor.model';
@@ -10,6 +9,7 @@ import { Observable } from 'rxjs';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { Instructor } from '@shared/models/users/instructor.model';
+import { buildParameters } from '@shared/utils/utilities';
 
 @Injectable({
   providedIn: 'root',
@@ -20,19 +20,7 @@ export class InstructorService {
   getAllInstructors(
     query: PaginatedQuery & { coursesCount?: number; quizzesCount?: number },
   ): Observable<PaginatedList<Instructor>> {
-    let params = new HttpParams();
-
-    if (query.searchTerm) {
-      params = params.set('searchTerm', query.searchTerm);
-    }
-    if (query.coursesCount !== undefined) {
-      params = params.set('coursesCount', query.coursesCount);
-    }
-    if (query.quizzesCount !== undefined) {
-      params = params.set('quizzesCount', query.quizzesCount);
-    }
-    params = params.set('pageNumber', query.pageNumber ?? 1);
-    params = params.set('pageSize', query.pageSize ?? 10);
+    const params = buildParameters(query);
 
     return this.http.get<PaginatedList<Instructor>>(`${this.appSettings.apiBaseUrl}/instructors`, {
       params,

@@ -2,20 +2,20 @@ import { InjectionToken } from '@angular/core';
 
 import { environment } from '@Environments/environment';
 
+import { normalizeBaseUrl } from '@shared/utils/utilities';
+
 export interface AppSettings {
   appName: string;
   apiBaseUrl: string;
-  production: boolean;
+  isProduction: boolean;
   enableDevTools: boolean;
 }
 
 export const APP_SETTINGS = new InjectionToken<AppSettings>('APP_SETTINGS');
 
-const normalizeBaseUrl = (url: string): string => url.replace(/\/+$/, '');
-
 export const appSettings: AppSettings = {
   appName: environment.appName,
   apiBaseUrl: normalizeBaseUrl(environment.apiUrl),
-  production: environment.production,
+  isProduction: environment.isProduction,
   enableDevTools: environment.enableDevTools,
 };

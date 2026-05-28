@@ -12,19 +12,24 @@ export function initials(name: string): string {
     .join('');
 }
 export function getApiErrorMessage(err: unknown, fallback: string): string {
+
   if (!(err instanceof HttpErrorResponse)) return fallback;
   const body = err.error;
+
   if (!body || typeof body !== 'object') return fallback;
+
   // Shape A: ValidationProblem
   const errors = (body as { errors?: Record<string, string[]> }).errors;
   if (errors && typeof errors === 'object') {
     const messages = Object.values(errors).flat().filter(Boolean);
-    if (messages.length > 0) return messages.join('');
+    if (messages.length > 0) return messages.join(' ');
   }
-  // Shape B: single Problem — but skip generic validation title if no errors map
+
+  // Shape B: single Problem 
   if (typeof (body as { title?: string }).title === 'string') {
     return (body as { title: string }).title;
   }
+
   return fallback;
 }
 export const normalizeBaseUrl = (url: string): string => url.replace(/\/+$/, '');

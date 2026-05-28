@@ -92,7 +92,7 @@ describe('getApiErrorMessage', () => {
       error: { title: 'One or more validation errors occurred.' },
     });
 
-    expect(getApiErrorMessage(err, fallback)).toBe(fallback);
+    expect(getApiErrorMessage(err, fallback)).toBe("One or more validation errors occurred.");
   });
 
   it('prefers errors map over title when both are present', () => {

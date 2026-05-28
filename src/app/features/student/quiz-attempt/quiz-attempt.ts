@@ -2,7 +2,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
-import { QuizService } from '@shared/services/quiz.service';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
 import { AttemptButton } from './attempt-button';
 import { QuestionAttemptHeader } from './question-attempt-header';
@@ -34,7 +34,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
             ></app-question-attempt-header>
 
             <ng-container
-              [ngComponentOutlet]="quizService.getSuitableQuestionAttemptComponent(question.type)"
+              [ngComponentOutlet]="mapperService.getSuitableQuestionAttemptComponent(question.type)"
             ></ng-container>
           }
             <app-navigation-buttons
@@ -88,7 +88,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizAttempt implements OnInit {
-  protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
   protected readonly quizId = input.required<string>();
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
 

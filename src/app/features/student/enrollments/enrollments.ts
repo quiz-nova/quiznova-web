@@ -30,11 +30,11 @@ import { CoursesService } from '@shared/services/courses.service';
         <div class="error" role="alert">
           <p>Failed to load your courses. Please try again later.</p>
         </div>
-      } @else if (!coursesResource.value().length) {
+      } @else if (!(coursesResource.value()?.items?.length ?? 0)) {
         <p class="feedback">You are not enrolled in any courses yet.</p>
       } @else {
         <section class="course-grid" aria-label="Enrolled courses">
-          @for (course of coursesResource.value(); track course.courseId) {
+          @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
             <article class="course-card">
               <div class="course-card__header">
                 <div>
@@ -119,16 +119,7 @@ import { CoursesService } from '@shared/services/courses.service';
       justify-content: space-between;
       gap: 1rem;
     }
-
-    .course-label {
-      margin: 0 0 0.35rem;
-      color: var(--clr-green-500);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
+    
     h2 {
       margin: 0;
       color: var(--clr-black-700);
@@ -202,11 +193,10 @@ export class Enrollments {
       const studentId = this.studentId();
 
       if (!studentId) {
-        return of([]);
+        return of(undefined);
       }
 
       return this.coursesService.getEnrollments(studentId);
     },
-    defaultValue: [],
   });
 }

@@ -2,7 +2,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import { QuestionType } from '@shared/models/quiz/question.model';
-import { QuizService } from '@shared/services/quiz.service';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
 import { QuizAttemptStore } from './quiz-attempt.store';
 
@@ -12,7 +12,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   template: `
     <header class="question-attempt-header">
       <ng-container
-        [ngComponentOutlet]="quizService.getSuitableQuestionTag(questionType())"
+        [ngComponentOutlet]="mapperService.getSuitableQuestionTag(questionType())"
       ></ng-container>
 
       <button
@@ -62,7 +62,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionAttemptHeader {
-  protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
   protected quizAttemptStore = inject(QuizAttemptStore);
   readonly questionType = input.required<QuestionType>();
   onClickFlag(): void {

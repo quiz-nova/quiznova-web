@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 export interface FeatureCard {
   id: number;
@@ -122,5 +122,4 @@ export const featureCards: FeatureCard[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeatureCardComponent {
-  cards = signal<FeatureCard[]>(featureCards);
 }

@@ -16,7 +16,7 @@ import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { QuizService } from '@shared/services/quiz.service';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
 import { EditQuizStore } from './edit-quiz.store';
 
@@ -111,7 +111,7 @@ import { EditQuizStore } from './edit-quiz.store';
                     </app-question-header>
 
                     <ng-container
-                      [ngComponentOutlet]="quizService.getSuitableQuestionFormComponent(question.type)"
+                      [ngComponentOutlet]="mapperService.getSuitableQuestionFormComponent(question.type)"
                       [ngComponentOutletInputs]="{ initialData: question }"
                     ></ng-container>
                   </div>
@@ -216,10 +216,6 @@ import { EditQuizStore } from './edit-quiz.store';
       font-style: italic;
     }
 
-    .error-text {
-      color: var(--clr-red-500);
-    }
-
     .questions-list {
       display: flex;
       flex-direction: column;
@@ -252,7 +248,7 @@ import { EditQuizStore } from './edit-quiz.store';
 export class EditQuiz implements OnInit {
   protected readonly store = inject(EditQuizStore);
   private readonly route = inject(ActivatedRoute);
-  protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
 
   private readonly formOutlets = viewChildren(NgComponentOutlet);
 

@@ -12,7 +12,7 @@ import { QuestionType } from '@shared/models/quiz/question.model';
       width: fit-content;
       margin: 0;
       padding: 0.35rem 0.85rem;
-      background-color: var(--clr-blue-500);
+      background-color: var(--clr-blue-400);
       border-radius: var(--radius-lg);
       color: var(--clr-white);
       transition: background-color 0.3s ease;

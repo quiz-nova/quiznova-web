@@ -14,6 +14,7 @@ import { Question } from '@shared/models/quiz/question.model';
 import { Quiz } from '@shared/models/quiz/quiz.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { QuizService } from '@shared/services/quiz.service';
+import { getApiErrorMessage } from '@shared/utils/utilities';
 
 import { QuizMetadataValue } from '../shared/quiz-metadata-form';
 
@@ -106,12 +107,12 @@ export const EditQuizStore = signalStore(
           patchState(store, (state) => ({
             quiz: state.quiz
               ? {
-                  ...state.quiz,
-                  title: metadata.title,
-                  courseId: metadata.courseId,
-                  startsAtUtc: metadata.startsAtUtc.toISOString(),
-                  endsAtUtc: metadata.endsAtUtc.toISOString(),
-                }
+                ...state.quiz,
+                title: metadata.title,
+                courseId: metadata.courseId,
+                startsAtUtc: metadata.startsAtUtc.toISOString(),
+                endsAtUtc: metadata.endsAtUtc.toISOString(),
+              }
               : null,
           }));
 
@@ -136,10 +137,10 @@ export const EditQuizStore = signalStore(
               patchState(store, (state) => ({
                 quiz: state.quiz
                   ? {
-                      ...state.quiz,
-                      courseId: newCourseId,
-                      questions: [],
-                    }
+                    ...state.quiz,
+                    courseId: newCourseId,
+                    questions: [],
+                  }
                   : null,
                 activeQuestionId: null,
                 remainingMarks: null,
@@ -174,9 +175,9 @@ export const EditQuizStore = signalStore(
               patchState(store, (state) => ({
                 quiz: state.quiz
                   ? {
-                      ...state.quiz,
-                      questions: [...state.quiz.questions, savedQuestion],
-                    }
+                    ...state.quiz,
+                    questions: [...state.quiz.questions, savedQuestion],
+                  }
                   : null,
                 activeQuestionId: savedQuestion.id,
               }));
@@ -219,11 +220,11 @@ export const EditQuizStore = signalStore(
           patchState(store, (state) => ({
             quiz: state.quiz
               ? {
-                  ...state.quiz,
-                  questions: state.quiz.questions.map((q) =>
-                    q.id === updatedQuestion.id ? updatedQuestion : q,
-                  ),
-                }
+                ...state.quiz,
+                questions: state.quiz.questions.map((q) =>
+                  q.id === updatedQuestion.id ? updatedQuestion : q,
+                ),
+              }
               : null,
             remainingMarks: state.remainingMarks !== null ? state.remainingMarks - marksDiff : null,
           }));
@@ -242,15 +243,16 @@ export const EditQuizStore = signalStore(
         patchState(store, (state) => ({
           quiz: state.quiz
             ? {
-                ...state.quiz,
-                questions: state.quiz.questions.map((question) =>
-                  question.id === questionId ? { ...question, questionText } : question,
-                ),
-              }
+              ...state.quiz,
+              questions: state.quiz.questions.map((question) =>
+                question.id === questionId ? { ...question, questionText } : question,
+              ),
+            }
             : null,
         }));
       },
 
+      // concat map here because we do optimistic updates so we take all his deletes and one after another if we used exhaustMap he will feel the screen is frozen
       removeQuestion: rxMethod<string>(
         concatMap((questionId) => {
           const quizId = store.quizId();
@@ -261,27 +263,39 @@ export const EditQuizStore = signalStore(
           const removedMarks = removedQuestion?.marks ?? 0;
 
           // Optimistically update UI
-          patchState(store, (state) => {
-            if (!state.quiz) return {};
-            const filteredQuestions = state.quiz.questions.filter((q) => q.id !== questionId);
-            const nextActiveId =
-              state.activeQuestionId === questionId
-                ? (filteredQuestions[0]?.id ?? null)
-                : state.activeQuestionId;
+          patchState(
+            store,
+            (state) => {
+              if (!state.quiz) return {};
+              const filteredQuestions = state.quiz.questions.filter((q) => q.id !== questionId);
+              const nextActiveId =
+                state.activeQuestionId === questionId
+                  ? (filteredQuestions[0]?.id ?? null)
+                  : state.activeQuestionId;
 
-            return {
-              quiz: { ...state.quiz, questions: filteredQuestions },
-              activeQuestionId: nextActiveId,
-              remainingMarks:
-                state.remainingMarks !== null ? state.remainingMarks + removedMarks : null,
-            };
-          }, setPending('removeQuestion'));
+              return {
+                quiz: { ...state.quiz, questions: filteredQuestions },
+                activeQuestionId: nextActiveId,
+                remainingMarks:
+                  state.remainingMarks !== null ? state.remainingMarks + removedMarks : null,
+              };
+            },
+            setPending('removeQuestion'),
+          );
 
           return quizService.removeQuestion(quizId, questionId).pipe(
             tap(() => patchState(store, setFulfilled('removeQuestion'))),
             catchError((err) => {
-              console.error('Failed to remove question', err);
-              patchState(store, setError('removeQuestion', 'Failed to remove question.'));
+              // Revert optimistic update
+              patchState(store, (state) => {
+                if (!state.quiz || !removedQuestion) return {};
+                return {
+                  quiz: { ...state.quiz, questions: [...state.quiz.questions, removedQuestion] },
+                  activeQuestionId: state.activeQuestionId === null ? (removedQuestion.id ?? null) : state.activeQuestionId,
+                  remainingMarks: state.remainingMarks !== null ? state.remainingMarks - removedMarks : null,
+                };
+              });
+              patchState(store, setError('removeQuestion', getApiErrorMessage(err, "Failed to remove question.")));
               return EMPTY;
             }),
           );

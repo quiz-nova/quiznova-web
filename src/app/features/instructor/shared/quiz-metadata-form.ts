@@ -83,7 +83,7 @@ type QuizHeaderFormGroup = FormGroup<{
         <p-select
           class="focus-green-ring dropdown-field"
           [formControl]="courseIdControl"
-          [options]="instructorCourses()"
+          [options]="instructorCourses()?.items ?? []"
           [attr.aria-invalid]="courseIdControl.invalid && courseIdControl.touched ? 'true' : null"
           (onChange)="onCourseChange($event.value)"
           inputId="quiz-course"
@@ -209,9 +209,9 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
 
   protected readonly instructorCourses = toSignal(
     toObservable(this.authService.currentUser).pipe(
-      switchMap((user) => (user ? this.coursesService.getInstructorCourses(user.id) : of([]))),
+      switchMap((user) => (user ? this.coursesService.getInstructorCourses(user.id) : of(null))),
     ),
-    { initialValue: [] },
+    { initialValue: null },
   );
 
   protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group({

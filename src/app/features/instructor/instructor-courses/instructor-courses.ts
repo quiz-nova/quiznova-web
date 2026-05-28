@@ -30,11 +30,11 @@ import { CoursesService } from '@shared/services/courses.service';
         <app-operation-failed>
           <p>Failed to load course data.</p>
         </app-operation-failed>
-      } @else if (!coursesResource.value().length) {
+      } @else if (!(coursesResource.value()?.items?.length ?? 0)) {
         <p class="feedback">No courses are assigned to you yet.</p>
       } @else {
         <section class="course-grid" aria-label="Instructor courses">
-          @for (course of coursesResource.value(); track course.courseId) {
+          @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
             <article class="course-card">
               <div class="course-card__header">
                 <div>
@@ -198,11 +198,10 @@ export class InstructorCourses {
       const instructorId = this.instructorId();
 
       if (!instructorId) {
-        return of([]);
+        return of(undefined);
       }
 
       return this.coursesService.getInstructorCourses(instructorId);
     },
-    defaultValue: [],
   });
 }

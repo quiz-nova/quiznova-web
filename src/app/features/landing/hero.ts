@@ -76,9 +76,6 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
       }
     }
 
-    .buttons .btn {
-      width: min(230px, 50%);
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

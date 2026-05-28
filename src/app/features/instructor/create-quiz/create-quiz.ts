@@ -17,6 +17,7 @@ import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
@@ -113,7 +114,7 @@ import { QuizService } from '@shared/services/quiz.service';
                   </app-question-header>
 
                   <ng-container
-                    [ngComponentOutlet]="quizService.getSuitableQuestionFormComponent(question.type)"
+                    [ngComponentOutlet]="mapperService.getSuitableQuestionFormComponent(question.type)"
                     [ngComponentOutletInputs]="{ initialData: question }"
                   ></ng-container>
                 </div>
@@ -315,6 +316,7 @@ import { QuizService } from '@shared/services/quiz.service';
 })
 export class CreateQuiz {
   protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
   protected readonly createQuizStore = inject(CreateQuizStore);
   protected readonly quiz: Signal<CreateQuizModel> = this.createQuizStore
     .quiz as Signal<CreateQuizModel>;
@@ -411,9 +413,5 @@ export class CreateQuiz {
       return 5;
     }
     return Math.min(5, currentMarks + effectiveRemaining);
-  }
-
-  protected getInvalidFormsCount(): number {
-    return this.createQuizStore.registeredForms().filter((form) => form.invalid).length;
   }
 }

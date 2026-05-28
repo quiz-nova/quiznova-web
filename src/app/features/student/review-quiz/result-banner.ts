@@ -48,8 +48,8 @@ import {ReviewQuizStore} from './review-quiz.store';
       gap: 1rem;
       padding: 1rem;
       border-radius: 0.85rem;
-      border: 1px solid var(--clr-blue-200);
-      background: var(--clr-blue-50);
+      border: 1px solid var(--clr-blue-400);
+      background: var(--clr-blue-400);
     }
 
     .result-banner__icon {
@@ -58,7 +58,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       width: 4rem;
       height: 4rem;
       border-radius: 999px;
-      background: var(--clr-blue-500);
+      background: var(--clr-blue-400);
       color: var(--clr-white);
       font-size: 1.5rem;
       font-weight: 700;
@@ -86,7 +86,7 @@ import {ReviewQuizStore} from './review-quiz.store';
 
     .result-banner__badge {
       border-radius: 999px;
-      background: var(--clr-blue-600);
+      background: var(--clr-blue-000);
       color: var(--clr-white);
       font-size: 0.72rem;
       letter-spacing: 0.02em;
@@ -114,7 +114,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       display: block;
       height: 100%;
       border-radius: inherit;
-      background: var(--clr-blue-500);
+      background: var(--clr-blue-400);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

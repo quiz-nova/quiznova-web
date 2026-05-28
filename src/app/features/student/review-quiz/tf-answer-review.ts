@@ -11,8 +11,8 @@ import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-a
   template: `
     <article
       class="review-question"
-      [class.review-question--correct]="tfAnswer().isCorrect === true"
-      [class.review-question--incorrect]="tfAnswer().isCorrect === false"
+      [class.review-question--correct]="tfAnswer().isCorrect"
+      [class.review-question--incorrect]="!tfAnswer().isCorrect"
       aria-label="Reviewed tf question"
     >
       <header class="review-question__header">

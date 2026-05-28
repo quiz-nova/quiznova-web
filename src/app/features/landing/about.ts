@@ -31,9 +31,6 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
       background-color: var(--clr-gray-100);
     }
 
-    .btn {
-      width: 200px;
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

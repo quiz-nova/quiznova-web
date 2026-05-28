@@ -15,8 +15,8 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { Button } from '@shared/components/button/button';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
-import { QuizService } from '@shared/services/quiz.service';
 
 import { NoAnswer } from './no-answer';
 
@@ -36,10 +36,10 @@ import { NoAnswer } from './no-answer';
       <!-- ── Back nav ── -->
       <nav class="back-nav" aria-label="Breadcrumb">
         <button
-          appButton
-          variant="gray"
           class="back-to-inbox-btn"
           (click)="goBack()"
+          appButton
+          variant="gray"
           type="button"
           aria-label="Back to Inbox"
         >
@@ -60,7 +60,11 @@ import { NoAnswer } from './no-answer';
         <!-- ── Header card ── -->
         <header class="attempt-header">
           <div class="header-main">
-            <div class="header-badge" [class.pending]="attempt()!.status === 'Pending'" [class.completed]="attempt()!.status === 'Completed'">
+            <div
+              class="header-badge"
+              [class.pending]="attempt()!.status === 'Pending'"
+              [class.completed]="attempt()!.status === 'Completed'"
+            >
               <i class="fa-solid fa-circle-dot"></i>
               {{ attempt()!.status }}
             </div>
@@ -72,7 +76,7 @@ import { NoAnswer } from './no-answer';
           </div>
           <div class="score-pill" aria-label="Current score">
             <span class="score-num">{{ attempt()!.score }}</span>
-            <span class="score-denom">pts</span>
+            <span class="score-lable">pts</span>
           </div>
         </header>
 
@@ -85,8 +89,12 @@ import { NoAnswer } from './no-answer';
               <!-- Question header -->
               <div class="question-header">
                 <span class="q-number">Q{{ i + 1 }}</span>
-                <span class="q-marks-badge">{{ question.marks }} {{ question.marks === 1 ? 'mark' : 'marks' }}</span>
-                <span class="q-type-badge" [class]="'type-' + question.type">{{ question.type | uppercase }}</span>
+                <span class="q-marks-badge"
+                  >{{ question.marks }} {{ question.marks === 1 ? 'mark' : 'marks' }}</span
+                >
+                <span class="q-type-badge" [class]="'type-' + question.type">{{
+                  question.type | uppercase
+                }}</span>
               </div>
               <p class="question-text">{{ question.questionText }}</p>
 
@@ -94,7 +102,9 @@ import { NoAnswer } from './no-answer';
                 <app-no-answer />
               } @else {
                 <ng-container
-                  [ngComponentOutlet]="quizService.getSuitableAnswerReviewComponent(question.type)"
+                  [ngComponentOutlet]="
+                    mapperService.getSuitableAnswerReviewComponent(question.type)
+                  "
                   [ngComponentOutletInputs]="{ question, answer }"
                 ></ng-container>
               }
@@ -142,8 +152,15 @@ import { NoAnswer } from './no-answer';
       margin-bottom: 0.5rem;
     }
 
-    .header-badge.pending   { background: #fef3c7; color: #92400e; }
-    .header-badge.completed { background: var(--clr-green-100); color: var(--clr-green-600); }
+    .header-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .header-badge.completed {
+      background: var(--clr-green-100);
+      color: var(--clr-green-600);
+    }
 
     .quiz-title {
       font-size: var(--fs-600);
@@ -171,8 +188,16 @@ import { NoAnswer } from './no-answer';
       flex-shrink: 0;
     }
 
-    .score-num { font-size: 2rem; font-weight: 700; line-height: 1; }
-    .score-denom { font-size: var(--fs-300); opacity: 0.85; }
+    .score-num {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-lable {
+      font-size: var(--fs-300);
+      opacity: 0.85;
+    }
 
     /* ── Question list ── */
     .question-list {
@@ -224,10 +249,6 @@ import { NoAnswer } from './no-answer';
       border-radius: var(--radius-sm);
     }
 
-    .type-mcq   { background: #ede9fe; color: var(--clr-violet-500); }
-    .type-tf    { background: #e0f7fa; color: var(--clr-cyan-500); }
-    .type-essay { background: #fef3c7; color: #92400e; }
-
     .question-text {
       font-size: var(--fs-500);
       font-weight: 500;
@@ -276,7 +297,7 @@ export class GradeReview {
   }
 
   private readonly quizAttemptService = inject(QuizAttemptService);
-  protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 

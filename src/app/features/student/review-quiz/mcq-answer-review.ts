@@ -11,8 +11,8 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
   template: `
     <article
       class="review-question"
-      [class.review-question--correct]="mcqAnswer().isCorrect === true"
-      [class.review-question--incorrect]="mcqAnswer().isCorrect === false"
+      [class.review-question--correct]="mcqAnswer().isCorrect"
+      [class.review-question--incorrect]="!mcqAnswer().isCorrect"
       aria-label="Reviewed multiple choice question"
     >
       <header class="review-question__header">
@@ -35,7 +35,7 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
             [class.review-choice--correct]="choice.id === mcq().correctChoiceId"
             [class.review-choice--selected]="choice.id === mcqAnswer().selectedChoiceId"
             [class.review-choice--selected-wrong]="
-              choice.id === mcqAnswer().selectedChoiceId && mcqAnswer().isCorrect === false
+              choice.id === mcqAnswer().selectedChoiceId && !mcqAnswer().isCorrect
             "
           >
             <span class="review-choice__prefix">{{ letter(i) }}.</span>

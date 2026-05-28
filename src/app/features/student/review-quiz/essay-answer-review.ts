@@ -174,8 +174,8 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
     }
 
     .review-answer--feedback {
-      border-color: var(--clr-blue-200);
-      background: var(--clr-blue-50);
+      border-color: var(--clr-blue-400);
+      background: var(--clr-blue-400);
     }
 
     .review-answer__label {

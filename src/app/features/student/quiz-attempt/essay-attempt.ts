@@ -62,7 +62,7 @@ export type EssayAttemptForm = FormGroup<{
       width: fit-content;
       border-radius: 999px;
       padding: 0.25rem 0.6rem;
-      background: var(--clr-blue-100);
+      background: var(--clr-blue-400);
       color: var(--clr-blue-900);
       font-size: 0.75rem;
       font-weight: 700;
@@ -89,7 +89,7 @@ export type EssayAttemptForm = FormGroup<{
 
       &:focus {
         outline: none;
-        border-color: var(--clr-blue-500);
+        border-color: var(--clr-blue-400);
         background: var(--clr-white);
       }
 

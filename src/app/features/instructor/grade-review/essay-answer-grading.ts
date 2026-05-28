@@ -198,7 +198,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
     .feedback-textarea {
       width: 100%;
       padding: 0.625rem 0.875rem;
-      border: 1.5px solid var(--clr-gray-200);
+      border: 2px solid var(--clr-gray-200);
       border-radius: var(--radius-md);
       font-size: var(--fs-400);
       color: var(--clr-gray-800);

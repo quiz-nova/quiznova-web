@@ -18,7 +18,7 @@ import {
 } from '@StoreFeatures/with-request-status.feature';
 import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
 
-import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Question } from '@shared/models/quiz/question.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';
 
@@ -39,12 +39,6 @@ export interface QuizAttemptState {
   questionAttempts: SubmitQuestionAnswerType[];
   currentQuestionIndex: number;
 }
-
-export interface QuestionAttempt {
-  questionId: string;
-  type: QuestionType;
-}
-
 const initialState: QuizAttemptState = {
   quizId: '',
   studentId: '',
@@ -116,7 +110,7 @@ export const QuizAttemptStore = signalStore(
           const solved = true;
 
           const exists = state.questionAttempts.some((q) => q.questionId === answer.questionId);
-          // if he submits the answer before we update it else we add it to the list of attempts
+          // if he submits the answer before we update it else, we add it to the list of attempts
           const updatedAttempts = exists
             ? state.questionAttempts.map((q) => (q.questionId === answer.questionId ? answer : q))
             : [...state.questionAttempts, answer];

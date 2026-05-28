@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angu
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
-import { QuizService } from '@shared/services/quiz.service';
+import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
 import { ResultBanner } from './result-banner';
 import { ReviewQuizHeader } from './review-quiz-header';
@@ -51,12 +51,12 @@ import {
             ) {
               @if (item.answer) {
                 <ng-container
-                  [ngComponentOutlet]="quizService.getSuitableStudentAnswerReviewComponent(item.question.type)"
+                  [ngComponentOutlet]="mapperService.getSuitableStudentAnswerReviewComponent(item.question.type)"
                   [ngComponentOutletInputs]="{ question: item.question, answer: item.answer, questionNumber: i + 1 }"
                 ></ng-container>
               } @else {
                 <ng-container
-                  [ngComponentOutlet]="quizService.getSuitableQuestionNotAnsweredComponent(item.question.type)"
+                  [ngComponentOutlet]="mapperService.getSuitableQuestionNotAnsweredComponent(item.question.type)"
                   [ngComponentOutletInputs]="{ question: item.question, questionNumber: i + 1 }"
                 ></ng-container>
               }
@@ -109,7 +109,7 @@ import {
 })
 export class ReviewQuiz implements OnInit {
   protected readonly reviewQuizStore = inject(ReviewQuizStore);
-  protected readonly quizService = inject(QuizService);
+  protected readonly mapperService = inject(QuestionComponentMapperService);
 
   readonly attemptId = input.required<string>();
 

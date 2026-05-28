@@ -125,12 +125,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       font-weight: 700;
     }
 
-    .start-btn--disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
     @media (width <= 60rem) {
       table {
         min-width: 42rem;

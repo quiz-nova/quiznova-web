@@ -14,7 +14,7 @@ import { Logo } from '@shared/components/logo/logo';
 export interface HeaderLink {
   id: number;
   label: string; // Name Will Appear To The User
-  name: string; // Name We Will Use In Html attribute
+  name: string; // Name We Will Use In HTML attribute
 }
 export const headerLinks: HeaderLink[] = [
   { id: 1, label: 'Features', name: 'features' },
@@ -87,7 +87,7 @@ export const headerLinks: HeaderLink[] = [
       justify-content: space-between;
       height: 4rem;
       padding-inline: 0.75rem;
-      font-family: var(--ff-heading);
+      font-family: var(--ff-heading),serif;
 
       @media (width < 768px) {
         flex-wrap: wrap;

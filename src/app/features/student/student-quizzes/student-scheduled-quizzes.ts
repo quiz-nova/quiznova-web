@@ -126,7 +126,7 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
 export class StudentScheduledQuizzes {
   readonly quizzes = input.required<StudentQuizApiDto[]>();
   readonly serverUtc = input.required<string>();
-
+  // TODO we should remove this and put it shared calss due it is duplicate
   protected durationInMinutes(quiz: StudentQuizApiDto): number {
     const startsAtMs = new Date(quiz.startsAtUtc).getTime();
     const endsAtMs = new Date(quiz.endsAtUtc).getTime();

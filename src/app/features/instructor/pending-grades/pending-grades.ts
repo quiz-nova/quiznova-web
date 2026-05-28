@@ -4,14 +4,17 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
 import { ProgressSpinner } from 'primeng/progressspinner';
 
+import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PendingManualAnswers } from '@shared/models/quiz-attempt/pending-manual-answer.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { initials } from '@shared/utils/utilities';
@@ -28,6 +31,7 @@ import { PendingGradesStats } from './pending-grades-stats';
     NoPendingGrades,
     PendingGradesStats,
     OperationFailed,
+    NavigationButtons,
   ],
   template: `
     <section class="page">
@@ -111,6 +115,23 @@ import { PendingGradesStats } from './pending-grades-stats';
                 </div>
               </article>
             }
+
+            <!-- Pagination Row -->
+            <div class="pagination-row">
+              <p class="page-info">
+                Page {{ pendingResource.value()?.pageNumber ?? 1 }} of
+                {{ pendingResource.value()?.totalPages ?? 1 }}
+              </p>
+              <app-navigation-buttons
+                ariaLabel="Pending grades pagination"
+                previousLabel="Previous page"
+                nextLabel="Next page"
+                [canGoPrevious]="pendingResource.value()?.hasPreviousPage ?? false"
+                [canGoNext]="pendingResource.value()?.hasNextPage ?? false"
+                (previousButtonClicked)="goToPreviousPage()"
+                (nextButtonClicked)="goToNextPage()"
+              />
+            </div>
           </section>
         }
       }
@@ -257,6 +278,23 @@ import { PendingGradesStats } from './pending-grades-stats';
       color: var(--clr-green-500);
     }
 
+    /* Pagination Row */
+    .pagination-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: var(--clr-gray-50);
+      border-top: 1px solid var(--clr-gray-200);
+    }
+
+    .page-info {
+      font-size: var(--fs-300);
+      color: var(--clr-gray-600);
+      font-weight: 500;
+      margin: 0;
+    }
+
     /* Status helpers */
     .status-container {
       display: grid;
@@ -270,33 +308,46 @@ export class PendingGrades {
   private readonly quizAttemptService = inject(QuizAttemptService);
   private readonly router = inject(Router);
 
-  protected readonly pendingResource = rxResource({
-    stream: () => this.quizAttemptService.getPendingManualAnswers(),
+  protected readonly pageNumber = signal(1);
+
+  protected readonly pendingResource = rxResource<PaginatedList<PendingManualAnswers>, { page: number }>({
+    params: () => ({ page: this.pageNumber() }),
+    stream: ({ params }) => this.quizAttemptService.getPendingManualAnswers(params.page, 10),
   });
 
-  protected readonly pendingList = computed(
-    () => this.pendingResource.value() ?? [],
+  protected readonly pendingList = computed<PendingManualAnswers[]>(
+    () => this.pendingResource.value()?.items ?? [],
   );
 
   protected readonly stats = computed(() => {
-    const list = this.pendingList();
-    const totalUngraded = list.reduce((sum, item) => sum + item.ungradedCount, 0);
+    const response = this.pendingResource.value();
+    const totalCount = response?.totalCount ?? 0;
+    const items = response?.items ?? [];
+    const totalUngraded = items.reduce((sum: number, item: PendingManualAnswers) => sum + item.ungradedCount, 0);
 
     return [
       {
         label: 'Awaiting Review',
-        value: list.length,
+        value: totalCount,
         icon: 'fa-solid fa-hourglass-half',
         iconClass: 'stat-icon amber',
       },
       {
-        label: 'Total Questions',
+        label: 'Total Questions (Page)',
         value: totalUngraded,
         icon: 'fa-solid fa-pen-nib',
         iconClass: 'stat-icon violet',
       },
     ];
   });
+
+  protected goToPreviousPage(): void {
+    this.pageNumber.update((value) => Math.max(1, value - 1));
+  }
+
+  protected goToNextPage(): void {
+    this.pageNumber.update((value) => value + 1);
+  }
 
   protected navigateToReview(item: PendingManualAnswers): void {
     this.router.navigate(['/instructor/grade', item.attemptId]);

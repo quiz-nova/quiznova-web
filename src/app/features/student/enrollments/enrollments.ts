@@ -7,7 +7,7 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { of } from 'rxjs';
 
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
-import { CoursesService } from '@shared/services/courses.service';
+import { EnrollmentService } from '@shared/services/enrollment.service';
 
 
 @Component({
@@ -30,11 +30,11 @@ import { CoursesService } from '@shared/services/courses.service';
         <div class="error" role="alert">
           <p>Failed to load your courses. Please try again later.</p>
         </div>
-      } @else if (!(coursesResource.value()?.items?.length ?? 0)) {
+      } @else if (!(coursesResource.value()?.length ?? 0)) {
         <p class="feedback">You are not enrolled in any courses yet.</p>
       } @else {
         <section class="course-grid" aria-label="Enrolled courses">
-          @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
+          @for (course of coursesResource.value() ?? []; track course.courseId) {
             <article class="course-card">
               <div class="course-card__header">
                 <div>
@@ -50,11 +50,11 @@ import { CoursesService } from '@shared/services/courses.service';
               <dl class="course-stats">
                 <div>
                   <dt>Instructor</dt>
-                  <dd>{{ course.instructorName }}</dd>
+                  <dd>{{ course.instructor.name }}</dd>
                 </div>
                 <div>
-                  <dt>Quizzes</dt>
-                  <dd>{{ course.quizzesCount }}</dd>
+                  <dt>Quizzes Taken</dt>
+                  <dd>{{ course.student.quizzesTaken }}</dd>
                 </div>
               </dl>
             </article>
@@ -184,7 +184,7 @@ import { CoursesService } from '@shared/services/courses.service';
 })
 export class Enrollments {
   private readonly authService = inject(AuthService);
-  private readonly coursesService = inject(CoursesService);
+  private readonly enrollmentService = inject(EnrollmentService);
 
   protected readonly studentId = computed(() => this.authService.currentUser()?.id ?? null);
 
@@ -196,7 +196,7 @@ export class Enrollments {
         return of(undefined);
       }
 
-      return this.coursesService.getEnrollments(studentId);
+      return this.enrollmentService.getEnrollments(studentId);
     },
   });
 }

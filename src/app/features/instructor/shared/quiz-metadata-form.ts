@@ -83,7 +83,7 @@ type QuizHeaderFormGroup = FormGroup<{
         <p-select
           class="focus-green-ring dropdown-field"
           [formControl]="courseIdControl"
-          [options]="instructorCourses()?.items ?? []"
+          [options]="instructorCourses() ?? []"
           [attr.aria-invalid]="courseIdControl.invalid && courseIdControl.touched ? 'true' : null"
           (onChange)="onCourseChange($event.value)"
           inputId="quiz-course"

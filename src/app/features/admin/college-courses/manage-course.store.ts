@@ -14,6 +14,7 @@ import { Course } from '@shared/models/course/course.model';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { Student } from '@shared/models/users/student.model';
 import { CoursesService } from '@shared/services/courses.service';
+import { EnrollmentService } from '@shared/services/enrollment.service';
 import { InstructorService } from '@shared/services/instructor.service';
 import { StudentService } from '@shared/services/student.service';
 
@@ -53,6 +54,7 @@ export const ManageCourseStore = signalStore(
   withMethods((
     store,
     coursesService = inject(CoursesService),
+    enrollmentService = inject(EnrollmentService),
     instructorService = inject(InstructorService),
     studentService = inject(StudentService),
   ) => {
@@ -106,8 +108,8 @@ export const ManageCourseStore = signalStore(
         }),
       ),
 
-      updateInstructor: rxMethod<string | null>(
-        exhaustMap((instructorId) => {
+      updateInstructor: rxMethod<{ instructorId: string; onSuccess?: () => void }>(
+        exhaustMap(({ instructorId, onSuccess }) => {
           const previousCourse = store.course();
           if (!previousCourse) {
             return EMPTY;
@@ -121,25 +123,26 @@ export const ManageCourseStore = signalStore(
           patchState(store, {
             course: { ...previousCourse, instructorId, instructorName },
             actionError: null,
-          });
+          }, setPending('updateInstructor'));
 
           return coursesService.updateCourseInstructor(previousCourse.courseId, { instructorId }).pipe(
             tap((updatedCourse) => {
-              patchState(store, { course: updatedCourse });
+              patchState(store, { course: updatedCourse }, setFulfilled('updateInstructor'));
+              onSuccess?.();
             }),
             catchError(() => {
               patchState(store, {
                 course: previousCourse,
                 actionError: 'Failed to update instructor.',
-              });
+              }, setError('updateInstructor', 'Failed to update instructor.'));
               return EMPTY;
             }),
           );
         }),
       ),
 
-      enrollStudent: rxMethod<string>(
-        exhaustMap((studentId) => {
+      enrollStudent: rxMethod<{ studentId: string; onSuccess?: () => void }>(
+        exhaustMap(({ studentId, onSuccess }) => {
           const course = store.course();
           const student = store.availableStudents().find((item) => item.id === studentId);
           if (!course || !student) {
@@ -157,24 +160,28 @@ export const ManageCourseStore = signalStore(
               enrolledStudentsCount: course.enrolledStudentsCount + 1,
             },
             actionError: null,
-          });
+          }, setPending('enrollStudent'));
 
-          return coursesService.enrollStudent(course.courseId, studentId).pipe(
+          return enrollmentService.enrollStudent(course.courseId, studentId).pipe(
+            tap(() => {
+              patchState(store, setFulfilled('enrollStudent'));
+              onSuccess?.();
+            }),
             catchError(() => {
               patchState(store, {
                 availableStudents: previousAvailableStudents,
                 enrolledStudents: previousEnrolledStudents,
                 course,
                 actionError: 'Failed to enroll student.',
-              });
+              }, setError('enrollStudent', 'Failed to enroll student.'));
               return EMPTY;
             }),
           );
         }),
       ),
 
-      removeStudent: rxMethod<string>(
-        exhaustMap((studentId) => {
+      removeStudent: rxMethod<{ studentId: string; onSuccess?: () => void }>(
+        exhaustMap(({ studentId, onSuccess }) => {
           const course = store.course();
           const student = store.enrolledStudents().find((item) => item.id === studentId);
           if (!course || !student) {
@@ -193,8 +200,11 @@ export const ManageCourseStore = signalStore(
             }
           }, setPending('removeStudent'));
 
-          return coursesService.removeStudent(course.courseId, studentId).pipe(
-            tap(() => patchState(store, setFulfilled('removeStudent'))),
+          return enrollmentService.removeStudent(course.courseId, studentId).pipe(
+            tap(() => {
+              patchState(store, setFulfilled('removeStudent'));
+              onSuccess?.();
+            }),
             catchError(() => {
               patchState(store, {
                 availableStudents: previousAvailableStudents,

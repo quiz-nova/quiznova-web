@@ -8,7 +8,7 @@ import { forkJoin, of } from 'rxjs';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
-import { CoursesService } from '@shared/services/courses.service';
+import { EnrollmentService } from '@shared/services/enrollment.service';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 
 
@@ -83,7 +83,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 })
 export class StudentDashboard {
   private readonly authService = inject(AuthService);
-  private readonly coursesService = inject(CoursesService);
+  private readonly enrollmentService = inject(EnrollmentService);
   private readonly quizAttemptsService = inject(QuizAttemptService);
 
   protected readonly welcomeName = computed(
@@ -98,7 +98,7 @@ export class StudentDashboard {
       if (!studentId) {
         return of({
           courses: {
-            coursesCount: 0,
+            enrollmentsCount: 0,
           },
           quizAttempts: {
             quizAttemptCount: 0,
@@ -107,13 +107,13 @@ export class StudentDashboard {
       }
 
       return forkJoin({
-        courses: this.coursesService.getEnrollmentsCount(studentId),
+        courses: this.enrollmentService.getEnrollmentsCount(studentId),
         quizAttempts: this.quizAttemptsService.getStudentQuizAttemptsCount(studentId),
       });
     },
     defaultValue: {
       courses: {
-        coursesCount: 0,
+        enrollmentsCount: 0,
       },
       quizAttempts: {
         quizAttemptCount: 0,
@@ -127,7 +127,7 @@ export class StudentDashboard {
     return [
       {
         title: 'Enrolled Courses',
-        value: summary.courses.coursesCount,
+        value: summary.courses.enrollmentsCount,
         icon: 'fa-solid fa-book-open',
         theme: 'green' as const,
       },

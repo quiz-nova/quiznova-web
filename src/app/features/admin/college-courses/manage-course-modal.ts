@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { DialogModule } from 'primeng/dialog';
@@ -17,10 +26,10 @@ import { ManageCourseStore } from './manage-course.store';
   providers: [ManageCourseStore],
   template: `
     <button
-      appButton
-      variant="gray"
       [attr.aria-label]="'Manage ' + course().courseName"
       (click)="openDialog()"
+      appButton
+      variant="gray"
       type="button"
     >
       Manage
@@ -34,42 +43,39 @@ import { ManageCourseStore } from './manage-course.store';
       (visibleChange)="onDialogVisibilityChange($event)"
       header="Manage Course"
     >
-      @if (store.isPending()) {
+      @if (store.isPending()('loadCourse')) {
         <div class="dialog-spinner">
           <p-progress-spinner ariaLabel="loading" />
         </div>
-      } @else if (store.error()) {
-        <p class="submit-error">{{ store.error() }}</p>
-      } @else if (store.isFulfilled()) {
+      } @else if (store.error()('loadCourse')) {
+        <p class="submit-error">{{ store.error()('loadCourse') }}</p>
+      } @else if (store.isFulfilled()('loadCourse')) {
         <div class="manage-layout">
           <div>
             <p class="course-title">{{ store.course()?.courseName }}</p>
-            <p class="course-subtitle">
-              Assign instructor and manage enrolled students.
-            </p>
+            <p class="course-subtitle">Assign instructor and manage enrolled students.</p>
           </div>
 
           <div class="form-field">
             <label for="manage-course-instructor">Instructor</label>
             <div class="inline-action">
               <p-select
-                inputId="manage-course-instructor"
-                [ngModel]="selectedInstructorId()"
-                (ngModelChange)="onInstructorSelectionChange($event)"
+                [(ngModel)]="selectedInstructorId"
                 [options]="store.instructorOptions()"
+                [filter]="true"
+                [showClear]="true"
+                inputId="manage-course-instructor"
                 optionLabel="name"
                 optionValue="id"
-                [filter]="true"
                 filterBy="name"
-                [showClear]="true"
                 placeholder="No instructor"
                 appendTo="body"
               ></p-select>
               <button
-                appButton
-                variant="green"
                 [disabled]="!hasInstructorChange()"
                 (click)="onUpdateInstructor()"
+                appButton
+                variant="green"
                 type="button"
               >
                 Save
@@ -81,43 +87,44 @@ import { ManageCourseStore } from './manage-course.store';
             <label for="manage-course-student">Enroll student</label>
             <div class="inline-action">
               <p-select
-                inputId="manage-course-student"
-                [ngModel]="selectedStudentId()"
-                (ngModelChange)="onStudentSelectionChange($event)"
+                [(ngModel)]="selectedStudentId"
                 [options]="store.availableStudentOptions()"
+                [filter]="true"
+                [showClear]="true"
+                inputId="manage-course-student"
                 optionLabel="name"
                 optionValue="id"
-                [filter]="true"
                 filterBy="name"
-                [showClear]="true"
                 placeholder="Select a student"
                 appendTo="body"
               ></p-select>
               <button
-                appButton
-                variant="green"
                 [loading]="store.isPending()('enrollStudent')"
                 [disabled]="!selectedStudentId()"
                 (click)="onEnrollStudent()"
+                appButton
+                variant="green"
                 type="button"
               >
-                @if(store.isPending()('enrollStudent')) { Enrolling... } @else { Enroll }
+                @if (store.isPending()('enrollStudent')) {
+                  Enrolling...
+                } @else {
+                  Enroll
+                }
               </button>
             </div>
           </div>
 
           <div class="enrolled-list">
-            <p class="list-heading">
-              Enrolled students ({{ store.enrolledStudents().length }})
-            </p>
+            <p class="list-heading">Enrolled students ({{ store.enrolledStudents().length }})</p>
             @if (store.enrolledStudents().length) {
               @for (student of store.enrolledStudents(); track student.id) {
                 <div class="student-row">
                   <span>{{ student.name }}</span>
                   <span class="student-id">{{ student.id.slice(0, 8) }}</span>
                   <app-delete-button
-                    ariaLabel="Remove student from course"
                     (deleteButtonClicked)="onRemoveStudent(student.id)"
+                    ariaLabel="Remove student from course"
                   />
                 </div>
               }
@@ -262,17 +269,17 @@ export class ManageCourseModal {
     this.isDialogOpen.set(true);
   }
 
-  protected onInstructorSelectionChange(value: string | null | undefined): void {
-    this.selectedInstructorId.set(value ?? null);
-  }
-
-  protected onStudentSelectionChange(value: string | null | undefined): void {
-    this.selectedStudentId.set(value ?? null);
-  }
 
   protected onUpdateInstructor(): void {
-    this.store.updateInstructor(this.selectedInstructorId());
-    this.changed.emit();
+    const instructorId = this.selectedInstructorId();
+    if (!instructorId) {
+      return;
+    }
+
+    this.store.updateInstructor({
+      instructorId,
+      onSuccess: () => this.changed.emit(),
+    });
   }
 
   protected onEnrollStudent(): void {
@@ -281,13 +288,19 @@ export class ManageCourseModal {
       return;
     }
 
-    this.store.enrollStudent(studentId);
-    this.selectedStudentId.set(null);
-    this.changed.emit();
+    this.store.enrollStudent({
+      studentId,
+      onSuccess: () => {
+        this.selectedStudentId.set(null);
+        this.changed.emit();
+      },
+    });
   }
 
   protected onRemoveStudent(studentId: string): void {
-    this.store.removeStudent(studentId);
-    this.changed.emit();
+    this.store.removeStudent({
+      studentId,
+      onSuccess: () => this.changed.emit(),
+    });
   }
 }

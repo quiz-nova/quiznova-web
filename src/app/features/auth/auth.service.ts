@@ -30,6 +30,7 @@ export class AuthService {
     const payload = {
       email: credentials.email,
       password: credentials.password,
+      role: credentials.role,
     };
 
     return this.http

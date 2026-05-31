@@ -27,15 +27,7 @@ type LoginFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-login',
-  imports: [
-    ReactiveFormsModule,
-    Logo,
-    FloatLabel,
-    InputText,
-    Password,
-    FieldError,
-    Button,
-  ],
+  imports: [ReactiveFormsModule, Logo, FloatLabel, InputText, Password, FieldError, Button],
   template: `
     <section class="auth-page">
       <div class="auth-left-side">
@@ -54,7 +46,6 @@ type LoginFormGroup = FormGroup<{
           <h2>Sign in</h2>
           <p>Don't have an account? Contact Your Admin</p>
         </div>
-
 
         @if (loginFailed()) {
           <div class="login-failed" role="alert" aria-live="polite">
@@ -125,7 +116,13 @@ type LoginFormGroup = FormGroup<{
               }
             </div>
           </fieldset>
-          <button appButton variant="green" [loading]="isLogging()" class="auth-submit" type="submit">
+          <button
+            class="auth-submit"
+            [loading]="isLogging()"
+            appButton
+            variant="green"
+            type="submit"
+          >
             <span>{{ isLogging() ? 'Signing in...' : 'Sign in' }}</span>
           </button>
         </form>

@@ -1,19 +1,28 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Locator } from '@playwright/test';
 
 test.describe('Authentication - Real Integration E2E', () => {
+  let emailInput: Locator;
+  let passwordInput: Locator;
+  let roleBox: Locator;
+  let submitButton: Locator;
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/auth/login');
+    emailInput = page.locator('#login-email');
+    passwordInput = page.locator('#login-password');
+    roleBox = page.locator('.role-box');
+    submitButton = page.locator('button.auth-submit');
   });
 
   test('should successfully log in as an Instructor and redirect to /instructor/dashboard', async ({
     page,
   }) => {
-    await page.locator('#login-email').fill('instructor1@quiznova.local');
-    await page.locator('#login-password').fill('Instructor123!');
+    await emailInput.fill('instructor1@quiznova.local');
+    await passwordInput.fill('Instructor123!');
 
-    await page.locator('.role-box').filter({ hasText: 'Instructor' }).click();
+    await roleBox.filter({ hasText: 'Instructor' }).click();
 
-    await page.locator('button.auth-submit').click();
+    await submitButton.click();
 
     await expect(page).toHaveURL('/instructor/dashboard');
 
@@ -30,10 +39,10 @@ test.describe('Authentication - Real Integration E2E', () => {
   test('should successfully log in as a Student and redirect to /student/dashboard', async ({
     page,
   }) => {
-    await page.locator('#login-email').fill('student1@quiznova.local');
-    await page.locator('#login-password').fill('Student123!');
-    await page.locator('.role-box').filter({ hasText: 'Student' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('student1@quiznova.local');
+    await passwordInput.fill('Student123!');
+    await roleBox.filter({ hasText: 'Student' }).click();
+    await submitButton.click();
 
     await expect(page).toHaveURL('/student/dashboard');
   });
@@ -41,19 +50,19 @@ test.describe('Authentication - Real Integration E2E', () => {
   test('should successfully log in as an Admin and redirect to /admin/dashboard', async ({
     page,
   }) => {
-    await page.locator('#login-email').fill('admin@quiznova.local');
-    await page.locator('#login-password').fill('Admin123!');
-    await page.locator('.role-box').filter({ hasText: 'Admin' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('admin@quiznova.local');
+    await passwordInput.fill('Admin123!');
+    await roleBox.filter({ hasText: 'Admin' }).click();
+    await submitButton.click();
 
     await expect(page).toHaveURL('/admin/dashboard');
   });
 
   test('should show validation/incorrect login error on invalid credentials', async ({ page }) => {
-    await page.locator('#login-email').fill('instructor1@quiznova.local');
-    await page.locator('#login-password').fill('WrongPassword!');
-    await page.locator('.role-box').filter({ hasText: 'Instructor' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('instructor1@quiznova.local');
+    await passwordInput.fill('WrongPassword!');
+    await roleBox.filter({ hasText: 'Instructor' }).click();
+    await submitButton.click();
 
     const alert = page.locator('.login-failed');
     await expect(alert).toBeVisible();
@@ -61,10 +70,10 @@ test.describe('Authentication - Real Integration E2E', () => {
   });
 
   test('should show error when logging in with a role mismatch', async ({ page }) => {
-    await page.locator('#login-email').fill('student1@quiznova.local');
-    await page.locator('#login-password').fill('Student123!');
-    await page.locator('.role-box').filter({ hasText: 'Admin' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('student1@quiznova.local');
+    await passwordInput.fill('Student123!');
+    await roleBox.filter({ hasText: 'Admin' }).click();
+    await submitButton.click();
 
     const alert = page.locator('.login-failed');
     await expect(alert).toBeVisible();
@@ -74,9 +83,17 @@ test.describe('Authentication - Real Integration E2E', () => {
 test.describe('Authentication - Mocked Network E2E (Fast & Decoupled)', () => {
   // These tests mock the HTTP layer completely, allowing front-end layout,
   // form submission states, and routing logic to be tested offline or in fast CI/CD.
+  let emailInput: Locator;
+  let passwordInput: Locator;
+  let roleBox: Locator;
+  let submitButton: Locator;
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/auth/login');
+    emailInput = page.locator('#login-email');
+    passwordInput = page.locator('#login-password');
+    roleBox = page.locator('.role-box');
+    submitButton = page.locator('button.auth-submit');
   });
 
   test('should mock successful student login and transition page correctly', async ({ page }) => {
@@ -100,10 +117,10 @@ test.describe('Authentication - Mocked Network E2E (Fast & Decoupled)', () => {
       });
     });
 
-    await page.locator('#login-email').fill('student-mock@quiznova.local');
-    await page.locator('#login-password').fill('AnyPassword!');
-    await page.locator('.role-box').filter({ hasText: 'Student' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('student-mock@quiznova.local');
+    await passwordInput.fill('AnyPassword!');
+    await roleBox.filter({ hasText: 'Student' }).click();
+    await submitButton.click();
 
     await expect(page).toHaveURL('/student/dashboard');
   });
@@ -117,10 +134,10 @@ test.describe('Authentication - Mocked Network E2E (Fast & Decoupled)', () => {
       });
     });
 
-    await page.locator('#login-email').fill('student-mock@quiznova.local');
-    await page.locator('#login-password').fill('AnyPassword!');
-    await page.locator('.role-box').filter({ hasText: 'Student' }).click();
-    await page.locator('button.auth-submit').click();
+    await emailInput.fill('student-mock@quiznova.local');
+    await passwordInput.fill('AnyPassword!');
+    await roleBox.filter({ hasText: 'Student' }).click();
+    await submitButton.click();
 
     const alert = page.locator('.login-failed');
     await expect(alert).toBeVisible();

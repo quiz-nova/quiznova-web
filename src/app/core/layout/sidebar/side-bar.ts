@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
+import { ROLE_DEFINITIONS } from '@Core/config/role.config';
 import { Tab } from '@Core/layout/sidebar/tab';
 import { TabGroup } from '@Core/layout/sidebar/tab-group';
 import { AuthService } from '@Features/auth/auth.service';
 
 import { Logo } from '@shared/components/logo/logo';
-import { ROLE_DEFINITIONS } from '@shared/models/users/user-role.model';
 import { User } from '@shared/models/users/user.model';
 
 

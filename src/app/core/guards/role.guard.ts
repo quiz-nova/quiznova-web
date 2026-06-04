@@ -1,11 +1,10 @@
 import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
 
+import { DEFAULT_USER_ROUTE } from '@Core/config/role.config';
 import { AuthService } from '@Features/auth/auth.service';
 
-import { DEFAULT_USER_ROUTE, UserRole } from '@shared/models/users/user-role.model';
-
-
+import { UserRole } from '@shared/models/users/user-role.model';
 export const roleGuard = (role: UserRole): CanMatchFn => {
   return () => {
     const authService = inject(AuthService);

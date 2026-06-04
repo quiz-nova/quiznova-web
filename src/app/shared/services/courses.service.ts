@@ -2,15 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
+import { UpdateCourseInstructor } from '@Features/admin/models/update-course-instructor.model';
 import { Observable, of } from 'rxjs';
 
 import { CourseCount } from '@shared/models/course/course-count.model';
 import { Course } from '@shared/models/course/course.model';
-import { CreateCourse } from '@shared/models/course/create-course.model';
-import { UpdateCourseInstructor } from '@shared/models/course/update-course-instructor.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { buildParameters } from '@shared/utils/utilities';
+import { CreateCourse } from '@Features/admin/models/create-course.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,10 +21,9 @@ export class CoursesService {
 
   getInstructorCourses(instructorId: string): Observable<Course[]> {
     return this.http.get<Course[]>(
-      `${this.appSettings.apiBaseUrl}/instructor/${instructorId}/courses`
+      `${this.appSettings.apiBaseUrl}/instructor/${instructorId}/courses`,
     );
   }
-
 
   getAllCourses(
     query: PaginatedQuery & {
@@ -55,7 +54,6 @@ export class CoursesService {
     );
   }
 
-
   deleteCourse(courseId: string): Observable<void> {
     return this.http.delete<void>(`${this.appSettings.apiBaseUrl}/courses/${courseId}`);
   }
@@ -66,8 +64,7 @@ export class CoursesService {
     }
 
     return this.http.get<CourseCount>(
-      `${this.appSettings.apiBaseUrl}/instructor/${instructorId}/courses/count`
+      `${this.appSettings.apiBaseUrl}/instructor/${instructorId}/courses/count`,
     );
   }
-
 }

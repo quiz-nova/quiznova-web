@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpParams } from '@angular/common/http';
 
-import { ROLE_DEFINITIONS, UserRole } from '@shared/models/users/user-role.model';
+import { UserRole } from '@shared/models/users/user-role.model';
 
 export function initials(name: string): string {
   return name
@@ -37,7 +37,7 @@ export const normalizeBaseUrl = (url: string): string => url.replace(/\/+$/, '')
 export function parseUserRole(role: string): UserRole {
   const normalizedRole = role.trim().toLowerCase();
 
-  if (!(normalizedRole in ROLE_DEFINITIONS)) {
+  if (!Object.values(UserRole).includes(normalizedRole as UserRole)) {
     throw new Error(`Invalid role: ${normalizedRole}`);
   }
   return normalizedRole as UserRole;

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
+import { ROLE_DEFINITIONS } from '@Core/config/role.config';
 import { AuthService } from '@Features/auth/auth.service';
 
-import { ROLE_DEFINITIONS } from '@shared/models/users/user-role.model';
 import { User } from '@shared/models/users/user.model';
 
 

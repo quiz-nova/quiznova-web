@@ -84,12 +84,11 @@ type McqFormGroup = FormGroup<{
                 />
               </div>
 
-              @if (choicesArray.length > 2) {
-                <app-delete-button
-                  (deleteButtonClicked)="onDeleteChoice(index)"
-                  ariaLabel="Delete choice"
-                />
-              }
+              <app-delete-button
+                (deleteButtonClicked)="onDeleteChoice(index)"
+                [isDisabled]="choicesArray.length <= 2"
+                ariaLabel="Delete choice"
+              />
             </div>
 
             @if (choiceControl.invalid && choiceControl.touched) {
@@ -120,9 +119,15 @@ type McqFormGroup = FormGroup<{
           }
         }
       </form>
-      @if (choicesArray.length < 5) {
-        <button appButton variant="gray" (click)="onAddChoice()" type="button">+Add Choice</button>
-      }
+      <button
+        appButton
+        variant="gray"
+        [disabled]="choicesArray.length >= 5"
+        (click)="onAddChoice()"
+        type="button"
+      >
+        +Add Choice
+      </button>
     </div>
   `,
   styles: `
@@ -196,7 +201,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly mcqForm: McqFormGroup = this.fb.group({
     questionText: [
       '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(500)],
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
     ],
     choices: this.fb.array<FormControl<string>>([]),
     correctChoiceId: [null as string | null, [Validators.required]],

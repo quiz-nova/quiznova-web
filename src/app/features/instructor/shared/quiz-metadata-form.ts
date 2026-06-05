@@ -1,10 +1,24 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, input, output, effect, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  input,
+  output,
+  effect,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 
@@ -59,7 +73,7 @@ type QuizHeaderFormGroup = FormGroup<{
           aria-describedby="quiz-title-is-required-error quiz-title-minlength-error quiz-title-maxlength-error"
         />
 
-        @if (titleControl.invalid && titleControl.touched) {
+        @if (titleControl.invalid && (titleControl.touched || titleControl.dirty)) {
           @if (titleControl.hasError('required')) {
             <app-field-error id="quiz-title-is-required-error"
               >Quiz title is required.</app-field-error
@@ -94,7 +108,7 @@ type QuizHeaderFormGroup = FormGroup<{
           aria-describedby="course-is-required-error"
         />
 
-        @if (courseIdControl.invalid && courseIdControl.touched) {
+        @if (courseIdControl.invalid && (courseIdControl.touched || courseIdControl.dirty)) {
           @if (courseIdControl.hasError('required')) {
             <app-field-error id="course-is-required-error">Course is required.</app-field-error>
           }
@@ -110,7 +124,7 @@ type QuizHeaderFormGroup = FormGroup<{
           [showTime]="true"
           [showIcon]="true"
           [fluid]="true"
-          [attr.aria-invalid]="startsAtControl.invalid && startsAtControl.touched ? 'true' : null"
+          [attr.aria-invalid]="startsAtControl.invalid ? 'true' : null"
           (onBlur)="emitValue()"
           inputId="quiz-starts-at"
           hourFormat="12"
@@ -119,10 +133,15 @@ type QuizHeaderFormGroup = FormGroup<{
           aria-describedby="starts-at-is-required-error"
         />
 
-        @if (startsAtControl.invalid && startsAtControl.touched) {
+        @if (startsAtControl.invalid) {
           @if (startsAtControl.hasError('required')) {
             <app-field-error id="starts-at-is-required-error"
               >Start time is required.</app-field-error
+            >
+          }
+          @if (startsAtControl.hasError('past')) {
+            <app-field-error id="starts-at-past-error"
+              >Start time cannot be in the past.</app-field-error
             >
           }
         }
@@ -137,7 +156,14 @@ type QuizHeaderFormGroup = FormGroup<{
           [showTime]="true"
           [showIcon]="true"
           [fluid]="true"
-          [attr.aria-invalid]="endsAtControl.invalid && endsAtControl.touched ? 'true' : null"
+          [attr.aria-invalid]="
+            endsAtControl.invalid ||
+            quizHeaderForm.hasError('beforeStart') ||
+            quizHeaderForm.hasError('sameSecond') ||
+            quizHeaderForm.hasError('lessThanTenMinutes')
+              ? 'true'
+              : null
+          "
           (onBlur)="emitValue()"
           inputId="quiz-ends-at"
           hourFormat="12"
@@ -146,9 +172,20 @@ type QuizHeaderFormGroup = FormGroup<{
           aria-describedby="ends-at-is-required-error"
         />
 
-        @if (endsAtControl.invalid && endsAtControl.touched) {
+        @if (endsAtControl.invalid) {
           @if (endsAtControl.hasError('required')) {
             <app-field-error id="ends-at-is-required-error">End time is required.</app-field-error>
+          }
+          @if (endsAtControl.hasError('beforeStart')) {
+            <app-field-error id="ends-at-before-start-error"
+              >End time must be after start time.</app-field-error
+            >
+          }
+          @if (endsAtControl.hasError('lessThanTenMinutes')) {
+            <app-field-error id="ends-at-less-than-ten-error"
+              >The difference between start and end time must be at least 10
+              minutes.</app-field-error
+            >
           }
         }
       </div>
@@ -214,15 +251,24 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
     { initialValue: null },
   );
 
-  protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group({
-    title: [
-      '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(30)],
-    ],
-    courseId: ['', Validators.required],
-    startsAtUtc: [this.getDefaultStartsAt(), Validators.required],
-    endsAtUtc: [this.getDefaultEndsAt(), Validators.required],
-  });
+  protected readonly quizHeaderForm: QuizHeaderFormGroup = this.fb.group(
+    {
+      title: [
+        '',
+        [
+          Validators.required,
+          CustomValidators.trimMinLength(3),
+          CustomValidators.trimMaxLength(30),
+        ],
+      ],
+      courseId: ['', Validators.required],
+      startsAtUtc: [this.getDefaultStartsAt(), Validators.required],
+      endsAtUtc: [this.getDefaultEndsAt(), Validators.required],
+    },
+    {
+      validators: [this.timeValidator()],
+    },
+  );
 
   protected readonly showConfirmModal = signal(false);
   private pendingCourseId = '';
@@ -330,5 +376,52 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
     const now = new Date();
     now.setHours(now.getHours() + 1);
     return now;
+  }
+
+  private timeValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const formGroup = group as QuizHeaderFormGroup;
+      const startsAtControl = formGroup.controls.startsAtUtc;
+      const endsAtControl = formGroup.controls.endsAtUtc;
+
+      const startsAt = startsAtControl.value;
+      const endsAt = endsAtControl.value;
+
+      if (!startsAt || !endsAt) {
+        return null;
+      }
+
+      const startsAtDate = new Date(startsAt);
+      const endsAtDate = new Date(endsAt);
+
+      if (isNaN(startsAtDate.getTime()) || isNaN(endsAtDate.getTime())) {
+        return null;
+      }
+
+      const now = new Date();
+
+      // 1. StartsAt in the past (with a 1 minute tolerance to avoid immediate form load errors)
+      const startsAtErrors = { ...startsAtControl.errors };
+      delete startsAtErrors['past'];
+      if (startsAtDate.getTime() < now.getTime() - 60000) {
+        startsAtErrors['past'] = true;
+      }
+      startsAtControl.setErrors(Object.keys(startsAtErrors).length > 0 ? startsAtErrors : null);
+
+      // 2. EndsAt check
+      const timeDiff = endsAtDate.getTime() - startsAtDate.getTime();
+      const endsAtErrors = { ...endsAtControl.errors };
+      delete endsAtErrors['beforeStart'];
+      delete endsAtErrors['lessThanTenMinutes'];
+
+      if (timeDiff < 0) {
+        endsAtErrors['beforeStart'] = true;
+      } else if (timeDiff < 10 * 60 * 1000) {
+        endsAtErrors['lessThanTenMinutes'] = true;
+      }
+      endsAtControl.setErrors(Object.keys(endsAtErrors).length > 0 ? endsAtErrors : null);
+
+      return null;
+    };
   }
 }

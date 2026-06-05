@@ -32,7 +32,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
         }
         @if (control().hasError('maxlength')) {
           <app-field-error id="question-text-maxlength-error"
-            >Question text cannot exceed 500 characters.</app-field-error
+            >Question text cannot exceed 1000 characters.</app-field-error
           >
         }
       }

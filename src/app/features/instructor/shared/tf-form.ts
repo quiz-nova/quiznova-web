@@ -24,6 +24,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
 
@@ -119,7 +120,10 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly tf = () => this.initialData() as Tf;
 
   protected readonly tfForm: TfFormGroup = this.fb.group({
-    text: ['', [Validators.required]],
+    text: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
+    ],
     answer: [null as boolean | null, [Validators.required]],
   });
 

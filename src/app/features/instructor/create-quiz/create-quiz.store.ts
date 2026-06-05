@@ -70,8 +70,10 @@ export const CreateQuizStore = signalStore(
     isEntireQuizValid: computed(() => {
       const quiz = store.quiz();
       const forms = store.registeredForms();
+      const starts = new Date(quiz.startsAtUtc).getTime();
+      const ends = new Date(quiz.endsAtUtc).getTime();
       return (
-        quiz.startsAtUtc < quiz.endsAtUtc && forms.every((f) => f.valid) && quiz.courseId !== ''
+        ends >= starts + 10 * 60 * 1000 && forms.every((f) => f.valid) && quiz.courseId !== ''
       );
     }),
   })),
@@ -263,10 +265,13 @@ export const CreateQuizStore = signalStore(
             }
 
             const updatedChoices = mcq.choices.filter((choice: Choice) => choice.id !== choiceId);
+            const isCorrectChoiceDeleted = mcq.correctChoiceId === choiceId;
+
             return {
               ...question,
               choices: updatedChoices,
               numberOfChoices: updatedChoices.length,
+              correctChoiceId: isCorrectChoiceDeleted ? '' : mcq.correctChoiceId,
             } as Mcq;
           }),
         },

@@ -138,7 +138,7 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly essayForm: EssayFormGroup = this.fb.group({
     questionText: [
       '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(500)],
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
     ],
     answerReference: [
       null as string | null,

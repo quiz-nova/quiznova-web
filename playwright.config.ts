@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const recordVideo = process.env['VIDEO'] === 'on';
+
 /**
  * See https://playwright.dev/docs/test-configuration for more details.
  */
@@ -35,8 +37,14 @@ export default defineConfig({
     /* Take screenshots on failure */
     screenshot: 'only-on-failure',
 
-    /* Record videos on failure */
-    video: 'retain-on-failure',
+    /* Emulate high-DPI/Retina display for maximum crispness and perfect text recording */
+    deviceScaleFactor: 2,
+
+    /* Set full-sized high quality viewport resolution */
+    viewport: { width: 1920, height: 1080 },
+
+    /* Record videos dynamically depending on VIDEO env variable */
+    video: recordVideo ? 'on' : 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */

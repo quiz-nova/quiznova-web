@@ -1,5 +1,7 @@
-import { Instructor } from '@shared/models/users/instructor.model';
-
-export type CreateInstructor = Omit<Instructor, 'id' | 'coursesCount' | 'quizzesCount'> & {
+export interface CreateInstructor {
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
   role: string;
-};
+}

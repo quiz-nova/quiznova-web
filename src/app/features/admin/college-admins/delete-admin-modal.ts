@@ -25,8 +25,7 @@ import { AdminService } from '@shared/services/admin.service';
       header="Delete Admin"
     >
       <p class="message">
-        Are you sure you want to delete <strong>{{ admin().name }}</strong
-      >?
+        Are you sure you want to delete <strong>{{ admin().personalInformation.name }}</strong>?
       </p>
 
       @if (submitError()) {

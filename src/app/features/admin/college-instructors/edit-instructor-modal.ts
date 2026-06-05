@@ -182,9 +182,9 @@ export class EditInstructorModal {
 
   protected openDialog(): void {
     this.EditInstructorForm.reset({
-      name: this.instructor().name,
-      email: this.instructor().email,
-      phoneNumber: this.instructor().phoneNumber,
+      name: this.instructor().personalInformation.name,
+      email: this.instructor().personalInformation.email,
+      phoneNumber: this.instructor().personalInformation.phoneNumber,
     });
     this.EditInstructorForm.markAsPristine();
     this.EditInstructorForm.markAsUntouched();

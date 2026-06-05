@@ -111,7 +111,7 @@ import { EditStudentModal } from './edit-student-modal';
             } @else {
               @for (student of studentsResource.value()?.items ?? []; track student.id) {
                 <tr>
-                  <td>{{ student.name }}</td>
+                  <td>{{ student.personalInformation.name }}</td>
                   <td>{{ student.enrolledCoursesCount }}</td>
                   <td>
                     <div class="actions">

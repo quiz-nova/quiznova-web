@@ -8,7 +8,7 @@ import { UserRole } from '@shared/models/users/user-role.model';
 import { User } from '@shared/models/users/user.model';
 import { parseUserRole } from '@shared/utils/utilities';
 
-import { Auth, Token } from './models/auth.model';
+import { Auth, Token, UserDto } from './models/auth.model';
 
 @Injectable({
   providedIn: 'root',
@@ -67,13 +67,15 @@ export class AuthService {
     this._currentUser.set(null);
   }
 
-  private mapUser(user: User): User {
+  private mapUser(user: UserDto): User {
     return {
       id: user.id,
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
       role: parseUserRole(user.role),
+      personalInformation: {
+        name: user.name,
+        email: '',
+        phoneNumber: '',
+      },
     };
   }
 

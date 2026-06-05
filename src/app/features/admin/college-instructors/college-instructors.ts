@@ -122,7 +122,7 @@ import { EditInstructorModal } from './edit-instructor-modal';
             } @else {
               @for (instructor of instructorsResource.value()?.items ?? []; track instructor.id) {
                 <tr>
-                  <td>{{ instructor.name }}</td>
+                  <td>{{ instructor.personalInformation.name }}</td>
                   <td>{{ instructor.coursesCount }}</td>
                   <td>{{ instructor.quizzesCount }}</td>
                   <td>

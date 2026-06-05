@@ -181,9 +181,9 @@ export class EditAdminModal {
 
   protected openDialog(): void {
     this.EditAdminForm.reset({
-      name: this.admin().name,
-      email: this.admin().email,
-      phoneNumber: this.admin().phoneNumber,
+      name: this.admin().personalInformation.name,
+      email: this.admin().personalInformation.email,
+      phoneNumber: this.admin().personalInformation.phoneNumber,
     });
     this.EditAdminForm.markAsPristine();
     this.EditAdminForm.markAsUntouched();

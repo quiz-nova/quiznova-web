@@ -25,8 +25,7 @@ import { StudentService } from '@shared/services/student.service';
       header="Delete Student"
     >
       <p class="message">
-        Are you sure you want to delete <strong>{{ student().name }}</strong
-        >?
+        Are you sure you want to delete <strong>{{ student().personalInformation.name }}</strong>?
       </p>
 
       @if (submitError()) {

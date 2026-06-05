@@ -97,8 +97,8 @@ import { EditAdminModal } from './edit-admin-modal';
             } @else {
               @for (admin of adminsResource.value()?.items ?? []; track admin.id) {
                 <tr>
-                  <td>{{ admin.name }}</td>
-                  <td>{{ admin.email }}</td>
+                  <td>{{ admin.personalInformation.name }}</td>
+                  <td>{{ admin.personalInformation.email }}</td>
                   <td>
                     <div class="actions">
                       <app-edit-admin-modal

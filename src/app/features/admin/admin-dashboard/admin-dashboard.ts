@@ -69,7 +69,7 @@ export class AdminDashboard {
   private readonly authService = inject(AuthService);
   private readonly collegeService = inject(CollegeService);
 
-  protected readonly welcomeName = computed(() => this.authService.currentUser()?.name || 'Admin');
+  protected readonly welcomeName = computed(() => this.authService.currentUser()?.personalInformation?.name || 'Admin');
 
   protected readonly summaryResource = rxResource({
     stream: () => this.collegeService.getCollegeSummary(),

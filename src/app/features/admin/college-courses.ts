@@ -270,7 +270,7 @@ export class CollegeCourses {
   protected readonly instructorOptions = computed(() =>
     (this.instructorsResource.value()?.items ?? []).map((instructor: Instructor) => ({
       id: instructor.id,
-      name: instructor.name,
+      name: instructor.personalInformation.name,
     })),
   );
 

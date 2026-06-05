@@ -41,13 +41,13 @@ export const ManageCourseStore = signalStore(
     instructorOptions: computed(() =>
       store.instructors().map((instructor) => ({
         id: instructor.id,
-        name: instructor.name,
+        name: instructor.personalInformation.name,
       })),
     ),
     availableStudentOptions: computed(() =>
       store.availableStudents().map((student) => ({
         id: student.id,
-        name: student.name,
+        name: student.personalInformation.name,
       })),
     ),
   })),
@@ -117,7 +117,7 @@ export const ManageCourseStore = signalStore(
 
           const instructorName = instructorId
             ? (store.instructors().find((instructor) => instructor.id === instructorId)
-              ?.name ?? '')
+              ?.personalInformation.name ?? '')
             : '';
 
           patchState(store, {

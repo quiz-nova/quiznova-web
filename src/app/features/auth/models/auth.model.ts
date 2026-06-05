@@ -1,8 +1,12 @@
-import { User } from '@shared/models/users/user.model';
+export interface UserDto {
+  id: string;
+  name: string;
+  role: string;
+}
 
 export interface Auth {
   token: Token;
-  user: User;
+  user: UserDto;
 }
 export interface Token {
   accessToken: string;

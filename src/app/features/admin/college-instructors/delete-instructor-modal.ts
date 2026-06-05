@@ -25,8 +25,7 @@ import { InstructorService } from '@shared/services/instructor.service';
       header="Delete Instructor"
     >
       <p class="message">
-        Are you sure you want to delete <strong>{{ instructor().name }}</strong
-      >?
+        Are you sure you want to delete <strong>{{ instructor().personalInformation.name }}</strong>?
       </p>
 
       @if (submitError()) {

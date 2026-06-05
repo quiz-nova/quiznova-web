@@ -184,9 +184,9 @@ export class EditStudentModal {
 
   protected openDialog(): void {
     this.EditStudentForm.reset({
-      name: this.student().name,
-      email: this.student().email,
-      phoneNumber: this.student().phoneNumber,
+      name: this.student().personalInformation.name,
+      email: this.student().personalInformation.email,
+      phoneNumber: this.student().personalInformation.phoneNumber,
     });
     this.EditStudentForm.markAsPristine();
     this.EditStudentForm.markAsUntouched();

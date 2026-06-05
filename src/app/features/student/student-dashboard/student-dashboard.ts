@@ -87,7 +87,7 @@ export class StudentDashboard {
   private readonly quizAttemptsService = inject(QuizAttemptService);
 
   protected readonly welcomeName = computed(
-    () => this.authService.currentUser()?.name || 'Student',
+    () => this.authService.currentUser()?.personalInformation?.name || 'Student',
   );
   protected readonly studentId = computed(() => this.authService.currentUser()?.id ?? null);
 

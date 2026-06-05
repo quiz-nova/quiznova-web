@@ -204,7 +204,7 @@ export class AddCourseModal {
   protected readonly instructorOptions = () =>
     this.instructors().map((instructor) => ({
       id: instructor.id,
-      name: instructor.name,
+      name: instructor.personalInformation.name,
     }));
 
   protected get nameControl() {

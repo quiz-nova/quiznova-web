@@ -11,9 +11,6 @@ import { QuizHeader } from '@Features/instructor/shared/quiz-header';
 import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
 
 import { Button } from '@shared/components/button/button';
-import { EssayTag } from '@shared/components/questions-tags/essay-tag';
-import { McqTag } from '@shared/components/questions-tags/mcq-tag';
-import { TfTag } from '@shared/components/questions-tags/tf-tag';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
@@ -31,9 +28,6 @@ import { QuizService } from '@shared/services/quiz.service';
     ObserveVisibilityDirective,
     QuestionsOutline,
     NgComponentOutlet,
-    McqTag,
-    TfTag,
-    EssayTag,
     RoleDashboardHeader,
     Button,
   ],
@@ -100,17 +94,9 @@ import { QuizService } from '@shared/services/quiz.service';
                     (deleteQuestion)="createQuizStore.removeQuestion($event)"
                     (marksChange)="createQuizStore.updateQuestionMarks($event.questionId, $event.marks)"
                   >
-                    @switch (question.type) {
-                      @case ('mcq') {
-                        <app-mcq-tag></app-mcq-tag>
-                      }
-                      @case ('tf') {
-                        <app-tf-tag></app-tf-tag>
-                      }
-                      @case ('essay') {
-                        <app-essay-tag></app-essay-tag>
-                      }
-                    }
+                    <ng-container
+                      [ngComponentOutlet]="mapperService.getSuitableQuestionTag(question.type)"
+                    ></ng-container>
                   </app-question-header>
 
                   <ng-container

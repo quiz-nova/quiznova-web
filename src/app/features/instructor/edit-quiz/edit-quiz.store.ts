@@ -81,13 +81,13 @@ export const EditQuizStore = signalStore(
                   patchState(store, { remainingMarks: course.remainingMarks });
                 }),
                 catchError((err) => {
-                  console.error('Failed to fetch course details', err);
+                  console.error(getApiErrorMessage(err, 'Failed to fetch course details'));
                   return EMPTY;
                 }),
               );
             }),
-            catchError(() => {
-              patchState(store, setError('loadQuiz', 'Failed to load quiz.'));
+            catchError((err) => {
+              patchState(store, setError('loadQuiz', getApiErrorMessage(err, 'Failed to load quiz.')));
               return EMPTY;
             }),
           );
@@ -118,7 +118,7 @@ export const EditQuizStore = signalStore(
 
           return quizService.updateQuizMetadata(quizId, metadata).pipe(
             catchError((err) => {
-              console.error('Failed to update metadata', err);
+              console.error(getApiErrorMessage(err, 'Failed to update metadata'));
               // In a real app, we'd revert the optimistic update here
               return EMPTY;
             }),
@@ -152,13 +152,13 @@ export const EditQuizStore = signalStore(
                   patchState(store, { remainingMarks: course.remainingMarks });
                 }),
                 catchError((err) => {
-                  console.error('Failed to fetch new course details', err);
+                  console.error(getApiErrorMessage(err, 'Failed to fetch new course details'));
                   return EMPTY;
                 }),
               );
             }),
             catchError((err) => {
-              console.error('Failed to update course ID', err);
+              console.error(getApiErrorMessage(err, 'Failed to update course ID'));
               return EMPTY;
             }),
           );
@@ -189,7 +189,7 @@ export const EditQuizStore = signalStore(
               }));
             }),
             catchError((err) => {
-              console.error('Failed to add question', err);
+              console.error(getApiErrorMessage(err, 'Failed to add question'));
               return EMPTY;
             }),
           );
@@ -231,7 +231,7 @@ export const EditQuizStore = signalStore(
 
           return quizService.updateQuestion(quizId, updatedQuestion.id, updatedQuestion).pipe(
             catchError((err) => {
-              console.error('Failed to update question', err);
+              console.error(getApiErrorMessage(err, 'Failed to update question'));
               return EMPTY;
             }),
           );

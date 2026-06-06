@@ -16,6 +16,7 @@ import { withRequestStatus } from '@StoreFeatures/with-request-status.feature';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CoursesService } from '@shared/services/courses.service';
+import { getApiErrorMessage } from '@shared/utils/utilities';
 
 const createInitialQuiz = (): CreateQuiz => ({
   title: '',
@@ -113,7 +114,7 @@ export const CreateQuizStore = signalStore(
           });
         },
         error: (err) => {
-          console.error('Failed to fetch course details', err);
+          console.error(getApiErrorMessage(err, 'Failed to fetch course details'));
         },
       });
     },

@@ -12,13 +12,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 
@@ -33,6 +30,8 @@ import { FieldError } from '@shared/components/field-error/field-error';
 import { CoursesService } from '@shared/services/courses.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
+import { timeValidator } from '../validators/time-validator';
+
 export interface QuizMetadataValue {
   title: string;
   courseId: string;
@@ -40,7 +39,7 @@ export interface QuizMetadataValue {
   endsAtUtc: Date;
 }
 
-type QuizHeaderFormGroup = FormGroup<{
+export type QuizHeaderFormGroup = FormGroup<{
   title: FormControl<string>;
   courseId: FormControl<string>;
   startsAtUtc: FormControl<Date>;
@@ -102,7 +101,7 @@ type QuizHeaderFormGroup = FormGroup<{
           (onChange)="onCourseChange($event.value)"
           inputId="quiz-course"
           optionLabel="courseName"
-          optionValue="courseId"
+          optionValue="id"
           placeholder="Select course"
           appendTo="body"
           aria-describedby="course-is-required-error"
@@ -266,7 +265,7 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
       endsAtUtc: [this.getDefaultEndsAt(), Validators.required],
     },
     {
-      validators: [this.timeValidator()],
+      validators: [timeValidator()],
     },
   );
 
@@ -376,52 +375,5 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
     const now = new Date();
     now.setHours(now.getHours() + 1);
     return now;
-  }
-
-  private timeValidator(): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const formGroup = group as QuizHeaderFormGroup;
-      const startsAtControl = formGroup.controls.startsAtUtc;
-      const endsAtControl = formGroup.controls.endsAtUtc;
-
-      const startsAt = startsAtControl.value;
-      const endsAt = endsAtControl.value;
-
-      if (!startsAt || !endsAt) {
-        return null;
-      }
-
-      const startsAtDate = new Date(startsAt);
-      const endsAtDate = new Date(endsAt);
-
-      if (isNaN(startsAtDate.getTime()) || isNaN(endsAtDate.getTime())) {
-        return null;
-      }
-
-      const now = new Date();
-
-      // 1. StartsAt in the past (with a 1 minute tolerance to avoid immediate form load errors)
-      const startsAtErrors = { ...startsAtControl.errors };
-      delete startsAtErrors['past'];
-      if (startsAtDate.getTime() < now.getTime() - 60000) {
-        startsAtErrors['past'] = true;
-      }
-      startsAtControl.setErrors(Object.keys(startsAtErrors).length > 0 ? startsAtErrors : null);
-
-      // 2. EndsAt check
-      const timeDiff = endsAtDate.getTime() - startsAtDate.getTime();
-      const endsAtErrors = { ...endsAtControl.errors };
-      delete endsAtErrors['beforeStart'];
-      delete endsAtErrors['lessThanTenMinutes'];
-
-      if (timeDiff < 0) {
-        endsAtErrors['beforeStart'] = true;
-      } else if (timeDiff < 10 * 60 * 1000) {
-        endsAtErrors['lessThanTenMinutes'] = true;
-      }
-      endsAtControl.setErrors(Object.keys(endsAtErrors).length > 0 ? endsAtErrors : null);
-
-      return null;
-    };
   }
 }

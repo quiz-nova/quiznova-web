@@ -14,7 +14,14 @@ import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
   selector: 'app-college-quizzes',
-  imports: [ProgressSpinner, FormsModule, InputText, InputNumber, NavigationButtons, RoleDashboardHeader],
+  imports: [
+    ProgressSpinner,
+    FormsModule,
+    InputText,
+    InputNumber,
+    NavigationButtons,
+    RoleDashboardHeader,
+  ],
   template: `
     <section class="page">
       <header class="page-header">
@@ -28,11 +35,11 @@ import { QuizService } from '@shared/services/quiz.service';
         <div class="filter-item">
           <label for="quiz-search">Search</label>
           <input
-            id="quiz-search"
-            pInputText
             class="focus-green-ring"
+            id="quiz-search"
             [ngModel]="searchTerm()"
             (ngModelChange)="onSearchTermChange($event)"
+            pInputText
             placeholder="Search by title, course, or instructor"
           />
         </div>
@@ -40,23 +47,23 @@ import { QuizService } from '@shared/services/quiz.service';
         <div class="filter-item">
           <label for="page-size">Page size</label>
           <p-inputnumber
-            inputId="page-size"
             [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
+            (ngModelChange)="onPageSizeChange($event)"
+            inputId="page-size"
           ></p-inputnumber>
         </div>
 
         <div class="filter-item">
           <label for="marks">Marks</label>
           <p-inputnumber
-            inputId="marks"
             [(ngModel)]="marks"
-            (ngModelChange)="onMarksChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onMarksChange($event)"
+            inputId="marks"
             placeholder="Any"
           ></p-inputnumber>
         </div>
@@ -89,7 +96,9 @@ import { QuizService } from '@shared/services/quiz.service';
                   </div>
                 </td>
               </tr>
-            } @else if (!quizzesResource.isLoading() && !(quizzesResource.value()?.items?.length ?? 0)) {
+            } @else if (
+              !quizzesResource.isLoading() && !(quizzesResource.value()?.items?.length ?? 0)
+            ) {
               <tr>
                 <td colspan="7">
                   <p class="feedback">No quizzes match your filters.</p>
@@ -120,18 +129,18 @@ import { QuizService } from '@shared/services/quiz.service';
           {{ quizzesResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
-          ariaLabel="Quizzes pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
           [canGoPrevious]="quizzesResource.value()?.hasPreviousPage ?? false"
           [canGoNext]="quizzesResource.value()?.hasNextPage ?? false"
           (previousButtonClicked)="goToPreviousPage()"
           (nextButtonClicked)="goToNextPage()"
+          ariaLabel="Quizzes pagination"
+          previousLabel="Previous page"
+          nextLabel="Next page"
         />
       </div>
     </section>
   `,
-  styleUrl: './shared/college-tables-shared.css',
+  styleUrl: '../shared/college-tables-shared.css',
   styles: `
     .state {
       display: inline-flex;
@@ -167,7 +176,9 @@ export class CollegeQuizzes {
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly marks = signal<number | null>(
-    this.route.snapshot.queryParams['marks'] ? Number(this.route.snapshot.queryParams['marks']) : null
+    this.route.snapshot.queryParams['marks']
+      ? Number(this.route.snapshot.queryParams['marks'])
+      : null,
   );
 
   constructor() {

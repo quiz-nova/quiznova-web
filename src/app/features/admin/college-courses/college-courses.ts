@@ -25,9 +25,9 @@ import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 
-import { AddCourseModal } from './college-courses/add-course-modal';
-import { DeleteCourseModal } from './college-courses/delete-course-modal';
-import { ManageCourseModal } from './college-courses/manage-course-modal';
+import { AddCourseModal } from './add-course-modal';
+import { DeleteCourseModal } from './delete-course-modal';
+import { ManageCourseModal } from './manage-course-modal';
 
 @Component({
   selector: 'app-college-courses',
@@ -156,9 +156,9 @@ import { ManageCourseModal } from './college-courses/manage-course-modal';
                 </td>
               </tr>
             } @else {
-              @for (course of coursesResource.value()?.items ?? []; track course.courseId) {
+              @for (course of coursesResource.value()?.items ?? []; track course.id) {
                 <tr>
-                  <td>{{ course.courseId.slice(0, 8) }}</td>
+                  <td>{{ course.id.slice(0, 8) }}</td>
                   <td>{{ course.courseName }}</td>
                   <td>{{ course.instructorName || 'Unassigned' }}</td>
                   <td>{{ course.enrolledStudentsCount }}</td>
@@ -193,7 +193,7 @@ import { ManageCourseModal } from './college-courses/manage-course-modal';
       </div>
     </section>
   `,
-  styleUrl: './shared/college-tables-shared.css',
+  styleUrl: '../shared/college-tables-shared.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeCourses {
@@ -253,18 +253,18 @@ export class CollegeCourses {
     stream: (shouldFetch) =>
       shouldFetch
         ? this.instructorService.getAllInstructors({
-          pageNumber: 1,
-          pageSize: 10,
-        })
+            pageNumber: 1,
+            pageSize: 10,
+          })
         : of({
-          items: [],
-          pageNumber: 1,
-          pageSize: 10,
-          totalPages: 1,
-          totalCount: 0,
-          hasPreviousPage: false,
-          hasNextPage: false,
-        } as PaginatedList<Instructor>),
+            items: [],
+            pageNumber: 1,
+            pageSize: 10,
+            totalPages: 1,
+            totalCount: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          } as PaginatedList<Instructor>),
   });
 
   protected readonly instructorOptions = computed(() =>

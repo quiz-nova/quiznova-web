@@ -2,7 +2,7 @@ import { Course } from '@shared/models/course/course.model';
 
 export type CreateCourse = Omit<
   Course,
-  | 'courseId'
+  | 'id'
   | 'courseName'
   | 'instructorName'
   | 'enrolledStudentsCount'

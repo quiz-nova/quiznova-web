@@ -120,7 +120,7 @@ import { ManageCourseStore } from './manage-course.store';
             @if (store.enrolledStudents().length) {
               @for (student of store.enrolledStudents(); track student.id) {
                 <div class="student-row">
-                  <span>{{ student.name }}</span>
+                  <span>{{ student.personalInformation.name }}</span>
                   <span class="student-id">{{ student.id.slice(0, 8) }}</span>
                   <app-delete-button
                     (deleteButtonClicked)="onRemoveStudent(student.id)"
@@ -133,8 +133,8 @@ import { ManageCourseStore } from './manage-course.store';
             }
           </div>
 
-          @if (store.actionError()) {
-            <p class="submit-error">{{ store.actionError() }}</p>
+          @if (store.anyError()) {
+            <p class="submit-error">{{ store.anyError() }}</p>
           }
         </div>
       }
@@ -251,7 +251,7 @@ export class ManageCourseModal {
 
   protected openDialog(): void {
     this.isDialogOpen.set(true);
-    this.store.loadCourse(this.course().courseId);
+    this.store.loadCourse(this.course().id);
   }
 
   protected closeDialog(): void {
@@ -268,7 +268,6 @@ export class ManageCourseModal {
 
     this.isDialogOpen.set(true);
   }
-
 
   protected onUpdateInstructor(): void {
     const instructorId = this.selectedInstructorId();

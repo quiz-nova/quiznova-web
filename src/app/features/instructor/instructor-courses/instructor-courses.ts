@@ -9,7 +9,6 @@ import { OperationFailed } from '@shared/components/operation-failed/operation-f
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CoursesService } from '@shared/services/courses.service';
 
-
 @Component({
   selector: 'app-instructor-courses',
   imports: [ProgressSpinner, RoleDashboardHeader, OperationFailed],
@@ -34,7 +33,7 @@ import { CoursesService } from '@shared/services/courses.service';
         <p class="feedback">No courses are assigned to you yet.</p>
       } @else {
         <section class="course-grid" aria-label="Instructor courses">
-          @for (course of coursesResource.value() ?? []; track course.courseId) {
+          @for (course of coursesResource.value() ?? []; track course.id) {
             <article class="course-card">
               <div class="course-card__header">
                 <div>
@@ -46,13 +45,9 @@ import { CoursesService } from '@shared/services/courses.service';
                 </div>
               </div>
 
-              <p class="course-id">ID {{ course.courseId.slice(0, 8) }}</p>
+              <p class="course-id">ID {{ course.id.slice(0, 8) }}</p>
 
               <dl class="course-stats">
-                <div>
-                  <dt>Instructor</dt>
-                  <dd>{{ course.instructorName }}</dd>
-                </div>
                 <div>
                   <dt>Students</dt>
                   <dd>{{ course.enrolledStudentsCount }}</dd>

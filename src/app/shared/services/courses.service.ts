@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
+import { CreateCourse } from '@Features/admin/models/create-course.model';
 import { UpdateCourseInstructor } from '@Features/admin/models/update-course-instructor.model';
 import { Observable, of } from 'rxjs';
 
@@ -10,7 +11,6 @@ import { Course } from '@shared/models/course/course.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
 import { buildParameters } from '@shared/utils/utilities';
-import { CreateCourse } from '@Features/admin/models/create-course.model';
 
 @Injectable({
   providedIn: 'root',

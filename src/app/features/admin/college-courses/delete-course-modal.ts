@@ -31,8 +31,14 @@ import { CoursesService } from '@shared/services/courses.service';
       }
 
       <div class="actions">
-        <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
-        <button appButton variant="red" [loading]="isSubmitting()" (click)="onDelete()" type="button">
+        <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
+        <button
+          [loading]="isSubmitting()"
+          (click)="onDelete()"
+          appButton
+          variant="red"
+          type="button"
+        >
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>
@@ -93,7 +99,7 @@ export class DeleteCourseModal {
     this.isSubmitting.set(true);
     this.submitError.set(false);
 
-    this.coursesService.deleteCourse(this.course().courseId).subscribe({
+    this.coursesService.deleteCourse(this.course().id).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.deleted.emit();

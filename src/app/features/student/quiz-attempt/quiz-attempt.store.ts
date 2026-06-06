@@ -1,4 +1,4 @@
-import { computed, inject } from '@angular/core';
+import { computed, inject, effect } from '@angular/core';
 
 import { AuthService } from '@Features/auth/auth.service';
 import {
@@ -21,11 +21,9 @@ import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
 import { Question } from '@shared/models/quiz/question.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';
+import { getApiErrorMessage } from '@shared/utils/utilities';
 
-import {
-  SubmitQuizAttempt,
-  SubmitQuestionAnswerType,
-} from './models/SubmitQuizAttempt.model';
+import { SubmitQuizAttempt, SubmitQuestionAnswerType } from './models/SubmitQuizAttempt.model';
 
 export interface QuestionWithStatus extends Question {
   isSolved: boolean;
@@ -35,23 +33,51 @@ export interface QuestionWithStatus extends Question {
 export interface QuizAttemptState {
   quizId: string;
   studentId: string;
+  quizTitle: string;
   quizQuestions: QuestionWithStatus[];
   questionAttempts: SubmitQuestionAnswerType[];
   currentQuestionIndex: number;
+  endsUtc: Date | null;
+  serverUtc: Date | null;
+  startedAt: Date | null;
 }
 const initialState: QuizAttemptState = {
   quizId: '',
   studentId: '',
+  quizTitle: '',
   quizQuestions: [],
   questionAttempts: [],
   currentQuestionIndex: 0,
+  endsUtc: null,
+  serverUtc: null,
+  startedAt: null,
 };
 
-
 export const QuizAttemptStore = signalStore(
-  { providedIn: 'root' },
   withState<QuizAttemptState>(initialState),
   withRequestStatus(),
+  withComputed((store) => ({
+    remaningSeconds: computed(() => {
+      const endsUtc = store.endsUtc();
+      const serverUtc = store.serverUtc();
+      if (!endsUtc || !serverUtc) return 0;
+      return Math.floor((endsUtc.getTime() - serverUtc.getTime()) / 1000);
+    }),
+    numberOfQuestions: computed(() => store.quizQuestions().length),
+    currentQuestion: computed(() => {
+      const questions = store.quizQuestions();
+      const currentIndex = store.currentQuestionIndex();
+      return questions[currentIndex];
+    }),
+    numberOfSolvedQuestions: computed(() => {
+      return store.quizQuestions().filter((q) => q.isSolved).length;
+    }),
+    canGoPrevious: computed(() => store.currentQuestionIndex() > 0),
+    canGoNext: computed(() => store.currentQuestionIndex() < store.quizQuestions().length - 1),
+  })),
+  withComputed((store) => ({
+    quizTimeOut: computed(() => store.remaningSeconds() <= 0),
+  })),
   withMethods((store) => {
     const quizService = inject(QuizService);
     const quizAttemptService = inject(QuizAttemptService);
@@ -71,21 +97,29 @@ export const QuizAttemptStore = signalStore(
             tap((quiz) => {
               const questions = quiz.questions.map(toQuestionWithStatus);
               patchState(store, {
+                quizTitle: quiz.title,
                 quizQuestions: questions,
                 questionAttempts: [],
                 quizId: quiz.quizId,
                 currentQuestionIndex: 0,
+                startedAt: new Date(),
+                endsUtc: new Date(quiz.endsAtUtc),
+                serverUtc: new Date(quiz.serverUtc),
               });
               patchState(store, setFulfilled('load'));
             }),
-            catchError(() => {
-              patchState(store, setError('load', 'Error Occurred When we try to submit your quiz')); // TODO we well modify this to be aligned with the backend error messages
+            catchError((err) => {
+              const errorMessage = getApiErrorMessage(
+                err,
+                'Error occurred when we tried to load your quiz',
+              );
+              patchState(store, setError('load', errorMessage));
               return EMPTY;
             }),
           );
         }),
       ),
-      setStudentId(studentId: string): void {
+      _setStudentId(studentId: string): void {
         patchState(store, { studentId });
       },
       setCurrentQuestionIndex(index: number): void {
@@ -106,6 +140,10 @@ export const QuizAttemptStore = signalStore(
         return currentQuestion ? currentQuestion.isFlagged : false;
       },
       submitAnswer(answer: SubmitQuestionAnswerType): void {
+        if (store.quizTimeOut()) {
+          return;
+        }
+
         patchState(store, (state) => {
           const solved = true;
 
@@ -125,11 +163,15 @@ export const QuizAttemptStore = signalStore(
           };
         });
       },
-      SubmitQuiz(): void {
+      _submitQuiz(): void {
+        if (store.isPending()('submit') || store.isFulfilled()('submit')) {
+          return;
+        }
+
         const studentId = store.studentId();
         const request: SubmitQuizAttempt = {
           quizId: store.quizId(),
-          startedAt: new Date().toISOString(), // Track from start in real implementation
+          startedAt: store.startedAt()!.toISOString(),
           submittedAt: new Date().toISOString(),
           questionAnswers: store.questionAttempts(),
         };
@@ -141,35 +183,61 @@ export const QuizAttemptStore = signalStore(
             tap(() => {
               patchState(store, setFulfilled('submit'));
             }),
-            catchError(() => {
-              patchState(store, setError('submit', 'Error occurred during submission'));
+            catchError((err) => {
+              const errorMessage = getApiErrorMessage(err, 'Error occurred during submission');
+              patchState(store, setError('submit', errorMessage));
               return EMPTY;
             }),
           )
           .subscribe();
       },
+      SubmitQuiz(): void {
+        if (store.quizTimeOut()) {
+          return;
+        }
+        this._submitQuiz();
+      },
     };
   }),
-  withComputed((store) => ({
-    numberOfQuestions: computed(() => store.quizQuestions().length),
-    currentQuestion: computed(() => {
-      const questions = store.quizQuestions();
-      const currentIndex = store.currentQuestionIndex();
-      return questions[currentIndex];
-    }),
-    numberOfSolvedQuestions: computed(() => {
-      return store.quizQuestions().filter((q) => q.isSolved).length;
-    }),
-    canGoPrevious: computed(() => store.currentQuestionIndex() > 0),
-    canGoNext: computed(() => store.currentQuestionIndex() < store.quizQuestions().length - 1),
-  })),
-  withHooks((store) => ({
-    onInit(): void {
-      const authService = inject(AuthService);
-      const currentUser = authService.currentUser();
-      if (currentUser) {
-        store.setStudentId(currentUser.id);
-      }
-    },
-  })),
+  withHooks((store) => {
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    effect(
+      () => {
+        const isTimeout = store.quizTimeOut();
+        const serverUtc = store.serverUtc();
+        if (serverUtc && isTimeout) {
+          store._submitQuiz();
+          if (intervalId) {
+            clearInterval(intervalId);
+          }
+        }
+      },
+      { allowSignalWrites: true },
+    );
+
+    return {
+      onInit(): void {
+        const authService = inject(AuthService);
+        const currentUser = authService.currentUser();
+        if (currentUser) {
+          store._setStudentId(currentUser.id);
+        }
+
+        intervalId = setInterval(() => {
+          const serverUtc = store.serverUtc();
+          if (serverUtc) {
+            patchState(store, {
+              serverUtc: new Date(serverUtc.getTime() + 1000),
+            });
+          }
+        }, 1000);
+      },
+      onDestroy(): void {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      },
+    };
+  }),
 );

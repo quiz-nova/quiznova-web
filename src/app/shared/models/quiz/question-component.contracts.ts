@@ -45,4 +45,6 @@ export interface StudentAnswerReviewContract {
   readonly questionNumber: InputSignal<number>;
 }
 
-export type StudentAnswerReviewMap = Partial<Record<QuestionType, Type<StudentAnswerReviewContract>>>;
+export type StudentAnswerReviewMap = Partial<
+  Record<QuestionType, Type<StudentAnswerReviewContract>>
+>;

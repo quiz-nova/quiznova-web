@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
@@ -19,7 +26,6 @@ export type TfAttemptForm = FormGroup<{
   imports: [],
   template: `
     <article class="question-card" aria-label="True or false question">
-      <p class="badge">True / False</p>
       <h2>{{ question().questionText }}</h2>
 
       <div class="options-grid">
@@ -54,16 +60,6 @@ export type TfAttemptForm = FormGroup<{
       border: 1px solid var(--clr-gray-300);
       border-radius: 0.75rem;
       background: var(--clr-white);
-    }
-
-    .badge {
-      margin: 0;
-      width: fit-content;
-      border-radius: 999px;
-      padding: 0.25rem 0.6rem;
-      background: var(--clr-gray-200);
-      font-size: 0.75rem;
-      font-weight: 700;
     }
 
     h2 {

@@ -1,10 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { toObservable, toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { Subscription, switchMap, timer } from 'rxjs';
-
-import { Quiz } from '@shared/models/quiz/quiz.model';
-import { QuizService } from '@shared/services/quiz.service';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
 import { QuizAttemptStore } from './quiz-attempt.store';
 
@@ -14,17 +8,17 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   template: `
     <header class="attempt-header">
       <div>
-        <h1>{{ quiz()?.title }}</h1>
+        <h1>{{ quizAttemptStore.quizTitle() }}</h1>
         <p>
           Question {{ this.quizAttemptStore.currentQuestionIndex() }} of
-          {{ quiz()?.questions?.length }}
+          {{ quizAttemptStore.numberOfQuestions() }}
         </p>
       </div>
 
       <div class="attempt-meta" aria-label="Quiz status">
         <span class="chip"
           >{{ this.quizAttemptStore.numberOfSolvedQuestions() }}/{{
-            quiz()?.questions?.length
+            quizAttemptStore.numberOfQuestions()
           }}</span
         >
         <span class="chip">{{ remainingTime() }}</span>
@@ -83,78 +77,14 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class QuizAttemptHeader implements OnInit {
-  private readonly destroyRef = inject(DestroyRef);
+export class QuizAttemptHeader {
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
-  protected readonly quizService = inject(QuizService);
-  private countdownSubscription: Subscription | null = null;
-  private quizTimedOut = false;
-  protected readonly remainingSeconds = signal(0);
 
   // user-friendly remaining time in format mm:ss
   protected readonly remainingTime = computed(() => {
-    const seconds = this.remainingSeconds();
+    const seconds = this.quizAttemptStore.remaningSeconds();
     const minutes = Math.floor(seconds / 60);
     const secondsPart = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${secondsPart.toString().padStart(2, '0')}`;
   });
-  protected readonly quiz = toSignal(
-    toObservable(this.quizAttemptStore.quizId).pipe(
-      switchMap((quizId) => this.quizService.getQuizById(quizId)),
-    ),
-  );
-
-  ngOnInit(): void {
-    toObservable(this.quiz)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((quiz) => {
-        if (!quiz) {
-          return;
-        }
-
-        this.startCountdown(quiz);
-      });
-  }
-
-  private startCountdown(quiz: Quiz): void {
-    this.countdownSubscription?.unsubscribe();
-
-    const serverUtcMs = quiz.serverUtc ? new Date(quiz.serverUtc).getTime() : Date.now();
-    const endsAtUtcMs = new Date(quiz.endsAtUtc).getTime();
-
-    if (!Number.isFinite(serverUtcMs) || !Number.isFinite(endsAtUtcMs)) {
-      this.remainingSeconds.set(0);
-      return;
-    }
-
-    const secondsUntilEnd = Math.max(0, Math.floor((endsAtUtcMs - serverUtcMs) / 1000));
-    this.remainingSeconds.set(secondsUntilEnd);
-    this.quizTimedOut = false;
-
-    if (secondsUntilEnd === 0) {
-      this.submitQuizOnTimeout();
-      return;
-    }
-
-    this.countdownSubscription = timer(1000, 1000)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        const next = Math.max(0, this.remainingSeconds() - 1);
-        this.remainingSeconds.set(next);
-
-        if (next === 0) {
-          this.countdownSubscription?.unsubscribe();
-          this.submitQuizOnTimeout();
-        }
-      });
-  }
-
-  private submitQuizOnTimeout(): void {
-    if (this.quizTimedOut) {
-      return;
-    }
-
-    this.quizTimedOut = true;
-    this.quizAttemptStore.SubmitQuiz();
-  }
 }

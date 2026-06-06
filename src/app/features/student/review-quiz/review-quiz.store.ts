@@ -27,6 +27,7 @@ import {
 } from '@shared/models/quiz-attempt/question-answer.model';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
+import { getApiErrorMessage } from '@shared/utils/utilities';
 
 
 type ReviewQuestion = Mcq | Tf | Essay;
@@ -125,8 +126,8 @@ export const ReviewQuizStore = signalStore(
               });
               patchState(store, setFulfilled('load'));
             }),
-            catchError(() => {
-              patchState(store, setError('load', 'Failed to load quiz attempt.'));
+            catchError((err) => {
+              patchState(store, setError('load', getApiErrorMessage(err, 'Failed to load quiz attempt.')));
               return EMPTY;
             }),
           );

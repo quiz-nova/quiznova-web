@@ -1,10 +1,13 @@
 import { NgComponentOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
 
+import { ProgressSpinner } from 'primeng/progressspinner';
+
+import { Button } from '@shared/components/button/button';
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
-import { AttemptButton } from './attempt-button';
 import { QuestionAttemptHeader } from './question-attempt-header';
 import { QuestionsNavigator } from './questions-navigator';
 import { QuestionsProgressBar } from './questions-progress-bar';
@@ -16,40 +19,75 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   imports: [
     QuizAttemptHeader,
     QuestionsNavigator,
-    AttemptButton,
     NavigationButtons,
     QuestionAttemptHeader,
     NgComponentOutlet,
     QuestionsProgressBar,
+    ProgressSpinner,
+    OperationFailed,
+    Button,
   ],
+  providers: [QuizAttemptStore],
   template: `
     <section class="attempt-layout" aria-label="Quiz attempt layout">
-      <app-quiz-attempt-header />
+      @if (quizAttemptStore.isPending()('load')) {
+        <div class="spinner-container">
+          <p-progress-spinner ariaLabel="Loading quiz attempt" />
+        </div>
+      } @else if (quizAttemptStore.error()('load'); as errorMessage) {
+        <app-operation-failed>
+          <p>{{ errorMessage }}</p>
+        </app-operation-failed>
+      } @else {
+        <app-quiz-attempt-header />
 
-      <div class="attempt-main">
-        <div class="question-column" aria-label="Question area">
-          @for (question of quizAttemptStore.quizQuestions(); track $index) {
+        @if (quizAttemptStore.error()('submit'); as submitErrorMessage) {
+          <app-operation-failed>
+            <p>{{ submitErrorMessage }}</p>
+          </app-operation-failed>
+        }
+
+        <div class="attempt-main">
+          <div class="question-column" aria-label="Question area">
+            @let question =
+              quizAttemptStore.quizQuestions()[quizAttemptStore.currentQuestionIndex()];
+
             <app-question-attempt-header
               [questionType]="question.type"
             ></app-question-attempt-header>
 
             <ng-container
-              [ngComponentOutlet]="mapperService.getSuitableQuestionAttemptComponent(question.type)"
+              [ngComponentOutlet]="
+                questionMapperService.getSuitableQuestionAttemptComponent(question.type)
+              "
+              [ngComponentOutletInputs]="{
+                question: question,
+              }"
             ></ng-container>
-          }
+
             <app-navigation-buttons
               [canGoPrevious]="quizAttemptStore.canGoPrevious()"
               [canGoNext]="quizAttemptStore.canGoNext()"
               ariaLabel="Question navigation"
             />
-        </div>
+          </div>
 
-        <aside class="sidebar-column" aria-label="Quiz tools">
-          <app-questions-navigator />
-          <app-questions-progress-bar />
-          <app-attempt-button />
-        </aside>
-      </div>
+          <aside class="sidebar-column" aria-label="Quiz tools">
+            <app-questions-navigator />
+            <app-questions-progress-bar />
+            <button
+              [loading]="quizAttemptStore.isPending()('submit')"
+              (click)="quizAttemptStore.SubmitQuiz()"
+              appButton
+              variant="red"
+              style="width: 100%"
+              type="button"
+            >
+              Submit Quiz
+            </button>
+          </aside>
+        </div>
+      }
     </section>
   `,
   styles: `
@@ -79,6 +117,13 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       gap: 1rem;
     }
 
+    .spinner-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 20rem;
+    }
+
     @media (width <= 64rem) {
       .attempt-main {
         grid-template-columns: 1fr;
@@ -88,7 +133,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizAttempt implements OnInit {
-  protected readonly mapperService = inject(QuestionComponentMapperService);
+  protected readonly questionMapperService = inject(QuestionComponentMapperService);
   protected readonly quizId = input.required<string>();
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
 

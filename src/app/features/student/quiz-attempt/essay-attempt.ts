@@ -10,6 +10,7 @@ import {
 
 import { distinctUntilChanged, startWith } from 'rxjs';
 
+import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Essay } from '@shared/models/quiz/questions/essay.model';
@@ -23,22 +24,23 @@ export type EssayAttemptForm = FormGroup<{
 
 @Component({
   selector: 'app-essay-attempt',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FieldError],
   template: `
     <article class="question-card" aria-label="Essay question">
-      <p class="badge">Text Response</p>
       <h2>{{ question().questionText }}</h2>
 
       <form class="essay-form" [formGroup]="essayAttemptForm">
         <textarea
           class="response-input"
           [class.invalid]="studentResponseControl.invalid && studentResponseControl.touched"
+          [attr.aria-invalid]="studentResponseControl.invalid && studentResponseControl.touched ? 'true' : null"
           formControlName="studentResponse"
           placeholder="Type your answer here..."
           rows="6"
+          aria-describedby="essay-response-error"
         ></textarea>
         @if (studentResponseControl.invalid && studentResponseControl.touched) {
-          <span class="error-message">Response must be between 3 and 1000 characters.</span>
+          <app-field-error id="essay-response-error">Response must be between 3 and 1000 characters.</app-field-error>
         }
       </form>
     </article>
@@ -55,17 +57,6 @@ export type EssayAttemptForm = FormGroup<{
       border: 1px solid var(--clr-gray-300);
       border-radius: 0.75rem;
       background: var(--clr-white);
-    }
-
-    .badge {
-      margin: 0;
-      width: fit-content;
-      border-radius: 999px;
-      padding: 0.25rem 0.6rem;
-      background: var(--clr-blue-400);
-      color: var(--clr-blue-900);
-      font-size: 0.75rem;
-      font-weight: 700;
     }
 
     h2 {
@@ -98,11 +89,6 @@ export type EssayAttemptForm = FormGroup<{
       }
     }
 
-    .error-message {
-      color: var(--clr-red-500);
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -46,8 +46,8 @@ import { EditInstructorModal } from './edit-instructor-modal';
             id="instructor-search"
             pInputText
             class="focus-green-ring"
-            [ngModel]="searchTerm()"
-            (ngModelChange)="onSearchTermChange($event)"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="pageNumber.set(1)"
             placeholder="Search by name or email"
           />
         </div>

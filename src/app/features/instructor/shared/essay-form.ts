@@ -44,15 +44,20 @@ type EssayFormGroup = FormGroup<{
         ></app-question-title>
 
         <div class="field-container">
-          <label class="field-label" for="answerReference">Expected Answer (for grading reference)</label>
+          <label class="field-label" for="answerReference"
+            >Expected Answer (for grading reference)</label
+          >
           <textarea
             class="answer-input"
             id="answerReference"
-            formControlName="answerReference"
-            [attr.aria-invalid]="answerReferenceControl.invalid && answerReferenceControl.touched ? 'true' : null"
-            placeholder="Enter the expected answer or keywords for grading..."
+            [attr.aria-invalid]="
+              answerReferenceControl.invalid && answerReferenceControl.touched ? 'true' : null
+            "
+            [formControl]="answerReferenceControl"
             (blur)="onBlur()"
+            placeholder="Enter the expected answer or keywords for grading..."
             rows="4"
+            aria-describedby="answer-reference-minlength-error answer-reference-maxlength-error"
           ></textarea>
           <p class="field-help-text">This will be shown to the grader as a reference answer.</p>
 
@@ -138,7 +143,11 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly essayForm: EssayFormGroup = this.fb.group({
     questionText: [
       '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
+      [
+        Validators.required,
+        CustomValidators.trimMinLength(3),
+        CustomValidators.trimMaxLength(1000),
+      ],
     ],
     answerReference: [
       null as string | null,

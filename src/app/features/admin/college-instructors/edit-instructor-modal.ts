@@ -49,7 +49,7 @@ type EditInstructorFormGroup = FormGroup<{
               [fluid]="true"
               pInputText
               type="text"
-              formControlName="name"
+              [formControl]="nameControl"
             />
             <label for="edit-instructor-name">Name</label>
           </p-floatlabel>
@@ -70,7 +70,7 @@ type EditInstructorFormGroup = FormGroup<{
               [fluid]="true"
               pInputText
               type="email"
-              formControlName="email"
+              [formControl]="emailControl"
               [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
               aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
@@ -92,7 +92,7 @@ type EditInstructorFormGroup = FormGroup<{
               [fluid]="true"
               pInputText
               type="text"
-              formControlName="phoneNumber"
+              [formControl]="phoneNumberControl"
               [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null"
               aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />

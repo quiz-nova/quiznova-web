@@ -49,7 +49,7 @@ type AddStudentFormGroup = FormGroup<{
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
               pInputText
               type="text"
-              formControlName="name"
+              [formControl]="nameControl"
               aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="student-name">Name</label>
@@ -74,7 +74,7 @@ type AddStudentFormGroup = FormGroup<{
               [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
               pInputText
               type="email"
-              formControlName="email"
+              [formControl]="emailControl"
               aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
             <label for="student-email">Email</label>
@@ -100,7 +100,7 @@ type AddStudentFormGroup = FormGroup<{
                 passwordControl.invalid && passwordControl.touched ? 'true' : null
               "
               inputId="student-password"
-              formControlName="password"
+              [formControl]="passwordControl"
               aria-describedby="password-is-required-error password-minlength-error password-strong-error"
             />
             <label for="student-password">Password</label>
@@ -135,7 +135,7 @@ type AddStudentFormGroup = FormGroup<{
               "
               pInputText
               type="text"
-              formControlName="phoneNumber"
+              [formControl]="phoneNumberControl"
               aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="student-phone">Phone Number</label>

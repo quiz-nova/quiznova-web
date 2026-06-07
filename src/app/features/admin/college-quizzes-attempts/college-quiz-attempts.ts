@@ -37,8 +37,8 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <input
             class="focus-green-ring"
             id="attempt-search"
-            [ngModel]="searchTerm()"
-            (ngModelChange)="onSearchTermChange($event)"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="pageNumber.set(1)"
             pInputText
             placeholder="Search by quiz title or student"
           />
@@ -48,10 +48,10 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="page-size">Page size</label>
           <p-inputnumber
             [(ngModel)]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
             inputId="page-size"
           ></p-inputnumber>
         </div>
@@ -60,9 +60,9 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="correct-answers">Correct answers</label>
           <p-inputnumber
             [(ngModel)]="correctAnswers"
+            (ngModelChange)="onCorrectAnswersChange($event)"
             [min]="0"
             [showButtons]="true"
-            (ngModelChange)="onCorrectAnswersChange($event)"
             inputId="correct-answers"
             placeholder="Any"
           ></p-inputnumber>
@@ -158,6 +158,7 @@ export class CollegeQuizzesAttempts {
   );
 
   constructor() {
+
     effect(() => {
       this.router.navigate([], {
         relativeTo: this.route,

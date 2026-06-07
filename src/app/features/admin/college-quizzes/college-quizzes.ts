@@ -37,8 +37,8 @@ import { QuizService } from '@shared/services/quiz.service';
           <input
             class="focus-green-ring"
             id="quiz-search"
-            [ngModel]="searchTerm()"
-            (ngModelChange)="onSearchTermChange($event)"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="pageNumber.set(1)"
             pInputText
             placeholder="Search by title, course, or instructor"
           />
@@ -48,10 +48,10 @@ import { QuizService } from '@shared/services/quiz.service';
           <label for="page-size">Page size</label>
           <p-inputnumber
             [(ngModel)]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
             inputId="page-size"
           ></p-inputnumber>
         </div>
@@ -60,9 +60,9 @@ import { QuizService } from '@shared/services/quiz.service';
           <label for="marks">Marks</label>
           <p-inputnumber
             [(ngModel)]="marks"
+            (ngModelChange)="onMarksChange($event)"
             [min]="0"
             [showButtons]="true"
-            (ngModelChange)="onMarksChange($event)"
             inputId="marks"
             placeholder="Any"
           ></p-inputnumber>

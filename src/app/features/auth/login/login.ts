@@ -64,7 +64,7 @@ type LoginFormGroup = FormGroup<{
                 [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
                 pInputText
                 type="email"
-                formControlName="email"
+                [formControl]="emailControl"
                 autocomplete="username"
                 aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
               />
@@ -91,7 +91,7 @@ type LoginFormGroup = FormGroup<{
                   passwordControl.invalid && passwordControl.touched ? 'true' : null
                 "
                 inputId="login-password"
-                formControlName="password"
+                [formControl]="passwordControl"
                 autocomplete="current-password"
                 aria-describedby="password-is-required-error"
               />
@@ -111,7 +111,7 @@ type LoginFormGroup = FormGroup<{
             <div class="roles">
               @for (role of userRoles; track role.id) {
                 <label class="role-box">
-                  <input [value]="role.value" type="radio" formControlName="role" />
+                  <input [value]="role.value" type="radio" [formControl]="roleControl" />
                   <span>{{ role.label }}</span>
                 </label>
               }

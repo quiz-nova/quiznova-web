@@ -59,8 +59,8 @@ import { ManageCourseModal } from './manage-course-modal';
           <input
             class="focus-green-ring"
             id="course-search"
-            [ngModel]="searchTerm()"
-            (ngModelChange)="onSearchTermChange($event)"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="pageNumber.set(1)"
             pInputText
             placeholder="Search by course ID or course name"
           />
@@ -70,10 +70,10 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="page-size">Page size</label>
           <p-inputnumber
             [(ngModel)]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
             inputId="page-size"
           ></p-inputnumber>
         </div>
@@ -82,9 +82,9 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="quizzes-count">Quizzes count</label>
           <p-inputnumber
             [(ngModel)]="quizzesCount"
+            (ngModelChange)="onQuizzesCountChange($event)"
             [min]="0"
             [showButtons]="true"
-            (ngModelChange)="onQuizzesCountChange($event)"
             inputId="quizzes-count"
             placeholder="Any"
           ></p-inputnumber>
@@ -94,9 +94,9 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="enrolled-count">Enrolled students</label>
           <p-inputnumber
             [(ngModel)]="enrolledStudentsCount"
+            (ngModelChange)="onEnrolledStudentsCountChange($event)"
             [min]="0"
             [showButtons]="true"
-            (ngModelChange)="onEnrolledStudentsCountChange($event)"
             inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>
@@ -105,11 +105,11 @@ import { ManageCourseModal } from './manage-course-modal';
         <div class="filter-item">
           <label for="instructor-filter">Instructor</label>
           <p-select
-            [ngModel]="instructorId()"
+            [(ngModel)]="instructorId"
+            (ngModelChange)="pageNumber.set(1)"
             [options]="instructorOptions()"
             [filter]="true"
             [showClear]="true"
-            (ngModelChange)="onInstructorChange($event)"
             (onShow)="onInstructorDropdownShow()"
             inputId="instructor-filter"
             optionLabel="name"

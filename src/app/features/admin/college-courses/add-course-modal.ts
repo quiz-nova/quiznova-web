@@ -58,7 +58,7 @@ type AddCourseFormGroup = FormGroup<{
               [fluid]="true" 
               pInputText 
               type="text" 
-              formControlName="name"
+              [formControl]="nameControl"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
               aria-describedby="course-name-is-required-error course-name-minlength-error course-name-maxlength-error"
             />
@@ -91,7 +91,7 @@ type AddCourseFormGroup = FormGroup<{
             [showClear]="true"
             (onShow)="loadInstructors()"
             inputId="course-instructor"
-            formControlName="instructorId"
+            [formControl]="instructorIdControl"
             optionLabel="name"
             optionValue="id"
             filterBy="name"
@@ -105,7 +105,7 @@ type AddCourseFormGroup = FormGroup<{
             <p-inputnumber
               [min]="1"
               inputId="minimum-passing-marks"
-              formControlName="minimumPassingMarks"
+              [formControl]="minimumPassingMarksControl"
               [attr.aria-invalid]="minimumPassingMarksControl.invalid && minimumPassingMarksControl.touched ? 'true' : null"
               aria-describedby="minimum-passing-marks-must-be-greater-than-zero-error"
             />
@@ -123,7 +123,7 @@ type AddCourseFormGroup = FormGroup<{
             <p-inputnumber 
               [min]="1" 
               inputId="maximum-marks" 
-              formControlName="maximumMarks"
+              [formControl]="maximumMarksControl"
               [attr.aria-invalid]="maximumMarksControl.invalid && maximumMarksControl.touched ? 'true' : null"
               aria-describedby="maximum-marks-must-be-greater-than-zero-error"
             />
@@ -209,6 +209,10 @@ export class AddCourseModal {
 
   protected get nameControl() {
     return this.addCourseForm.controls.name;
+  }
+
+  protected get instructorIdControl() {
+    return this.addCourseForm.controls.instructorId;
   }
 
   protected get minimumPassingMarksControl() {

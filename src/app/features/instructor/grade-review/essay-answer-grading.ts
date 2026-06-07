@@ -41,18 +41,18 @@ import { CustomValidators } from '@shared/validators/custom-validators';
             type="number"
             class="score-input"
             [id]="'score-' + essayAnswer().answerId"
-            formControlName="score"
+            [formControl]="scoreControl"
             [min]="0"
             [max]="question().marks"
             [attr.aria-describedby]="'score-error-' + essayAnswer().answerId"
             placeholder="0"
           />
           <app-field-error [id]="'score-error-' + essayAnswer().answerId">
-            @if (form.controls.score.touched && form.controls.score.errors?.['required']) {
+            @if (scoreControl.touched && scoreControl.errors?.['required']) {
               Score is required.
-            } @else if (form.controls.score.touched && form.controls.score.errors?.['min']) {
+            } @else if (scoreControl.touched && scoreControl.errors?.['min']) {
               Score cannot be negative.
-            } @else if (form.controls.score.touched && form.controls.score.errors?.['max']) {
+            } @else if (scoreControl.touched && scoreControl.errors?.['max']) {
               Score cannot exceed {{ question().marks }}.
             }
           </app-field-error>
@@ -67,16 +67,16 @@ import { CustomValidators } from '@shared/validators/custom-validators';
           <textarea
             class="feedback-textarea"
             [id]="'feedback-' + essayAnswer().answerId"
-            formControlName="feedback"
+            [formControl]="feedbackControl"
             rows="3"
             placeholder="Leave a note for the student (3–200 characters)..."
             [attr.aria-describedby]="'feedback-error-' + essayAnswer().answerId"
           ></textarea>
           <div class="feedback-footer">
             <app-field-error [id]="'feedback-error-' + essayAnswer().answerId">
-              @if (form.controls.feedback.touched && form.controls.feedback.errors?.['minlength']) {
+              @if (feedbackControl.touched && feedbackControl.errors?.['minlength']) {
                 Feedback must be at least 3 characters.
-              } @else if (form.controls.feedback.touched && form.controls.feedback.errors?.['maxlength']) {
+              } @else if (feedbackControl.touched && feedbackControl.errors?.['maxlength']) {
                 Feedback must not exceed 200 characters.
               }
             </app-field-error>
@@ -328,6 +328,14 @@ export class EssayAnswerGrading implements AnswerReviewContract, OnInit {
     if (manualAnswer?.score !== null && manualAnswer?.score !== undefined) {
       this.saved = true;
     }
+  }
+
+  protected get scoreControl() {
+    return this.form.controls.score;
+  }
+
+  protected get feedbackControl() {
+    return this.form.controls.feedback;
   }
 
   protected get feedbackLength(): number {

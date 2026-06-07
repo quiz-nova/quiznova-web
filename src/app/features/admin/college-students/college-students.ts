@@ -45,8 +45,8 @@ import { EditStudentModal } from './edit-student-modal';
           <input
             class="focus-green-ring"
             id="student-search"
-            [ngModel]="searchTerm()"
-            (ngModelChange)="onSearchTermChange($event)"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="pageNumber.set(1)"
             pInputText
             placeholder="Search by name or email"
           />
@@ -56,10 +56,10 @@ import { EditStudentModal } from './edit-student-modal';
           <label for="page-size">Page size</label>
           <p-inputnumber
             [(ngModel)]="pageSize"
+            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
             inputId="page-size"
           ></p-inputnumber>
         </div>
@@ -67,10 +67,10 @@ import { EditStudentModal } from './edit-student-modal';
         <div class="filter-item">
           <label for="enrolled-count">Enrolled courses</label>
           <p-inputnumber
-            [ngModel]="enrolledCoursesCount()"
+            [(ngModel)]="enrolledCoursesCount"
+            (ngModelChange)="pageNumber.set(1)"
             [min]="0"
             [showButtons]="true"
-            (ngModelChange)="onEnrolledCoursesCountChange($event)"
             inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>

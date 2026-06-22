@@ -5,16 +5,58 @@ class QuizAttemptPage {
   readonly headerQuestionCount: Locator;
   readonly submitButton: Locator;
   readonly essayTextareas: Locator;
+  readonly questionHeader: Locator;
+  readonly questionHeaderTag: Locator;
+  readonly mcqTag: Locator;
+  readonly tfTag: Locator;
+  readonly essayTag: Locator;
+  readonly mcqOptions: Locator;
+  readonly tfOptions: Locator;
+  readonly nextButton: Locator;
+  readonly navigatorButtons: Locator;
 
   constructor(private page: Page) {
     this.headerTitle = page.locator('app-quiz-attempt-header h1');
     this.headerQuestionCount = page.locator('app-quiz-attempt-header p');
-    this.submitButton = page.locator('button[appButton]');
+    this.submitButton = page.locator('button:has-text("Submit Quiz")');
     this.essayTextareas = page.locator('app-essay-form textarea');
+    this.questionHeader = page.locator('app-question-attempt-header');
+    this.questionHeaderTag = page.locator('app-question-attempt-header p').first();
+    this.mcqTag = page.locator('app-question-attempt-header .mcq-tag');
+    this.tfTag = page.locator('app-question-attempt-header .question-tag');
+    this.essayTag = page.locator('app-question-attempt-header .essay-tag');
+    this.mcqOptions = page.locator('app-mcq-attempt button.option');
+    this.tfOptions = page.locator('app-tf-attempt button.option');
+    this.nextButton = page.locator('app-navigation-buttons button:has-text("Next")');
+    this.navigatorButtons = page.locator('app-questions-navigator button');
   }
 
   optionButton(text: string): Locator {
     return this.page.locator('button.option').filter({ hasText: text });
+  }
+
+  async answerCurrentQuestion(): Promise<void> {
+    // Wait for the tag to be visible on the screen
+    await this.questionHeaderTag.waitFor({ state: 'visible', timeout: 5000 });
+
+    if (await this.mcqTag.isVisible()) {
+      await this.mcqOptions.nth(1).click();
+    } else if (await this.tfTag.isVisible()) {
+      await this.tfOptions.filter({ hasText: 'True' }).click();
+    } else if (await this.essayTag.isVisible()) {
+      await this.essayTextareas.fill('Test essay response');
+    }
+  }
+
+  async answerAllQuestions(): Promise<void> {
+    const count = await this.navigatorButtons.count();
+
+    for (let i = 0; i < count; i++) {
+      await this.answerCurrentQuestion();
+      if (i < count - 1) {
+        await this.nextButton.click();
+      }
+    }
   }
 }
 
@@ -113,14 +155,8 @@ test.describe('Quiz Attempt E2E & Countdown', () => {
     await expect(quizAttemptPage.headerTitle).toContainText('Auto-Graded Only Quiz');
     await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
 
-    // Solve Question 1 (True/False)
-    await quizAttemptPage.optionButton('True').click();
-
-    // Solve Question 2 (MCQ) - Option 4
-    await quizAttemptPage.optionButton('4').click();
-
-    // Solve Question 3 (MCQ) - Option JavaScript
-    await quizAttemptPage.optionButton('JavaScript').click();
+    // Solve all questions dynamically based on their tags and navigate using the Next button
+    await quizAttemptPage.answerAllQuestions();
 
     // Submit the quiz
     await expect(quizAttemptPage.submitButton).toBeEnabled();
@@ -192,11 +228,8 @@ test.describe('Quiz Attempt E2E & Countdown', () => {
     await expect(quizAttemptPage.headerTitle).toContainText('Manually-Graded Only Quiz');
     await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
 
-    // Solve Essay Questions by typing in textareas
-    await expect(quizAttemptPage.essayTextareas).toHaveCount(3);
-    await quizAttemptPage.essayTextareas.nth(0).fill('Polymorphism is many forms.');
-    await quizAttemptPage.essayTextareas.nth(1).fill('MVC stands for Model View Controller.');
-    await quizAttemptPage.essayTextareas.nth(2).fill('DI helps inject dependencies.');
+    // Solve all questions dynamically based on their tags and navigate using the Next button
+    await quizAttemptPage.answerAllQuestions();
 
     // Submit the quiz
     await expect(quizAttemptPage.submitButton).toBeEnabled();
@@ -271,14 +304,8 @@ test.describe('Quiz Attempt E2E & Countdown', () => {
     await expect(quizAttemptPage.headerTitle).toContainText('Hybrid Graded Quiz');
     await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
 
-    // Solve MCQ (Question 1)
-    await quizAttemptPage.optionButton('4').click();
-
-    // Solve TF (Question 2)
-    await quizAttemptPage.optionButton('True').click();
-
-    // Solve Essay (Question 3)
-    await quizAttemptPage.essayTextareas.first().fill('OOP polymorphism explanation.');
+    // Solve all questions dynamically based on their tags and navigate using the Next button
+    await quizAttemptPage.answerAllQuestions();
 
     // Submit the quiz
     await expect(quizAttemptPage.submitButton).toBeEnabled();

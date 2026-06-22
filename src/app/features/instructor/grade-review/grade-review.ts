@@ -71,7 +71,7 @@ import { NoAnswer } from './no-answer';
             <h1 class="quiz-title">{{ attempt()!.quizTitle }}</h1>
             <p class="submitted-on">
               <i class="fa-regular fa-calendar"></i>
-              Submitted {{ attempt()!.submittedAt | date: 'MMMM d, y — h:mm a' }}
+              Submitted {{ attempt()!.submittedAt | date: 'short' }}
             </p>
           </div>
           <div class="score-pill" aria-label="Current score">

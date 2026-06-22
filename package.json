@@ -10,7 +10,8 @@
     "lint:css": "stylelint \"src/**/*.css\"",
     "format": "prettier --write .",
     "lint": "ng lint",
-    "lint:fix": "ng lint --fix"
+    "lint:fix": "ng lint --fix",
+    "test:a11y": "playwright test e2e/accessibility/"
   },
   "private": true,
   "packageManager": "npm@11.10.0",
@@ -33,6 +34,7 @@
     "@angular/build": "^21.2.2",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.49.1",
     "@types/node": "^20.17.19",
@@ -51,5 +53,8 @@
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.57.1",
     "vitest": "^4.0.8"
+  },
+  "overrides": {
+    "vite": "^7.3.2"
   }
 }

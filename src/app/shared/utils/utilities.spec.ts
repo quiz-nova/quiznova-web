@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { describe, it, expect } from 'vitest';
 
-import { initials, getApiErrorMessage, normalizeBaseUrl } from './utilities';
+import { initials, getApiErrorMessage, normalizeBaseUrl, shortId } from './utilities';
 
 const fallback = 'Something went wrong';
 
@@ -123,5 +123,27 @@ describe('normalizeBaseUrl', () => {
 
   it('does not remove slashes in the middle of the path', () => {
     expect(normalizeBaseUrl('http://localhost:7100/api/v1/')).toBe('http://localhost:7100/api/v1');
+  });
+});
+
+describe('shortId', () => {
+  it('returns first 8 characters of a string', () => {
+    expect(shortId('1234567890')).toBe('12345678');
+  });
+
+  it('returns empty string if input is null', () => {
+    expect(shortId(null)).toBe('');
+  });
+
+  it('returns empty string if input is undefined', () => {
+    expect(shortId(undefined)).toBe('');
+  });
+
+  it('returns empty string if input is empty string', () => {
+    expect(shortId('')).toBe('');
+  });
+
+  it('returns the whole string if it is shorter than 8 characters', () => {
+    expect(shortId('abc')).toBe('abc');
   });
 });

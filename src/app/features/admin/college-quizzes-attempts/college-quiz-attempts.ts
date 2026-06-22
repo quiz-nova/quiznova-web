@@ -1,26 +1,39 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
+import { shortId } from '@shared/utils/utilities';
 
 @Component({
   selector: 'app-college-quizzes-attempts',
   imports: [
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     FormsModule,
     InputText,
     InputNumber,
     NavigationButtons,
     RoleDashboardHeader,
+    DatePipe,
   ],
   template: `
     <section class="page">
@@ -48,10 +61,10 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="page-size">Page size</label>
           <p-inputnumber
             [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
+            (ngModelChange)="onPageSizeChange($event)"
             inputId="page-size"
           ></p-inputnumber>
         </div>
@@ -60,9 +73,9 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           <label for="correct-answers">Correct answers</label>
           <p-inputnumber
             [(ngModel)]="correctAnswers"
-            (ngModelChange)="onCorrectAnswersChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onCorrectAnswersChange($event)"
             inputId="correct-answers"
             placeholder="Any"
           ></p-inputnumber>
@@ -70,13 +83,8 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
       </div>
 
       <div class="table-shell">
-        @if (quizAttemptsResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table [value]="tableData()" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
             <tr>
               <th>Attempt ID</th>
               <th>Quiz Title</th>
@@ -85,42 +93,40 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
               <th>Score</th>
               <th>Submitted At</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (quizAttemptsResource.error()) {
-              <tr>
-                <td colspan="6">
+          </ng-template>
+          <ng-template #body let-attempt>
+            <tr>
+              @if (quizAttemptsResource.isLoading()) {
+                <td><p-skeleton width="50%" height="1.5rem" /></td>
+                <td><p-skeleton width="70%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="30%" height="1.5rem" /></td>
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+              } @else {
+                <td>{{ shortId(attempt.quizAttemptId) }}</td>
+                <td>{{ attempt.quizTitle }}</td>
+                <td>{{ attempt.answeredQuestions }}/{{ attempt.totalQuestions }}</td>
+                <td>{{ attempt.correctAnswers }}</td>
+                <td>{{ attempt.score }}</td>
+                <td>{{ attempt.submittedAt | date: 'short' }}</td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="6">
+                @if (quizAttemptsResource.error()) {
                   <div class="error">
                     <p>Failed to load quiz attempts data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (
-              !quizAttemptsResource.isLoading() &&
-              !(quizAttemptsResource.value()?.items?.length ?? 0)
-            ) {
-              <tr>
-                <td colspan="6">
+                } @else {
                   <p class="feedback">No quiz attempts match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (
-                attempt of quizAttemptsResource.value()?.items ?? [];
-                track attempt.quizAttemptId
-              ) {
-                <tr>
-                  <td>{{ attempt.quizAttemptId.slice(0, 8) }}</td>
-                  <td>{{ attempt.quizTitle }}</td>
-                  <td>{{ attempt.answeredQuestions }}/{{ attempt.totalQuestions }}</td>
-                  <td>{{ attempt.correctAnswers }}</td>
-                  <td>{{ attempt.score }}</td>
-                  <td>{{ attempt.submittedAt }}</td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -147,10 +153,26 @@ export class CollegeQuizzesAttempts {
   private readonly quizAttemptService = inject(QuizAttemptService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  protected readonly shortId = shortId;
 
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<QuizAttempt[]>(() => {
+    if (this.quizAttemptsResource.isLoading()) {
+      return Array.from<unknown, QuizAttempt>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            quizAttemptId: `skeleton-${i}`,
+          }) as unknown as QuizAttempt,
+      );
+    }
+    if (this.quizAttemptsResource.error()) {
+      return [];
+    }
+    return this.quizAttemptsResource.value()?.items ?? [];
+  });
   protected readonly correctAnswers = signal<number | null>(
     this.route.snapshot.queryParams['correct']
       ? Number(this.route.snapshot.queryParams['correct'])
@@ -158,7 +180,6 @@ export class CollegeQuizzesAttempts {
   );
 
   constructor() {
-
     effect(() => {
       this.router.navigate([], {
         relativeTo: this.route,

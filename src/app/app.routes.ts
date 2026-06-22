@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { canDeactivateQuizAttempt } from '@Core/guards/quiz-attempt.guard';
 import { roleGuard } from '@Core/guards/role.guard';
 import { Login } from '@Features/auth/login/login';
 import { Landing } from '@Features/landing/landing';
@@ -111,45 +112,51 @@ export const routes: Routes = [
   },
   {
     path: 'student',
-    loadComponent: () => import('@Features/student/student').then((m) => m.Student),
     canMatch: [roleGuard(UserRole.student)],
     children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'dashboard',
-      },
-      {
-        path: 'my-courses',
-        loadComponent: () =>
-          import('@Features/student/enrollments/enrollments').then((m) => m.Enrollments),
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('@Features/student/student-dashboard/student-dashboard').then(
-            (m) => m.StudentDashboard,
-          ),
-      },
-      {
-        path: 'quizzes',
-        loadComponent: () =>
-          import('@Features/student/student-quizzes/student-quizzes').then((m) => m.StudentQuizzes),
-      },
       {
         path: 'quiz-attempt/:quizId',
         loadComponent: () =>
           import('@Features/student/quiz-attempt/quiz-attempt').then((m) => m.QuizAttempt),
+        canDeactivate: [canDeactivateQuizAttempt],
       },
       {
-        path: 'review-quiz/:attemptId',
-        loadComponent: () =>
-          import('@Features/student/review-quiz/review-quiz').then((m) => m.ReviewQuiz),
-      },
-      {
-        path: 'results',
-        loadComponent: () =>
-          import('@Features/student/student-results/student-results').then((m) => m.StudentResults),
+        path: '',
+        loadComponent: () => import('@Features/student/student').then((m) => m.Student),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'dashboard',
+          },
+          {
+            path: 'my-courses',
+            loadComponent: () =>
+              import('@Features/student/enrollments/enrollments').then((m) => m.Enrollments),
+          },
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('@Features/student/student-dashboard/student-dashboard').then(
+                (m) => m.StudentDashboard,
+              ),
+          },
+          {
+            path: 'quizzes',
+            loadComponent: () =>
+              import('@Features/student/student-quizzes/student-quizzes').then((m) => m.StudentQuizzes),
+          },
+          {
+            path: 'review-quiz/:attemptId',
+            loadComponent: () =>
+              import('@Features/student/review-quiz/review-quiz').then((m) => m.ReviewQuiz),
+          },
+          {
+            path: 'results',
+            loadComponent: () =>
+              import('@Features/student/student-results/student-results').then((m) => m.StudentResults),
+          },
+        ],
       },
     ],
   },

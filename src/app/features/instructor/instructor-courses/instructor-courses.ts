@@ -8,6 +8,7 @@ import { of } from 'rxjs';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CoursesService } from '@shared/services/courses.service';
+import { shortId } from '@shared/utils/utilities';
 
 @Component({
   selector: 'app-instructor-courses',
@@ -45,7 +46,7 @@ import { CoursesService } from '@shared/services/courses.service';
                 </div>
               </div>
 
-              <p class="course-id">ID {{ course.id.slice(0, 8) }}</p>
+              <p class="course-id">ID {{ shortId(course.id) }}</p>
 
               <dl class="course-stats">
                 <div>
@@ -185,6 +186,7 @@ import { CoursesService } from '@shared/services/courses.service';
 export class InstructorCourses {
   private readonly authService = inject(AuthService);
   private readonly coursesService = inject(CoursesService);
+  protected readonly shortId = shortId;
 
   protected readonly instructorId = computed(() => this.authService.currentUser()?.id ?? null);
 

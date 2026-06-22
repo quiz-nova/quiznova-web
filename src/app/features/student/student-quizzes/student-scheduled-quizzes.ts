@@ -33,7 +33,7 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                   <td>{{ quiz.questionsCount }}</td>
                   <td>{{ durationInMinutes(quiz) }} min</td>
                   <td>{{ startsInLabel(quiz.startsAtUtc) }}</td>
-                  <td>{{ quiz.startsAtUtc | date: 'd MMM, h:mm a' }}</td>
+                  <td>{{ quiz.startsAtUtc | date: 'short' }}</td>
                   <td><span class="locked-tag">Locked</span></td>
                 </tr>
               }

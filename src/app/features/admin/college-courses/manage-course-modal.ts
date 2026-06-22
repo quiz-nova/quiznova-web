@@ -17,6 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { Button } from '@shared/components/button/button';
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Course } from '@shared/models/course/course.model';
+import { shortId } from '@shared/utils/utilities';
 
 import { ManageCourseStore } from './manage-course.store';
 
@@ -121,7 +122,7 @@ import { ManageCourseStore } from './manage-course.store';
               @for (student of store.enrolledStudents(); track student.id) {
                 <div class="student-row">
                   <span>{{ student.personalInformation.name }}</span>
-                  <span class="student-id">{{ student.id.slice(0, 8) }}</span>
+                  <span class="student-id">{{ shortId(student.id) }}</span>
                   <app-delete-button
                     (deleteButtonClicked)="onRemoveStudent(student.id)"
                     ariaLabel="Remove student from course"
@@ -234,6 +235,7 @@ import { ManageCourseStore } from './manage-course.store';
 export class ManageCourseModal {
   readonly course = input.required<Course>();
   readonly changed = output<void>();
+  protected readonly shortId = shortId;
 
   protected readonly store = inject(ManageCourseStore);
   protected readonly isDialogOpen = model(false);

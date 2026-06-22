@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
 
 import { AddStudentModal } from './add-student-modal';
@@ -19,7 +21,8 @@ import { EditStudentModal } from './edit-student-modal';
 @Component({
   selector: 'app-college-students',
   imports: [
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     AddStudentModal,
     EditStudentModal,
     DeleteStudentModal,
@@ -78,58 +81,55 @@ import { EditStudentModal } from './edit-student-modal';
       </div>
 
       <div class="table-shell">
-        @if (studentsResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #header>
             <tr>
               <th>Name</th>
               <th>Enrolled Courses</th>
-              <th>Actions</th>
+              <th style="width: 8rem">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (studentsResource.error()) {
-              <tr>
-                <td colspan="3">
+          </ng-template>
+          <ng-template #body let-student>
+            <tr>
+              @if (studentsResource.isLoading()) {
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="4rem" height="1.5rem" /></td>
+              } @else {
+                <td>{{ student.personalInformation.name }}</td>
+                <td>{{ student.enrolledCoursesCount }}</td>
+                <td>
+                  <div class="actions">
+                    <app-edit-student-modal
+                      [student]="student"
+                      (updated)="reloadStudents()"
+                    ></app-edit-student-modal>
+                    <app-delete-student-modal
+                      [student]="student"
+                      (deleted)="reloadStudents()"
+                    ></app-delete-student-modal>
+                  </div>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="3">
+                @if (studentsResource.error()) {
                   <div class="error">
                     <p>Failed to load student data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (
-              !studentsResource.isLoading() && !(studentsResource.value()?.items?.length ?? 0)
-            ) {
-              <tr>
-                <td colspan="3">
+                } @else {
                   <p class="feedback">No students match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (student of studentsResource.value()?.items ?? []; track student.id) {
-                <tr>
-                  <td>{{ student.personalInformation.name }}</td>
-                  <td>{{ student.enrolledCoursesCount }}</td>
-                  <td>
-                    <div class="actions">
-                      <app-edit-student-modal
-                        [student]="student"
-                        (updated)="reloadStudents()"
-                      ></app-edit-student-modal>
-                      <app-delete-student-modal
-                        [student]="student"
-                        (deleted)="reloadStudents()"
-                      ></app-delete-student-modal>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -160,6 +160,17 @@ export class CollegeStudents {
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<Student[]>(() => {
+    if (this.studentsResource.isLoading()) {
+      return Array.from<unknown, Student>({ length: this.pageSize() }, (_, i) => ({
+        id: `skeleton-${i}`,
+      } as unknown as Student));
+    }
+    if (this.studentsResource.error()) {
+      return [];
+    }
+    return this.studentsResource.value()?.items ?? [];
+  });
   protected readonly enrolledCoursesCount = signal<number | null>(
     this.route.snapshot.queryParams['enrolled'] ? Number(this.route.snapshot.queryParams['enrolled']) : null
   );

@@ -12,7 +12,6 @@ export function initials(name: string): string {
     .join('');
 }
 export function getApiErrorMessage(err: unknown, fallback: string): string {
-
   if (!(err instanceof HttpErrorResponse)) return fallback;
   const body = err.error;
 
@@ -25,7 +24,7 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
     if (messages.length > 0) return messages.join(' ');
   }
 
-  // Shape B: single Problem 
+  // Shape B: single Problem
   if (typeof (body as { title?: string }).title === 'string') {
     return (body as { title: string }).title;
   }
@@ -57,4 +56,9 @@ export function buildParameters(query: Record<string, any>): HttpParams {
   }
 
   return params;
+}
+
+export function shortId(id: string | null | undefined): string {
+  if (!id) return '';
+  return id.slice(0, 8);
 }

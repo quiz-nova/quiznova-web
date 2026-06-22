@@ -33,7 +33,7 @@ test.describe('Authentication - Real Integration E2E', () => {
     // This is the UserDto in the backend and the auth.service.ts saves it in the browser
     const parsedUser = JSON.parse(storedUser || '{}');
     expect(parsedUser.role).toBe('instructor');
-    expect(parsedUser.name).toBe('Instructor One');
+    expect(parsedUser.personalInformation.name).toBe('Instructor One');
   });
 
   test('should successfully log in as a Student and redirect to /student/dashboard', async ({

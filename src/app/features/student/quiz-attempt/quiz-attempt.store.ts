@@ -197,6 +197,16 @@ export const QuizAttemptStore = signalStore(
         }
         this._submitQuiz();
       },
+      GoToPreviousQuestion(): void {
+        if (store.currentQuestionIndex() > 0) {
+          patchState(store, { currentQuestionIndex: store.currentQuestionIndex() - 1 });
+        }
+      },
+      GoToNextQuestion(): void {
+        if (store.currentQuestionIndex() < store.numberOfQuestions() - 1) {
+          patchState(store, { currentQuestionIndex: store.currentQuestionIndex() + 1 });
+        }
+      },
     };
   }),
   withHooks((store) => {

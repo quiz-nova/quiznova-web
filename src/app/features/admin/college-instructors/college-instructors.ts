@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { Instructor } from '@shared/models/users/instructor.model';
 import { InstructorService } from '@shared/services/instructor.service';
 
 import { AddInstructorModal } from './add-instructor-modal';
@@ -19,7 +21,8 @@ import { EditInstructorModal } from './edit-instructor-modal';
 @Component({
   selector: 'app-college-instructors',
   imports: [
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     AddInstructorModal,
     EditInstructorModal,
     DeleteInstructorModal,
@@ -90,58 +93,58 @@ import { EditInstructorModal } from './edit-instructor-modal';
       </div>
 
       <div class="table-shell">
-        @if (instructorsResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #header>
             <tr>
               <th>Name</th>
               <th>Courses</th>
               <th>Quizzes</th>
-              <th>Actions</th>
+              <th style="width: 8rem">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (instructorsResource.error()) {
-              <tr>
-                <td colspan="4">
+          </ng-template>
+          <ng-template #body let-instructor>
+            <tr>
+              @if (instructorsResource.isLoading()) {
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="4rem" height="1.5rem" /></td>
+              } @else {
+                <td>{{ instructor.personalInformation.name }}</td>
+                <td>{{ instructor.coursesCount }}</td>
+                <td>{{ instructor.quizzesCount }}</td>
+                <td>
+                  <div class="actions">
+                    <app-edit-instructor-modal
+                      [instructor]="instructor"
+                      (updated)="reloadInstructors()"
+                    ></app-edit-instructor-modal>
+                    <app-delete-instructor-modal
+                      [instructor]="instructor"
+                      (deleted)="reloadInstructors()"
+                    ></app-delete-instructor-modal>
+                  </div>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="4">
+                @if (instructorsResource.error()) {
                   <div class="error">
                     <p>Failed to load instructor data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (!instructorsResource.isLoading() && !(instructorsResource.value()?.items?.length ?? 0)) {
-              <tr>
-                <td colspan="4">
+                } @else {
                   <p class="feedback">No instructors match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (instructor of instructorsResource.value()?.items ?? []; track instructor.id) {
-                <tr>
-                  <td>{{ instructor.personalInformation.name }}</td>
-                  <td>{{ instructor.coursesCount }}</td>
-                  <td>{{ instructor.quizzesCount }}</td>
-                  <td>
-                    <div class="actions">
-                      <app-edit-instructor-modal
-                        [instructor]="instructor"
-                        (updated)="reloadInstructors()"
-                      ></app-edit-instructor-modal>
-                      <app-delete-instructor-modal
-                        [instructor]="instructor"
-                        (deleted)="reloadInstructors()"
-                      ></app-delete-instructor-modal>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -172,6 +175,17 @@ export class CollegeInstructors {
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<Instructor[]>(() => {
+    if (this.instructorsResource.isLoading()) {
+      return Array.from<unknown, Instructor>({ length: this.pageSize() }, (_, i) => ({
+        id: `skeleton-${i}`,
+      } as unknown as Instructor));
+    }
+    if (this.instructorsResource.error()) {
+      return [];
+    }
+    return this.instructorsResource.value()?.items ?? [];
+  });
   protected readonly coursesCount = signal<number | null>(
     this.route.snapshot.queryParams['courses'] ? Number(this.route.snapshot.queryParams['courses']) : null
   );

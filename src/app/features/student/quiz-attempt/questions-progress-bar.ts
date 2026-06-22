@@ -49,13 +49,6 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       background: var(--gradient-main);
     }
 
-    .progress-label {
-      color: var(--clr-blue-900);
-      font-size: var(--fs-300);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
     .progress-summary {
       margin: 0;
       text-align: center;

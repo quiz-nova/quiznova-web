@@ -1,26 +1,31 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { Quiz } from '@shared/models/quiz/quiz.model';
 import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
   selector: 'app-college-quizzes',
   imports: [
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     FormsModule,
     InputText,
     InputNumber,
     NavigationButtons,
     RoleDashboardHeader,
+    DatePipe,
   ],
   template: `
     <section class="page">
@@ -70,13 +75,11 @@ import { QuizService } from '@shared/services/quiz.service';
       </div>
 
       <div class="table-shell">
-        @if (quizzesResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #header>
             <tr>
               <th>Title</th>
               <th>Course</th>
@@ -84,43 +87,46 @@ import { QuizService } from '@shared/services/quiz.service';
               <th>Marks</th>
               <th>Starts At</th>
               <th>Ends At</th>
-              <th>State</th>
+              <th style="width: 8rem">State</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (quizzesResource.error()) {
-              <tr>
-                <td colspan="7">
+          </ng-template>
+          <ng-template #body let-quiz>
+            <tr>
+              @if (quizzesResource.isLoading()) {
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="50%" height="1.5rem" /></td>
+                <td><p-skeleton width="50%" height="1.5rem" /></td>
+                <td><p-skeleton width="30%" height="1.5rem" /></td>
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="4rem" height="1.5rem" /></td>
+              } @else {
+                <td>{{ quiz.title }}</td>
+                <td>{{ quiz.courseName }}</td>
+                <td>{{ quiz.instructorName }}</td>
+                <td>{{ quiz.marks }}</td>
+                <td>{{ quiz.startsAtUtc | date: 'short' }}</td>
+                <td>{{ quiz.endsAtUtc | date: 'short' }}</td>
+                <td>
+                  <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="7">
+                @if (quizzesResource.error()) {
                   <div class="error">
                     <p>Failed to load quiz data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (
-              !quizzesResource.isLoading() && !(quizzesResource.value()?.items?.length ?? 0)
-            ) {
-              <tr>
-                <td colspan="7">
+                } @else {
                   <p class="feedback">No quizzes match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (quiz of quizzesResource.value()?.items ?? []; track quiz.quizId) {
-                <tr>
-                  <td>{{ quiz.title }}</td>
-                  <td>{{ quiz.courseName }}</td>
-                  <td>{{ quiz.instructorName }}</td>
-                  <td>{{ quiz.marks }}</td>
-                  <td>{{ quiz.startsAtUtc }}</td>
-                  <td>{{ quiz.endsAtUtc }}</td>
-                  <td>
-                    <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -175,6 +181,17 @@ export class CollegeQuizzes {
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<Quiz[]>(() => {
+    if (this.quizzesResource.isLoading()) {
+      return Array.from<unknown, Quiz>({ length: this.pageSize() }, (_, i) => ({
+        quizId: `skeleton-${i}`,
+      } as unknown as Quiz));
+    }
+    if (this.quizzesResource.error()) {
+      return [];
+    }
+    return this.quizzesResource.value()?.items ?? [];
+  });
   protected readonly marks = signal<number | null>(
     this.route.snapshot.queryParams['marks']
       ? Number(this.route.snapshot.queryParams['marks'])

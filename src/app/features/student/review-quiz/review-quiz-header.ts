@@ -1,10 +1,13 @@
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+
+import { shortId } from '@shared/utils/utilities';
 
 import { ReviewQuizStore } from './review-quiz.store';
 
 @Component({
   selector: 'app-review-quiz-header',
-  imports: [],
+  imports: [DatePipe],
   template: `
     <header class="review-header">
       <h1 class="review-header__title">Attempt Review</h1>
@@ -12,7 +15,7 @@ import { ReviewQuizStore } from './review-quiz.store';
 
       <div class="review-header__meta">
         <span class="review-header__chip">{{ shortAttemptId() }}</span>
-        <span class="review-header__chip">{{ reviewQuizStore.quizAttempt()?.submittedAt }}</span>
+        <span class="review-header__chip">{{ reviewQuizStore.quizAttempt()?.submittedAt | date: 'short' }}</span>
       </div>
     </header>
   `,
@@ -63,7 +66,7 @@ export class ReviewQuizHeader {
   protected readonly reviewQuizStore = inject(ReviewQuizStore);
 
   protected readonly shortAttemptId = computed(() => {
-    const id = this.reviewQuizStore.quizAttempt()?.quizAttemptId ?? '';
-    return id ? `Attempt ${id.slice(0, 8)}` : '';
+    const id = this.reviewQuizStore.quizAttempt()?.quizAttemptId;
+    return id ? `Attempt ${shortId(id)}` : '';
   });
 }

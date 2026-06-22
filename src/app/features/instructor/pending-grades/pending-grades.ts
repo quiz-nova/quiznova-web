@@ -97,8 +97,7 @@ import { PendingGradesStats } from './pending-grades-stats';
 
                 <!-- Submitted At -->
                 <div class="date-cell">
-                  <p>{{ item.submittedAt | date: 'MMM d, y' }}</p>
-                  <p class="time">{{ item.submittedAt | date: 'h:mm a' }}</p>
+                  <p>{{ item.submittedAt | date: 'short' }}</p>
                 </div>
 
                 <!-- Badge -->

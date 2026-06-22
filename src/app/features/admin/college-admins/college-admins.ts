@@ -1,15 +1,24 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { User } from '@shared/models/users/user.model';
 import { AdminService } from '@shared/services/admin.service';
 
 import { AddAdminModal } from './add-admin-modal';
@@ -19,7 +28,8 @@ import { EditAdminModal } from './edit-admin-modal';
 @Component({
   selector: 'app-college-admins',
   imports: [
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     AddAdminModal,
     EditAdminModal,
     DeleteAdminModal,
@@ -43,11 +53,11 @@ import { EditAdminModal } from './edit-admin-modal';
         <div class="filter-item">
           <label for="admin-search">Search</label>
           <input
-            id="admin-search"
-            pInputText
             class="focus-green-ring"
+            id="admin-search"
             [(ngModel)]="searchTerm"
             (ngModelChange)="pageNumber.set(1)"
+            pInputText
             placeholder="Search by name or email"
           />
         </div>
@@ -55,67 +65,63 @@ import { EditAdminModal } from './edit-admin-modal';
         <div class="filter-item">
           <label for="page-size">Page size</label>
           <p-inputnumber
-            inputId="page-size"
             [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
             [min]="1"
             [max]="100"
             [showButtons]="true"
+            (ngModelChange)="onPageSizeChange($event)"
+            inputId="page-size"
           ></p-inputnumber>
         </div>
       </div>
 
       <div class="table-shell">
-        @if (adminsResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table [value]="tableData()" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #header>
             <tr>
               <th>Name</th>
               <th>Email</th>
-              <th>Actions</th>
+              <th style="width: 8rem">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (adminsResource.error()) {
-              <tr>
-                <td colspan="3">
+          </ng-template>
+          <ng-template #body let-admin>
+            <tr>
+              @if (adminsResource.isLoading()) {
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="80%" height="1.5rem" /></td>
+                <td><p-skeleton width="4rem" height="1.5rem" /></td>
+              } @else {
+                <td>{{ admin.personalInformation.name }}</td>
+                <td>{{ admin.personalInformation.email }}</td>
+                <td>
+                  <div class="actions">
+                    <app-edit-admin-modal
+                      [admin]="admin"
+                      (updated)="reloadAdmins()"
+                    ></app-edit-admin-modal>
+                    <app-delete-admin-modal
+                      [admin]="admin"
+                      (deleted)="reloadAdmins()"
+                    ></app-delete-admin-modal>
+                  </div>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="3">
+                @if (adminsResource.error()) {
                   <div class="error">
                     <p>Failed to load admin data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (!adminsResource.isLoading() && !(adminsResource.value()?.items?.length ?? 0)) {
-              <tr>
-                <td colspan="3">
+                } @else {
                   <p class="feedback">No admins match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (admin of adminsResource.value()?.items ?? []; track admin.id) {
-                <tr>
-                  <td>{{ admin.personalInformation.name }}</td>
-                  <td>{{ admin.personalInformation.email }}</td>
-                  <td>
-                    <div class="actions">
-                      <app-edit-admin-modal
-                        [admin]="admin"
-                        (updated)="reloadAdmins()"
-                      ></app-edit-admin-modal>
-                      <app-delete-admin-modal
-                        [admin]="admin"
-                        (deleted)="reloadAdmins()"
-                      ></app-delete-admin-modal>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -124,13 +130,13 @@ import { EditAdminModal } from './edit-admin-modal';
           {{ adminsResource.value()?.totalPages ?? 1 }}
         </p>
         <app-navigation-buttons
-          ariaLabel="Admins pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
           [canGoPrevious]="adminsResource.value()?.hasPreviousPage ?? false"
           [canGoNext]="adminsResource.value()?.hasNextPage ?? false"
           (previousButtonClicked)="goToPreviousPage()"
           (nextButtonClicked)="goToNextPage()"
+          ariaLabel="Admins pagination"
+          previousLabel="Previous page"
+          nextLabel="Next page"
         />
       </div>
     </section>
@@ -146,6 +152,17 @@ export class CollegeAdmins {
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<User[]>(() => {
+    if (this.adminsResource.isLoading()) {
+      return Array.from<unknown, User>({ length: this.pageSize() }, (_, i) => ({
+        id: `skeleton-${i}`,
+      } as unknown as User));
+    }
+    if (this.adminsResource.error()) {
+      return [];
+    }
+    return this.adminsResource.value()?.items ?? [];
+  });
 
   constructor() {
     effect(() => {

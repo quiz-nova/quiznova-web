@@ -13,17 +13,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { ProgressSpinner } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { Course } from '@shared/models/course/course.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
+import { shortId } from '@shared/utils/utilities';
 
 import { AddCourseModal } from './add-course-modal';
 import { DeleteCourseModal } from './delete-course-modal';
@@ -35,7 +38,8 @@ import { ManageCourseModal } from './manage-course-modal';
     AddCourseModal,
     DeleteCourseModal,
     ManageCourseModal,
-    ProgressSpinner,
+    TableModule,
+    SkeletonModule,
     FormsModule,
     InputText,
     InputNumber,
@@ -122,58 +126,58 @@ import { ManageCourseModal } from './manage-course-modal';
       </div>
 
       <div class="table-shell">
-        @if (coursesResource.isLoading()) {
-          <div class="table-overlay-spinner">
-            <p-progress-spinner ariaLabel="loading"></p-progress-spinner>
-          </div>
-        }
-        <table>
-          <thead>
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
+          <ng-template #header>
             <tr>
               <th>Id</th>
               <th>Course</th>
               <th>Instructor</th>
               <th>Enrolled</th>
               <th>Quizzes</th>
-              <th>Actions</th>
+              <th style="width: 8rem">Actions</th>
             </tr>
-          </thead>
-          <tbody>
-            @if (coursesResource.error()) {
-              <tr>
-                <td colspan="6">
+          </ng-template>
+          <ng-template #body let-course>
+            <tr>
+              @if (coursesResource.isLoading()) {
+                <td><p-skeleton width="60%" height="1.5rem" /></td>
+                <td><p-skeleton width="80%" height="1.5rem" /></td>
+                <td><p-skeleton width="70%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="40%" height="1.5rem" /></td>
+                <td><p-skeleton width="4rem" height="1.5rem" /></td>
+              } @else {
+                <td>{{ shortId(course.id) }}</td>
+                <td>{{ course.courseName }}</td>
+                <td>{{ course.instructorName || 'Unassigned' }}</td>
+                <td>{{ course.enrolledStudentsCount }}</td>
+                <td>{{ course.quizzesCount }}</td>
+                <td>
+                  <div class="actions">
+                    <app-manage-course-modal [course]="course" (changed)="reloadCourses()" />
+                    <app-delete-course-modal [course]="course" (deleted)="reloadCourses()" />
+                  </div>
+                </td>
+              }
+            </tr>
+          </ng-template>
+          <ng-template #emptymessage>
+            <tr>
+              <td colspan="6">
+                @if (coursesResource.error()) {
                   <div class="error">
                     <p>Failed to load course data.</p>
                   </div>
-                </td>
-              </tr>
-            } @else if (
-              !coursesResource.isLoading() && !(coursesResource.value()?.items?.length ?? 0)
-            ) {
-              <tr>
-                <td colspan="6">
+                } @else {
                   <p class="feedback">No courses match your filters.</p>
-                </td>
-              </tr>
-            } @else {
-              @for (course of coursesResource.value()?.items ?? []; track course.id) {
-                <tr>
-                  <td>{{ course.id.slice(0, 8) }}</td>
-                  <td>{{ course.courseName }}</td>
-                  <td>{{ course.instructorName || 'Unassigned' }}</td>
-                  <td>{{ course.enrolledStudentsCount }}</td>
-                  <td>{{ course.quizzesCount }}</td>
-                  <td>
-                    <div class="actions">
-                      <app-manage-course-modal [course]="course" (changed)="reloadCourses()" />
-                      <app-delete-course-modal [course]="course" (deleted)="reloadCourses()" />
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
+                }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
 
       <div class="pagination-row">
@@ -201,10 +205,22 @@ export class CollegeCourses {
   private readonly instructorService = inject(InstructorService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  protected readonly shortId = shortId;
 
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly tableData = computed<Course[]>(() => {
+    if (this.coursesResource.isLoading()) {
+      return Array.from<unknown, Course>({ length: this.pageSize() }, (_, i) => ({
+        id: `skeleton-${i}`,
+      } as unknown as Course));
+    }
+    if (this.coursesResource.error()) {
+      return [];
+    }
+    return this.coursesResource.value()?.items ?? [];
+  });
   protected readonly quizzesCount = signal<number | null>(
     this.route.snapshot.queryParams['quizzes']
       ? Number(this.route.snapshot.queryParams['quizzes'])

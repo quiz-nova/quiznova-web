@@ -19,7 +19,7 @@ class QuizAttemptPage {
     this.headerTitle = page.locator('app-quiz-attempt-header h1');
     this.headerQuestionCount = page.locator('app-quiz-attempt-header p');
     this.submitButton = page.locator('button:has-text("Submit Quiz")');
-    this.essayTextareas = page.locator('app-essay-form textarea');
+    this.essayTextareas = page.locator('app-essay-attempt textarea');
     this.questionHeader = page.locator('app-question-attempt-header');
     this.questionHeaderTag = page.locator('app-question-attempt-header p').first();
     this.mcqTag = page.locator('app-question-attempt-header .mcq-tag');
@@ -35,7 +35,9 @@ class QuizAttemptPage {
     return this.page.locator('button.option').filter({ hasText: text });
   }
 
-  async answerCurrentQuestion(): Promise<void> {
+  async answerCurrentQuestion(index: number): Promise<void> {
+    await expect(this.headerQuestionCount).toContainText(`Question ${index} of`);
+
     // Wait for the tag to be visible on the screen
     await this.questionHeaderTag.waitFor({ state: 'visible', timeout: 5000 });
 
@@ -52,7 +54,7 @@ class QuizAttemptPage {
     const count = await this.navigatorButtons.count();
 
     for (let i = 0; i < count; i++) {
-      await this.answerCurrentQuestion();
+      await this.answerCurrentQuestion(i);
       if (i < count - 1) {
         await this.nextButton.click();
       }

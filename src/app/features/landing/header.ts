@@ -52,9 +52,6 @@ export const headerLinks: HeaderLink[] = [
           [class.menu-open]="activateBurgerIcon() && menuClicked()"
         >
           <button appButton variant="gray" type="button" routerLink="/auth/login">Log in</button>
-          <button appButton variant="green" type="button" routerLink="/auth/register">
-            Get Started
-          </button>
         </div>
       </header>
     </div>
@@ -66,8 +63,10 @@ export const headerLinks: HeaderLink[] = [
       top: 0;
       z-index: 1000;
       display: block;
-      background-color: var(--clr-transparent);
-      backdrop-filter: blur(14px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
 
       &::after {
         content: '';
@@ -76,7 +75,7 @@ export const headerLinks: HeaderLink[] = [
         left: 0;
         width: 100%;
         height: 1px;
-        background: var(--clr-gray-200);
+        background: linear-gradient(90deg, transparent, var(--clr-gray-200), transparent);
       }
     }
 
@@ -85,19 +84,20 @@ export const headerLinks: HeaderLink[] = [
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 4rem;
-      padding-inline: 0.75rem;
-      font-family: var(--ff-heading),serif;
+      height: 4.5rem;
+      padding-inline: 1rem;
+      font-family: var(--ff-heading), serif;
 
       @media (width < 768px) {
         flex-wrap: wrap;
         height: auto;
-        padding-block: 0.75rem;
+        padding-block: 1rem;
       }
     }
 
     nav {
       display: flex;
+      align-items: center;
       gap: 2rem;
 
       @media (width < 768px) {
@@ -110,13 +110,16 @@ export const headerLinks: HeaderLink[] = [
 
     a {
       color: var(--clr-gray-600);
+      font-weight: 500;
+      transition: color 0.25s var(--ease-standard), transform 0.25s var(--ease-standard);
 
       @media (width < 768px) {
         padding-left: 1rem;
       }
 
       &:hover {
-        color: var(--clr-black-500);
+        color: var(--clr-green-400);
+        transform: translateY(-1px);
       }
     }
 
@@ -128,6 +131,7 @@ export const headerLinks: HeaderLink[] = [
         background-color: var(--clr-transparent);
         overflow: hidden;
         visibility: hidden;
+        transition: max-height 0.3s ease-in-out, visibility 0.3s;
       }
 
       &.menu-open {
@@ -142,7 +146,8 @@ export const headerLinks: HeaderLink[] = [
     .buttons {
       position: relative;
       display: flex;
-      gap: 0.625rem;
+      align-items: center;
+      gap: 0.75rem;
 
       @media (width < 768px) {
         justify-content: space-evenly;
@@ -151,7 +156,7 @@ export const headerLinks: HeaderLink[] = [
 
       button {
         min-height: auto;
-        padding: 0.625rem 1rem;
+        padding: 0.5rem 1.25rem;
 
         @media (width < 768px) {
           width: 40%;
@@ -170,8 +175,8 @@ export const headerLinks: HeaderLink[] = [
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 1.5rem;
-        height: 1.5rem;
+        width: 2rem;
+        height: 2rem;
         font-size: var(--fs-600);
       }
     }

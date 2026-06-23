@@ -157,18 +157,18 @@ import { QuizService } from '@shared/services/quiz.service';
     }
 
     .state.upcoming {
-      background-color: #e0f2fe;
-      color: #0369a1;
+      background-color: var(--clr-blue-100);
+      color: var(--clr-blue-700);
     }
 
     .state.active {
-      background-color: #dcfce7;
-      color: #15803d;
+      background-color: var(--clr-green-150);
+      color: var(--clr-green-700);
     }
 
     .state.completed {
-      background-color: #f3f4f6;
-      color: #4b5563;
+      background-color: var(--clr-gray-150);
+      color: var(--clr-gray-650);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

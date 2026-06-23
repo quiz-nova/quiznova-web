@@ -31,6 +31,11 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
   `,
   styleUrls: ['./shared/landing-shared.css'],
   styles: `
+    :host {
+      display: block;
+      background: radial-gradient(circle at 50% 35%, rgba(18, 165, 136, 0.05) 0%, transparent 55%);
+    }
+
     main {
       display: flex;
       align-items: center;
@@ -42,26 +47,36 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
 
     .content {
       display: flex;
-      gap: 0.25rem;
+      align-items: center;
+      gap: 0.5rem;
       margin-block: 1rem;
-      padding: 0.625rem;
-      border-radius: var(--radius-md);
-      background-color: var(--clr-green-100);
-      color: var(--clr-green-500);
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--clr-green-100);
+      border-radius: 9999px;
+      background-color: var(--clr-green-50);
+      color: var(--clr-green-800);
+      font-weight: 600;
+      font-size: var(--fs-300);
       text-align: center;
     }
 
     h1 {
+      font-family: var(--ff-heading), sans-serif;
       font-size: var(--fs-900);
-      line-height: 1;
+      font-weight: 700;
+      line-height: 1.1;
       text-align: center;
+      letter-spacing: -0.03em;
+      max-width: 50rem;
     }
 
     .system-description {
-      margin-block: 2rem;
+      margin-block: 1rem 2rem;
       color: var(--clr-gray-600);
       font-size: var(--fs-600);
+      line-height: 1.6;
       text-align: center;
+      max-width: 44rem;
     }
 
     .buttons {
@@ -75,7 +90,6 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
         flex-direction: column;
       }
     }
-
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

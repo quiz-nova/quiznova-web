@@ -102,7 +102,7 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
       padding: 0.2rem 0.5rem;
       border-radius: 999px;
       background-color: var(--clr-green-100);
-      color: var(--clr-green-700, #15803d);
+      color: var(--clr-green-800);
       font-size: var(--fs-300);
       font-weight: 600;
       line-height: 1;
@@ -110,8 +110,8 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
     }
 
     .questions-outline__remaining--zero {
-      background-color: #fef2f2;
-      color: #991b1b;
+      background-color: var(--clr-red-50);
+      color: var(--clr-red-800);
     }
 
     h2 {
@@ -162,18 +162,18 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
         transform 0.25s ease;
 
       &:hover {
-        border-color: var(--clr-green-500);
+        border-color: var(--clr-green-400);
       }
 
       &:focus-visible {
         outline: none;
-        border-color: var(--clr-green-500);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 20%, transparent);
+        border-color: var(--clr-green-400);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-400) 20%, transparent);
       }
     }
 
     .questions-outline__item--active {
-      border-color: var(--clr-green-500);
+      border-color: var(--clr-green-400);
       background-color: var(--clr-green-100);
       transform: translateX(2px);
     }
@@ -197,7 +197,7 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
     }
 
     .questions-outline__item--active .questions-outline__number {
-      background-color: var(--clr-green-500);
+      background-color: var(--clr-green-400);
       color: var(--clr-white);
       transform: scale(1.03);
     }

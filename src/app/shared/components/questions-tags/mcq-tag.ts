@@ -12,13 +12,13 @@ import { QuestionType } from '@shared/models/quiz/question.model';
       width: fit-content;
       margin: 0;
       padding: 0.35rem 0.85rem;
-      background-color: var(--clr-green-500);
+      background-color: var(--clr-green-400);
       border-radius: var(--radius-lg);
       color: var(--clr-white);
       transition: background-color 0.3s ease;
 
       &:hover {
-        background-color: var(--clr-green-200);
+        background-color: var(--clr-green-300);
       }
     }
   `,

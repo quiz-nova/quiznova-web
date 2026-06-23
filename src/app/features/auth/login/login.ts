@@ -62,9 +62,9 @@ type LoginFormGroup = FormGroup<{
                 id="login-email"
                 [fluid]="true"
                 [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
+                [formControl]="emailControl"
                 pInputText
                 type="email"
-                [formControl]="emailControl"
                 autocomplete="username"
                 aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
               />
@@ -90,8 +90,8 @@ type LoginFormGroup = FormGroup<{
                 [attr.aria-invalid]="
                   passwordControl.invalid && passwordControl.touched ? 'true' : null
                 "
-                inputId="login-password"
                 [formControl]="passwordControl"
+                inputId="login-password"
                 autocomplete="current-password"
                 aria-describedby="password-is-required-error"
               />
@@ -111,7 +111,7 @@ type LoginFormGroup = FormGroup<{
             <div class="roles">
               @for (role of userRoles; track role.id) {
                 <label class="role-box">
-                  <input [value]="role.value" type="radio" [formControl]="roleControl" />
+                  <input [value]="role.value" [formControl]="roleControl" type="radio" />
                   <span>{{ role.label }}</span>
                 </label>
               }
@@ -145,6 +145,7 @@ type LoginFormGroup = FormGroup<{
       height: 100vh;
       background-color: var(--clr-blue-400);
       font-size: var(--fs-500);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
 
       @media (width < 767px) {
         display: none;
@@ -154,12 +155,21 @@ type LoginFormGroup = FormGroup<{
         display: flex;
         justify-content: center;
         flex-direction: column;
-        gap: 0.5rem;
-        padding-inline: 2rem;
+        gap: 1rem;
+        padding-inline: 4rem;
         color: var(--clr-white);
+
+        h2 {
+          font-family: var(--ff-heading), sans-serif;
+          font-size: var(--fs-800);
+          font-weight: 700;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
+        }
 
         p {
           color: var(--clr-gray-500);
+          line-height: 1.6;
         }
       }
     }
@@ -172,12 +182,14 @@ type LoginFormGroup = FormGroup<{
       display: flex;
       justify-content: center;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
       width: 50%;
-      padding-inline: 2rem;
+      padding-inline: 4rem;
+      background-color: var(--clr-white);
 
       @media (width < 767px) {
         width: 100%;
+        padding-inline: 2rem;
       }
     }
 
@@ -188,19 +200,23 @@ type LoginFormGroup = FormGroup<{
       gap: 0.5rem;
 
       h2 {
-        font-size: var(--fs-700);
+        font-family: var(--ff-heading), sans-serif;
+        font-size: var(--fs-800);
+        color: var(--clr-blue-900);
+        margin: 0;
       }
 
       p {
         color: var(--clr-gray-600);
+        margin: 0;
       }
 
       a {
-        color: var(--clr-green-500);
+        color: var(--clr-green-400);
 
         &:hover {
           text-decoration: underline;
-          text-decoration-color: var(--clr-green-500);
+          text-decoration-color: var(--clr-green-400);
         }
       }
     }
@@ -208,7 +224,7 @@ type LoginFormGroup = FormGroup<{
     .auth-form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.25rem;
     }
 
     .login-failed {
@@ -216,19 +232,19 @@ type LoginFormGroup = FormGroup<{
       align-items: center;
       gap: 0.75rem;
       padding: 0.9rem 1rem;
-      border: 1px solid var(--clr-gray-500);
-      border-radius: var(--radius-lg);
-      background-color: var(--clr-gray-100);
+      border: 1px solid var(--clr-red-200);
+      border-radius: var(--radius-md);
+      background-color: var(--clr-red-50);
 
       i {
         flex-shrink: 0;
-        color: var(--clr-red-500);
+        color: var(--clr-red-800);
         font-size: 1.125rem;
       }
 
       p {
         margin: 0;
-        color: var(--clr-gray-500);
+        color: var(--clr-red-800);
         font-weight: 600;
       }
     }
@@ -251,18 +267,16 @@ type LoginFormGroup = FormGroup<{
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      border: 1px solid var(--clr-gray-600);
+      border: 1px solid var(--clr-gray-300);
       border-radius: var(--radius-md);
       background-color: var(--clr-gray-50);
       color: var(--clr-blue-900);
       flex: 1;
-      min-height: 60px;
+      min-height: 56px;
       padding: 0.5rem;
+      font-weight: 600;
       text-align: center;
-      transition:
-        background-color 0.25s ease,
-        color 0.25s ease,
-        border-color 0.25s ease;
+      transition: all 0.25s var(--ease-standard);
 
       input {
         position: absolute;
@@ -271,18 +285,23 @@ type LoginFormGroup = FormGroup<{
       }
 
       &:hover {
-        background-color: var(--clr-violet-500);
-        color: var(--clr-white);
-        border-color: var(--clr-transparent);
+        border-color: var(--clr-green-400);
+        background-color: var(--clr-green-50);
+        color: var(--clr-green-800);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(18, 165, 136, 0.08);
         cursor: pointer;
       }
 
       &:has(input:checked) {
-        background-color: var(--clr-violet-500);
-        color: var(--clr-white);
-        border-color: var(--clr-transparent);
+        border-color: var(--clr-green-400);
+        background-color: var(--clr-green-50);
+        color: var(--clr-green-800);
+        font-weight: 700;
+        box-shadow: 0 0 0 3px rgba(18, 165, 136, 0.15);
       }
     }
+
     .auth-submit {
       width: 100%;
       min-height: 3.5rem; /* Ensure enough height for the spinner */

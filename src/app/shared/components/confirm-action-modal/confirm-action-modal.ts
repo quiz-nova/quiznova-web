@@ -47,7 +47,8 @@ import { Button } from '@shared/components/button/button';
         <div class="modal-actions">
           <button appButton variant="gray" (click)="onCancel()" type="button">Cancel</button>
           <button
-            class="btn btn-danger"
+            appButton
+            variant="red"
             [disabled]="confirmationInput !== confirmationPhrase()"
             (click)="onConfirm()"
             type="button"
@@ -122,10 +123,10 @@ import { Button } from '@shared/components/button/button';
       align-items: flex-start;
       gap: 0.5rem;
       padding: 0.75rem 1rem;
-      border: 1px solid #fecaca;
+      border: 1px solid var(--clr-red-200);
       border-radius: 0.5rem;
-      background-color: #fef2f2;
-      color: #991b1b;
+      background-color: var(--clr-red-50);
+      color: var(--clr-red-800);
       font-size: var(--fs-400);
       line-height: 1.5;
     }
@@ -154,25 +155,7 @@ import { Button } from '@shared/components/button/button';
       gap: 0.75rem;
     }
 
-    .btn-danger {
-      background-color: var(--clr-red-500);
-      color: var(--clr-white);
-      border: none;
-      padding: 0.55rem 1.15rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
 
-    .btn-danger:hover:not(:disabled) {
-      background-color: #b91c1c;
-    }
-
-    .btn-danger:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
   `,
 })
 export class ConfirmActionModal {

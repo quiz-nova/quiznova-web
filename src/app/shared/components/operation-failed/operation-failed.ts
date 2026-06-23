@@ -28,15 +28,15 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       }
 
       .error-state {
-        border: 1px solid var(--clr-red-500, #fecaca);
+        border: 1px solid var(--clr-red-200);
         border-radius: var(--radius-md);
-        color: var(--clr-red-500, #b91c1c);
-        background-color: #fef2f2;
+        color: var(--clr-red-700);
+        background-color: var(--clr-red-50);
       }
 
       .error-icon {
         font-size: 2rem;
-        color: var(--clr-red-500, #ef4444);
+        color: var(--clr-red-500);
       }
     `,
   ],

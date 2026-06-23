@@ -100,7 +100,7 @@ import { Essay } from '@shared/models/quiz/questions/essay.model';
 
     .review-question__note {
       margin: 0;
-      color: var(--clr-review-danger-500);
+      color: var(--clr-red-600);
       font-size: 0.82rem;
       font-weight: 700;
     }
@@ -123,8 +123,8 @@ import { Essay } from '@shared/models/quiz/questions/essay.model';
     }
 
     .review-answer--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-answer__label {

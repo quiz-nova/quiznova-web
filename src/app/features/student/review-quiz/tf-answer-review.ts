@@ -50,14 +50,14 @@ import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-a
       display: grid;
       gap: 0.6rem;
       padding: 0.9rem;
-      border: 1px solid var(--clr-review-danger-200);
+      border: 1px solid var(--clr-red-200);
       border-radius: 0.75rem;
-      background: var(--clr-review-danger-50);
+      background: var(--clr-red-50);
     }
 
     .review-question--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-question__header {
@@ -93,13 +93,13 @@ import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-a
       font-size: 0.8rem;
       border-radius: 999px;
       padding: 0.18rem 0.48rem;
-      background: var(--clr-review-danger-500);
+      background: var(--clr-red-600);
       color: var(--clr-white);
       font-weight: 700;
     }
 
     .review-question--correct .review-question__marks {
-      background: var(--clr-review-success-500);
+      background: var(--clr-green-500);
     }
 
     .review-question__text {
@@ -117,14 +117,14 @@ import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-a
 
     .review-answer {
       border-radius: 0.6rem;
-      border: 1px solid var(--clr-review-danger-200);
+      border: 1px solid var(--clr-red-200);
       background: var(--clr-white);
       padding: 0.5rem 0.6rem;
     }
 
     .review-answer--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-answer__label {

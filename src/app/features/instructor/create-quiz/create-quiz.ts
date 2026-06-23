@@ -237,7 +237,7 @@ import { QuizService } from '@shared/services/quiz.service';
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
-      border-left: 6px solid var(--clr-green-500);
+      border-left: 6px solid var(--clr-green-400);
       border-radius: var(--radius-md);
       /*box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%),*/
       /*0 10px 10px -5px rgb(0 0 0 / 4%);*/

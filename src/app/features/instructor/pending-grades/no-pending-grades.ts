@@ -39,7 +39,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       height: 4rem;
       border-radius: 1.25rem;
       background: var(--clr-green-100);
-      color: var(--clr-green-500);
+      color: var(--clr-green-400);
       font-size: 1.75rem;
     }
 

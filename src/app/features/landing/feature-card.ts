@@ -71,14 +71,16 @@ export const featureCards: FeatureCard[] = [
       display: flex;
       justify-content: flex-start;
       flex-direction: column;
-      gap: 0.625rem;
-      height: 180px;
-      padding: 1.5rem;
-      border-radius: var(--radius-md);
+      gap: 0.75rem;
+      height: 190px;
+      padding: 1.75rem;
+      border: 1px solid var(--clr-gray-200);
+      border-radius: var(--radius-lg);
       background-color: var(--clr-white);
       transition:
-        transform 0.2s linear,
-        box-shadow 0.2s ease-in-out;
+        transform 0.3s var(--ease-spring),
+        border-color 0.3s var(--ease-spring),
+        box-shadow 0.3s var(--ease-spring);
 
       @media (width < 768px) {
         align-items: center;
@@ -87,23 +89,31 @@ export const featureCards: FeatureCard[] = [
       }
 
       h3 {
+        font-family: var(--ff-heading), sans-serif;
         font-size: var(--fs-500);
+        font-weight: 700;
+        color: var(--clr-blue-900);
+        margin: 0;
       }
 
       p {
         color: var(--clr-gray-600);
         font-size: var(--fs-400);
-        word-spacing: 3px;
+        line-height: 1.5;
+        margin: 0;
       }
 
       &:hover {
-        transform: scale(1.01);
+        transform: translateY(-4px) scale(1.02);
+        border-color: var(--clr-green-300);
         box-shadow:
-          0 20px 25px -5px rgb(0 0 0 / 10%),
-          0 10px 10px -5px rgb(0 0 0 / 4%);
+          0 20px 25px -5px rgba(18, 165, 136, 0.08),
+          0 10px 10px -5px rgba(18, 165, 136, 0.04);
 
         .icon {
-          transform: scale(1.2);
+          transform: scale(1.15) rotate(5deg);
+          background: var(--clr-green-400);
+          color: var(--clr-white);
         }
       }
     }
@@ -112,11 +122,16 @@ export const featureCards: FeatureCard[] = [
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 2rem;
-      height: 2rem;
+      width: 2.5rem;
+      height: 2.5rem;
       border-radius: var(--radius-md);
       background: var(--clr-green-100);
-      transition: transform 0.3s ease-in-out;
+      color: var(--clr-green-400);
+      font-size: 1.15rem;
+      transition:
+        transform 0.3s var(--ease-spring),
+        background-color 0.3s var(--ease-spring),
+        color 0.3s var(--ease-spring);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

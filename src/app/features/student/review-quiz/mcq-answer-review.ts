@@ -60,14 +60,14 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
       display: grid;
       gap: 0.6rem;
       padding: 0.9rem;
-      border: 1px solid var(--clr-review-danger-200);
+      border: 1px solid var(--clr-red-200);
       border-radius: 0.75rem;
-      background: var(--clr-review-danger-50);
+      background: var(--clr-red-50);
     }
 
     .review-question--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-question__header {
@@ -103,13 +103,13 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
       font-size: 0.8rem;
       border-radius: 999px;
       padding: 0.18rem 0.48rem;
-      background: var(--clr-review-danger-500);
+      background: var(--clr-red-600);
       color: var(--clr-white);
       font-weight: 700;
     }
 
     .review-question--correct .review-question__marks {
-      background: var(--clr-review-success-500);
+      background: var(--clr-green-500);
     }
 
     .review-question__text {
@@ -136,13 +136,13 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
     }
 
     .review-choice--selected-wrong {
-      border-color: var(--clr-review-danger-200);
-      background: var(--clr-review-danger-50);
+      border-color: var(--clr-red-200);
+      background: var(--clr-red-50);
     }
 
     .review-choice--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-choice__prefix {
@@ -161,15 +161,15 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
       font-size: 0.7rem;
       border-radius: 999px;
       padding: 0.1rem 0.45rem;
-      border: 1px solid var(--clr-review-danger-200);
-      color: var(--clr-review-danger-500);
+      border: 1px solid var(--clr-red-200);
+      color: var(--clr-red-600);
       font-weight: 700;
       background: var(--clr-white);
     }
 
     .review-choice__pill--correct {
-      border-color: var(--clr-review-success-200);
-      color: var(--clr-review-success-500);
+      border-color: var(--clr-emerald-200);
+      color: var(--clr-green-500);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

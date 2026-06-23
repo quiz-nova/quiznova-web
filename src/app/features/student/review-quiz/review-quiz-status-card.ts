@@ -64,15 +64,15 @@ import { ReviewQuizStore } from './review-quiz.store';
     }
 
     .status-card--success .status-card__value {
-      color: var(--clr-review-success-500);
+      color: var(--clr-green-500);
     }
 
     .status-card--danger .status-card__value {
-      color: var(--clr-review-danger-500);
+      color: var(--clr-red-600);
     }
 
     .status-card--info .status-card__value {
-      color: var(--clr-review-info-500);
+      color: var(--clr-blue-500);
     }
 
     @media (width <= 64rem) {

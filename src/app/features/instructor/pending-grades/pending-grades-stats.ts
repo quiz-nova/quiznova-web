@@ -60,7 +60,7 @@ export interface GradingStat {
     }
 
     .stat-icon.green  { background: var(--clr-green-50); color: var(--clr-green-600); }
-    .stat-icon.amber  { background: var(--clr-yellow-50); color: var(--clr-yellow-700); }
+    .stat-icon.amber  { background: var(--clr-amber-50); color: var(--clr-amber-700); }
     .stat-icon.violet { background: var(--clr-violet-50); color: var(--clr-violet-700); }
     .stat-icon.cyan   { background: var(--clr-cyan-50); color: var(--clr-cyan-700); }
 

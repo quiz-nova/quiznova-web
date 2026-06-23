@@ -35,10 +35,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       align-items: center;
       gap: 0.5rem;
       padding: 0.625rem 1rem;
-      border: 1px solid #d8dee8;
+      border: 1px solid var(--clr-gray-250);
       border-radius: 999px;
-      background-color: #fff;
-      color: #0f172a;
+      background-color: var(--clr-white);
+      color: var(--clr-blue-900);
       font-size: var(--fs-300);
       font-weight: 500;
       line-height: 1;
@@ -46,17 +46,17 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     }
 
     .stat-pill--warning {
-      border-color: #fecaca;
-      background-color: #fef2f2;
-      color: #991b1b;
+      border-color: var(--clr-red-200);
+      background-color: var(--clr-red-50);
+      color: var(--clr-red-800);
     }
 
     .stat-pill--warning .stat-icon {
-      color: #991b1b;
+      color: var(--clr-red-800);
     }
 
     .stat-icon {
-      color: #1f2937;
+      color: var(--clr-gray-800);
     }
   `,
 })

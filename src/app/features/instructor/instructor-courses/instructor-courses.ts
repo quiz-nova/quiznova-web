@@ -102,7 +102,7 @@ import { shortId } from '@shared/utils/utilities';
       display: grid;
       gap: 1rem;
       padding: 1.5rem;
-      border: 1px solid #d9e2ec;
+      border: 1px solid var(--clr-gray-250);
       border-radius: 1rem;
       background: var(--clr-white);
       box-shadow: 0 12px 30px rgb(15 23 42 / 8%);
@@ -126,9 +126,10 @@ import { shortId } from '@shared/utils/utilities';
 
     h2 {
       margin: 0;
-      color: #0f172a;
+      color: var(--clr-blue-900);
       font-size: 1.4rem;
       line-height: 1.25;
+      font-family: var(--ff-heading), sans-serif;
     }
 
     .course-icon {
@@ -138,8 +139,8 @@ import { shortId } from '@shared/utils/utilities';
       width: 2.75rem;
       height: 2.75rem;
       border-radius: 1rem;
-      background: #e9fbf6;
-      color: #19b394;
+      background: var(--clr-green-50);
+      color: var(--clr-green-600);
       font-size: 1.2rem;
     }
 
@@ -155,7 +156,7 @@ import { shortId } from '@shared/utils/utilities';
       gap: 0.75rem;
       margin: 0;
       padding-top: 1rem;
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid var(--clr-gray-250);
     }
 
     .course-stats div {
@@ -170,7 +171,7 @@ import { shortId } from '@shared/utils/utilities';
 
     dd {
       margin: 0;
-      color: #0f172a;
+      color: var(--clr-blue-900);
       font-size: 1.1rem;
       font-weight: 700;
     }

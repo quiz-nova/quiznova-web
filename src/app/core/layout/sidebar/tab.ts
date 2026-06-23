@@ -6,7 +6,6 @@ import { AuthService } from '@Features/auth/auth.service';
 
 import { User } from '@shared/models/users/user.model';
 
-
 @Component({
   selector: 'app-tab',
   imports: [RouterLink, RouterLinkActive],
@@ -29,29 +28,38 @@ import { User } from '@shared/models/users/user.model';
         align-items: center;
         gap: 0.875rem;
         min-height: 3.5rem;
-        padding: 0.5rem;
-        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
         color: var(--clr-gray-600);
-        font-size: var(--fs-500);
+        font-size: var(--fs-400);
+        font-weight: 600;
         transition:
-          background-color 0.2s ease-in-out,
-          color 0.2s ease-in-out;
+          background-color 0.25s var(--ease-standard),
+          color 0.25s var(--ease-standard),
+          transform 0.25s var(--ease-standard);
       }
 
       .tab:hover {
-        background-color: var(--clr-green-100);
-        color: var(--clr-green-500);
+        background-color: var(--clr-green-50);
+        color: var(--clr-green-600);
+        transform: translateX(4px);
       }
 
       .tab.active {
         background-color: var(--clr-green-100);
-        color: var(--clr-green-500);
+        color: var(--clr-green-800);
+        font-weight: 700;
       }
 
       .tab-icon {
-        width: 1.125rem;
+        width: 1.25rem;
         text-align: center;
-        font-size: 1rem;
+        font-size: 1.1rem;
+        transition: transform 0.25s var(--ease-standard);
+      }
+
+      .tab:hover .tab-icon {
+        transform: scale(1.1);
       }
     `,
   ],

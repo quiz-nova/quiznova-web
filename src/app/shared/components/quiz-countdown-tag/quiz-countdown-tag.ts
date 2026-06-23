@@ -30,10 +30,10 @@ import {
       gap: 0.4rem;
       min-height: 1.85rem;
       padding: 0.25rem 0.7rem;
-      border: 1px solid color-mix(in srgb, var(--clr-green-500) 30%, var(--clr-white));
+      border: 1px solid color-mix(in srgb, var(--clr-green-400) 30%, var(--clr-white));
       border-radius: 999px;
       background-color: var(--clr-green-100);
-      color: var(--clr-green-500);
+      color: var(--clr-green-400);
       font-size: var(--fs-300);
       font-weight: 700;
       font-variant-numeric: tabular-nums;
@@ -42,7 +42,7 @@ import {
 
     .countdown--expired {
       border-color: color-mix(in srgb, var(--clr-red-500) 35%, var(--clr-white));
-      background-color: color-mix(in srgb, var(--clr-red-100) 45%, var(--clr-white));
+      background-color: color-mix(in srgb, var(--clr-red-200) 45%, var(--clr-white));
       color: var(--clr-red-500);
     }
   `,

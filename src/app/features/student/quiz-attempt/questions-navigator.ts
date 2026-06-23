@@ -66,23 +66,23 @@ import { QuizAttemptStore } from './quiz-attempt.store';
 
     /* Solved state */
     button.is-solved {
-      background: var(--clr-green-500);
+      background: var(--clr-green-400);
       color: var(--clr-white);
-      border-color: var(--clr-green-500);
+      border-color: var(--clr-green-400);
     }
 
     /* Flagged state (overrides solved) */
     button.is-flagged {
-      background: var(--clr-yellow-500);
+      background: var(--clr-amber-100);
       color: var(--clr-red-500);
-      border-color: var(--clr-yellow-500);
+      border-color: var(--clr-amber-100);
     }
 
     /* Current state (overrides all other states) */
     button.is-current {
       background: var(--clr-white);
-      color: var(--clr-green-500);
-      border: 2px solid var(--clr-green-500);
+      color: var(--clr-green-400);
+      border: 2px solid var(--clr-green-400);
     }
 
     .legend {
@@ -109,7 +109,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     }
 
     .answered {
-      background: var(--clr-green-500);
+      background: var(--clr-green-400);
     }
 
     .unanswered {
@@ -117,7 +117,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     }
 
     .flagged {
-      background: var(--clr-yellow-500);
+      background: var(--clr-amber-100);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

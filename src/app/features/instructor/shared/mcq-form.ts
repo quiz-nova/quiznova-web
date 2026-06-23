@@ -172,7 +172,7 @@ type McqFormGroup = FormGroup<{
 
         &:focus {
           outline: none;
-          border: 3px solid var(--clr-green-500);
+          border: 3px solid var(--clr-green-400);
         }
       }
 

@@ -82,14 +82,14 @@ export type McqAttemptForm = FormGroup<{
       transition: all 0.2s ease-in-out;
 
       &:hover {
-        border-color: var(--clr-green-500);
+        border-color: var(--clr-green-400);
         transform: scale(1.01);
       }
 
       &.selected {
         border-color: var(--clr-green-600);
         background-color: var(--clr-green-50);
-        color: var(--clr-green-700);
+        color: var(--clr-green-800);
         box-shadow: 0 0 0 1px var(--clr-green-600);
       }
     }

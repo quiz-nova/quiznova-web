@@ -257,8 +257,8 @@ import { PendingGradesStats } from './pending-grades-stats';
       gap: 0.375rem;
       padding: 0.3rem 0.75rem;
       border-radius: 999px;
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--clr-amber-100);
+      color: var(--clr-amber-800);
       font-size: var(--fs-300);
       font-weight: 600;
     }
@@ -274,7 +274,7 @@ import { PendingGradesStats } from './pending-grades-stats';
     .submission-row:hover .arrow-cell,
     .submission-row:focus-visible .arrow-cell {
       transform: translateX(3px);
-      color: var(--clr-green-500);
+      color: var(--clr-green-400);
     }
 
     /* Pagination Row */

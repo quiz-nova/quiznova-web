@@ -153,8 +153,8 @@ import { NoAnswer } from './no-answer';
     }
 
     .header-badge.pending {
-      background: #fef3c7;
-      color: #92400e;
+      background: var(--clr-amber-100);
+      color: var(--clr-amber-800);
     }
 
     .header-badge.completed {

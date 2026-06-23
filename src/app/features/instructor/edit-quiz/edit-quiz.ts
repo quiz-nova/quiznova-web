@@ -225,7 +225,7 @@ import { EditQuizStore } from './edit-quiz.store';
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
-      border-left: 6px solid var(--clr-green-500);
+      border-left: 6px solid var(--clr-green-400);
       border-radius: var(--radius-md);
     }
   `,

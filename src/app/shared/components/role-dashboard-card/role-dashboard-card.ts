@@ -32,20 +32,23 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         justify-content: space-between;
         gap: 1.5rem;
         min-height: 9.5rem;
-        padding: 1.5rem;
+        padding: 1.75rem;
         background: var(--clr-white);
         border: 1px solid var(--clr-gray-200);
         border-radius: var(--radius-lg, 1rem);
-        box-shadow: 0 4px 16px rgb(15 23 42 / 6%);
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
         transition:
-          transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-          box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);      }
+          transform 0.3s var(--ease-spring),
+          border-color 0.3s var(--ease-spring),
+          box-shadow 0.3s var(--ease-spring);
+      }
 
       .dashboard-card:hover {
         transform: translateY(-4px);
+        border-color: var(--theme-border);
         box-shadow: 
-          0 12px 24px -4px rgb(15 23 42 / 8%),
-          0 8px 12px -6px rgb(15 23 42 / 6%);
+          0 12px 24px -4px rgba(15, 23, 42, 0.06),
+          0 8px 12px -6px rgba(15, 23, 42, 0.04);
       }
 
       .card-header {
@@ -57,9 +60,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
       .card-title {
         margin: 0;
-        color: var(--clr-gray-600, #5a6e85);
+        color: var(--clr-gray-600);
+        font-family: var(--ff-heading), sans-serif;
         font-size: 1.125rem;
-        font-weight: 600;
+        font-weight: 700;
         line-height: 1.3;
       }
 
@@ -71,7 +75,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
       .card-value {
         margin: 0;
-        color: var(--clr-blue-900, #0f172a);
+        color: var(--clr-blue-900);
         font-size: clamp(2rem, 4vw, 2.5rem);
         font-weight: 800;
         line-height: 1;
@@ -80,7 +84,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
       .card-caption {
         margin: 0;
-        color: var(--clr-gray-500, #64748b);
+        color: var(--clr-gray-500);
         font-size: 0.875rem;
         line-height: 1.4;
       }
@@ -89,31 +93,31 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 2.75rem;
-        height: 2.75rem;
+        width: 3rem;
+        height: 3rem;
         border-radius: var(--radius-md, 0.875rem);
-        font-size: 1.25rem;
+        font-size: 1.35rem;
         transition: 
-          transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-          background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-          color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transform 0.3s var(--ease-spring),
+          background-color 0.3s var(--ease-spring),
+          color 0.3s var(--ease-spring);
       }
 
       .dashboard-card:hover .card-icon {
-        transform: scale(1.1) rotate(3deg);
+        transform: scale(1.1) rotate(4deg);
       }
 
       /* Theme: Green */
       .theme-green {
         --theme-bg: var(--clr-green-50);
-        --theme-text: var(--clr-green-500);
-        --theme-border: var(--clr-green-200);
+        --theme-text: var(--clr-green-600);
+        --theme-border: var(--clr-green-300);
       }
       /* Theme: Amber */
       .theme-amber {
-        --theme-bg: var(--clr-yellow-50);
-        --theme-text: var(--clr-yellow-700);
-        --theme-border: var(--clr-yellow-200);
+        --theme-bg: var(--clr-amber-50);
+        --theme-text: var(--clr-amber-700);
+        --theme-border: var(--clr-amber-200);
       }
       /* Theme: Violet */
       .theme-violet {
@@ -130,13 +134,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       /* Theme: Primary */
       .theme-primary {
         --theme-bg: var(--clr-green-50);
-        --theme-text: var(--clr-green-500);
-        --theme-border: var(--clr-green-500);
+        --theme-text: var(--clr-green-400);
+        --theme-border: var(--clr-green-400);
       }
 
       /* Applying Theme Colors */
       .dashboard-card {
-        border-color: var(--theme-border);
+        border-color: var(--clr-gray-200);
       }
       
       .card-icon {

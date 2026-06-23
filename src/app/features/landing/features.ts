@@ -56,7 +56,7 @@ import { FeatureCardComponent, featureCards } from './feature-card';
     }
 
     .cards app-feature-card i {
-      color: var(--clr-green-500);
+      color: var(--clr-green-400);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

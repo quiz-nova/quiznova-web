@@ -1,8 +1,8 @@
 @layer utilities {
   /* PrimeNG RadioButton Styling */
   .p-radiobutton .p-radiobutton-box.p-highlight {
-    border-color: var(--clr-green-500);
-    background-color: var(--clr-green-500);
+    border-color: var(--clr-green-400);
+    background-color: var(--clr-green-400);
   }
 
   .p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon {
@@ -10,7 +10,7 @@
   }
 
   .p-radiobutton:not(.p-disabled) .p-radiobutton-box:hover {
-    border-color: var(--clr-green-500);
+    border-color: var(--clr-green-400);
   }
 
   /* PrimeNG Select Styling */
@@ -26,12 +26,12 @@
   }
 
   .p-select:not(.p-disabled):hover {
-    border-color: var(--clr-green-500);
+    border-color: var(--clr-green-400);
   }
 
   .p-select.p-focus {
-    border-color: var(--clr-green-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 25%, transparent);
+    border-color: var(--clr-green-400);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-400) 25%, transparent);
     outline: none;
   }
 
@@ -76,12 +76,12 @@
   }
 
   .p-inputnumber .p-inputnumber-input:hover:not(:disabled) {
-    border-color: var(--clr-green-500);
+    border-color: var(--clr-green-400);
   }
 
   .p-inputnumber .p-inputnumber-input:focus {
-    border-color: var(--clr-green-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 25%, transparent);
+    border-color: var(--clr-green-400);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-400) 25%, transparent);
     outline: none;
   }
 
@@ -105,8 +105,8 @@
   }
 
   .p-inputnumber .p-inputnumber-button:hover:not(:disabled) {
-    background-color: var(--clr-green-500);
-    border-color: var(--clr-green-500);
+    background-color: var(--clr-green-400);
+    border-color: var(--clr-green-400);
     color: var(--clr-white);
   }
 
@@ -151,13 +151,13 @@
 
   [pInputText]:hover:not(:disabled),
   .p-datepicker-input:hover:not(:disabled) {
-    border-color: var(--clr-green-500);
+    border-color: var(--clr-green-400);
   }
 
   [pInputText]:focus,
   .p-datepicker-input:focus {
-    border-color: var(--clr-green-500);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-500) 25%, transparent);
+    border-color: var(--clr-green-400);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-400) 25%, transparent);
     outline: none;
   }
 
@@ -178,7 +178,7 @@
   }
 
   .p-progress-spinner-circle {
-    stroke: var(--clr-green-500);
+    stroke: var(--clr-green-400);
     stroke-dasharray: 169.646 169.646;
     stroke-width: 3;
     animation: p-progress-spinner-dash 1.5s ease-in-out infinite;

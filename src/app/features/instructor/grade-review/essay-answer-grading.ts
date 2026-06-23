@@ -215,7 +215,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
     .score-input:focus,
     .feedback-textarea:focus {
       outline: none;
-      border-color: var(--clr-green-500);
+      border-color: var(--clr-green-400);
     }
 
     .feedback-footer {
@@ -249,7 +249,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       gap: 0.5rem;
       padding: 0.625rem 1.5rem;
       border-radius: var(--radius-md);
-      background: var(--clr-green-500);
+      background: var(--clr-green-400);
       color: var(--clr-white);
       font-size: var(--fs-400);
       font-weight: 600;
@@ -278,8 +278,8 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       gap: 0.375rem;
       padding: 0.3rem 0.75rem;
       border-radius: 999px;
-      background: var(--clr-review-success-50);
-      color: var(--clr-review-success-500);
+      background: var(--clr-emerald-50);
+      color: var(--clr-green-500);
       font-size: var(--fs-300);
       font-weight: 700;
     }

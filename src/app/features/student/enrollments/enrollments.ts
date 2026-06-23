@@ -136,7 +136,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       height: 3rem;
       border-radius: 0.75rem;
       background: var(--clr-green-100);
-      color: var(--clr-green-500);
+      color: var(--clr-green-400);
       font-size: 1.25rem;
     }
 

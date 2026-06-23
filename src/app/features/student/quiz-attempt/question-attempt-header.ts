@@ -54,8 +54,8 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     }
 
     .flagged {
-      border-color: var(--clr-yellow-500);
-      background-color: var(--clr-yellow-500);
+      border-color: var(--clr-amber-100);
+      background-color: var(--clr-amber-100);
       color: var(--clr-red-500);
     }
   `,

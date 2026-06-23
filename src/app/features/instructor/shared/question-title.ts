@@ -55,7 +55,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
 
       &:focus {
         outline: none;
-        border: 3px solid var(--clr-green-500);
+        border: 3px solid var(--clr-green-400);
       }
     }
   `,

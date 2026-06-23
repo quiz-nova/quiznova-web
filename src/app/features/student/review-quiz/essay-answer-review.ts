@@ -93,8 +93,8 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
     }
 
     .review-question--pending {
-      border-color: #fde68a; /* Amber-200 */
-      background: #fffbeb; /* Amber-50 */
+      border-color: var(--clr-amber-200);
+      background: var(--clr-amber-100);
     }
 
     .review-question__header {
@@ -136,11 +136,11 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
     }
 
     .review-question__marks--success {
-      background: var(--clr-review-success-500);
+      background: var(--clr-green-500);
     }
 
     .review-question__marks--pending {
-      background: #d97706; /* Amber-600 */
+      background: var(--clr-amber-800);
       color: var(--clr-white);
     }
 
@@ -169,8 +169,8 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
     }
 
     .review-answer--reference {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-answer--feedback {

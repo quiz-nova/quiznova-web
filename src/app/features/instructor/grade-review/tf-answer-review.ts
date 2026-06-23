@@ -55,13 +55,13 @@ import { QuestionAnswer, TfAnswer, AutoGradedAnswer } from '@shared/models/quiz-
     }
 
     .answer-value.correct {
-      background: var(--clr-review-success-50);
-      border-color: var(--clr-review-success-200);
-      color: var(--clr-review-success-500);
+      background: var(--clr-emerald-50);
+      border-color: var(--clr-emerald-200);
+      color: var(--clr-green-500);
       font-weight: 600;
       padding: 0.25rem 0.625rem;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--clr-review-success-200);
+      border: 1px solid var(--clr-emerald-200);
     }
 
     .result-badge {
@@ -77,13 +77,13 @@ import { QuestionAnswer, TfAnswer, AutoGradedAnswer } from '@shared/models/quiz-
     }
 
     .result-badge.is-correct {
-      background: var(--clr-review-success-50);
-      color: var(--clr-review-success-500);
+      background: var(--clr-emerald-50);
+      color: var(--clr-green-500);
     }
 
     .result-badge.is-wrong {
-      background: var(--clr-review-danger-50);
-      color: var(--clr-review-danger-500);
+      background: var(--clr-red-50);
+      color: var(--clr-red-600);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

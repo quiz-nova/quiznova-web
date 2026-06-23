@@ -114,7 +114,7 @@ type EssayFormGroup = FormGroup<{
 
       &:focus {
         outline: none;
-        border-color: var(--clr-green-500);
+        border-color: var(--clr-green-400);
         background: var(--clr-white);
       }
     }

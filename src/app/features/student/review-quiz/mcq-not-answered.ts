@@ -97,7 +97,7 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
     .review-question__note {
       margin: 0;
-      color: var(--clr-review-danger-500);
+      color: var(--clr-red-600);
       font-size: 0.82rem;
       font-weight: 700;
     }
@@ -119,8 +119,8 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
     }
 
     .review-choice--correct {
-      border-color: var(--clr-review-success-200);
-      background: var(--clr-review-success-50);
+      border-color: var(--clr-emerald-200);
+      background: var(--clr-emerald-50);
     }
 
     .review-choice__prefix {
@@ -139,8 +139,8 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
       font-size: 0.7rem;
       border-radius: 999px;
       padding: 0.1rem 0.45rem;
-      border: 1px solid var(--clr-review-success-200);
-      color: var(--clr-review-success-500);
+      border: 1px solid var(--clr-emerald-200);
+      color: var(--clr-green-500);
       font-weight: 700;
       background: var(--clr-white);
     }

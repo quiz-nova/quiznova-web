@@ -33,7 +33,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
       }
 
       .delete-button:hover:not(:disabled) {
-        background-color: var(--clr-red-100);
+        background-color: var(--clr-red-200);
       }
 
       .delete-button:focus-visible {

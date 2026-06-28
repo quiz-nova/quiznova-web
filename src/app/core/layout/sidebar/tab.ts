@@ -84,6 +84,7 @@ export class Tab {
     Admins: 'fa-solid fa-user-shield',
     Settings: 'fa-solid fa-gear',
     'Pending Grades': 'fa-solid fa-clipboard-check',
+    'Course Chat': 'fa-solid fa-comments',
   };
 
   protected readonly routeLink = computed(() => {

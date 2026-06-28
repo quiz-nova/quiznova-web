@@ -144,7 +144,9 @@ export const routes: Routes = [
           {
             path: 'quizzes',
             loadComponent: () =>
-              import('@Features/student/student-quizzes/student-quizzes').then((m) => m.StudentQuizzes),
+              import('@Features/student/student-quizzes/student-quizzes').then(
+                (m) => m.StudentQuizzes,
+              ),
           },
           {
             path: 'review-quiz/:attemptId',
@@ -154,7 +156,9 @@ export const routes: Routes = [
           {
             path: 'results',
             loadComponent: () =>
-              import('@Features/student/student-results/student-results').then((m) => m.StudentResults),
+              import('@Features/student/student-results/student-results').then(
+                (m) => m.StudentResults,
+              ),
           },
         ],
       },

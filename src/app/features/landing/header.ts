@@ -18,9 +18,8 @@ export interface HeaderLink {
 }
 export const headerLinks: HeaderLink[] = [
   { id: 1, label: 'Features', name: 'features' },
-  { id: 2, label: 'Pricing', name: 'pricing' },
-  { id: 3, label: 'About', name: 'about' },
-  { id: 4, label: 'Contact', name: 'contact' },
+  { id: 2, label: 'About', name: 'about' },
+  { id: 3, label: 'Contact', name: 'contact' },
 ];
 
 @Component({
@@ -111,6 +110,7 @@ export const headerLinks: HeaderLink[] = [
     a {
       color: var(--clr-gray-600);
       font-weight: 500;
+      border-radius: var(--radius-sm);
       transition: color 0.25s var(--ease-standard), transform 0.25s var(--ease-standard);
 
       @media (width < 768px) {
@@ -120,6 +120,11 @@ export const headerLinks: HeaderLink[] = [
       &:hover {
         color: var(--clr-green-400);
         transform: translateY(-1px);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--clr-green-400);
+        outline-offset: 2px;
       }
     }
 

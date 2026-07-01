@@ -16,7 +16,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           <p [delay]="100" appFadeInOnScroll>The future of educational assessment</p>
         </div>
         <h1 [delay]="150" appFadeInOnScroll>
-          Smarter quizzes for <span class="gradient-text">modern education</span>
+          Smarter quizzes for <span class="accent-word">modern education</span>
         </h1>
         <p class="system-description" [delay]="200" appFadeInOnScroll>
           QuizNova empowers colleges and institutions to create, assign, and analyze quizzes with a
@@ -42,7 +42,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
       justify-content: center;
       flex-direction: column;
       gap: 1rem;
-      height: calc(100vh - 4rem);
+      min-height: calc(100vh - 4.5rem);
     }
 
     .content {
@@ -68,6 +68,10 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
       text-align: center;
       letter-spacing: -0.03em;
       max-width: 50rem;
+    }
+
+    .accent-word {
+      color: var(--clr-green-400);
     }
 
     .system-description {

@@ -16,8 +16,8 @@ export interface CompanyLinks {
 
 export const productLinks: ProductLinks[] = [
   { id: 1, label: 'Features', name: '#features' },
-  { id: 2, label: 'Pricing', name: '#pricing' },
-  { id: 3, label: 'Login', name: '#' },
+  { id: 2, label: 'About', name: '#about' },
+  { id: 3, label: 'Login', name: '/auth/login' },
 ];
 
 export const companyLinks: CompanyLinks[] = [
@@ -31,48 +31,45 @@ export const companyLinks: CompanyLinks[] = [
   imports: [Logo],
   template: `
     <footer class="footer" id="contact">
-      <div class="footer__top">
-        <div class="footer__brand">
-          <app-logo />
-          <p>The modern multi-tenant quiz platform built for educational institutions.</p>
-        </div>
-
-        <div class="footer__columns">
-          <div class="footer__column">
-            <h4>Product</h4>
-            @for (link of productLinks(); track link.id) {
-              <a [attr.href]="link.name">{{ link.label }}</a>
-            }
+      <div class="container">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <app-logo />
+            <p>The modern multi-tenant quiz platform built for educational institutions.</p>
           </div>
 
-          <div class="footer__column">
-            <h4>Company</h4>
-            @for (link of companyLinks(); track link.id) {
-              <a [attr.href]="link.name">{{ link.label }}</a>
-            }
+          <div class="footer__columns">
+            <div class="footer__column">
+              <h4>Product</h4>
+              @for (link of productLinks(); track link.id) {
+                <a [attr.href]="link.name">{{ link.label }}</a>
+              }
+            </div>
+
+            <div class="footer__column">
+              <h4>Company</h4>
+              @for (link of companyLinks(); track link.id) {
+                <a [attr.href]="link.name">{{ link.label }}</a>
+              }
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="footer__bottom">
-        <p>© 2026 QuizNova. All rights reserved.</p>
+        <div class="footer__bottom">
+          <p>© 2026 QuizNova. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   `,
   styleUrls: ['./shared/landing-shared.css'],
   styles: `
     .footer {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 2rem;
-      overflow-x: clip;
       background-color: var(--clr-blue-900);
       color: var(--clr-white);
     }
 
     .footer__bottom {
-      margin: 1rem;
+      padding-block: 1.5rem;
       text-align: center;
     }
 
@@ -81,7 +78,7 @@ export const companyLinks: CompanyLinks[] = [
       display: flex;
       justify-content: space-between;
       gap: 2rem;
-      padding: 2rem;
+      padding-block: 3rem;
 
       @media (width < 575px) {
         align-items: center;
@@ -92,11 +89,10 @@ export const companyLinks: CompanyLinks[] = [
       &::after {
         position: absolute;
         top: 100%;
-        left: 50%;
-        width: 100vw;
+        left: 0;
+        width: 100%;
         height: 1px;
-        background-color: var(--clr-white);
-        transform: translateX(-50%);
+        background-color: rgba(255, 255, 255, 0.15);
         content: '';
       }
     }
@@ -112,7 +108,7 @@ export const companyLinks: CompanyLinks[] = [
       }
 
       p {
-        color: var(--clr-gray-600);
+        color: var(--clr-gray-500);
       }
     }
 
@@ -125,16 +121,27 @@ export const companyLinks: CompanyLinks[] = [
       @media (width < 575px) {
         width: 100%;
       }
-
-      a {
-        color: var(--clr-gray-600);
-      }
     }
 
     .footer__column {
       display: flex;
       flex-direction: column;
       gap: 0.625rem;
+
+      a {
+        color: var(--clr-gray-500);
+        transition: color 0.2s var(--ease-standard);
+      }
+
+      a:hover {
+        color: var(--clr-green-400);
+      }
+
+      a:focus-visible {
+        outline: 2px solid var(--clr-green-400);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

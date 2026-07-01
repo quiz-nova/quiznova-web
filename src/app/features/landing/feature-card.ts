@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-export interface FeatureCard {
+export interface FeatureCardData {
   id: number;
   icon: string;
   title: string;
   content: string;
 }
 
-export const featureCards: FeatureCard[] = [
+export const featureCards: FeatureCardData[] = [
   {
     id: 1,
     icon: 'fa-solid fa-building-shield',
@@ -72,15 +72,14 @@ export const featureCards: FeatureCard[] = [
       justify-content: flex-start;
       flex-direction: column;
       gap: 0.75rem;
-      height: 190px;
+      min-height: 190px;
       padding: 1.75rem;
       border: 1px solid var(--clr-gray-200);
       border-radius: var(--radius-lg);
       background-color: var(--clr-white);
       transition:
         transform 0.3s var(--ease-spring),
-        border-color 0.3s var(--ease-spring),
-        box-shadow 0.3s var(--ease-spring);
+        border-color 0.3s var(--ease-spring);
 
       @media (width < 768px) {
         align-items: center;
@@ -106,9 +105,6 @@ export const featureCards: FeatureCard[] = [
       &:hover {
         transform: translateY(-4px) scale(1.02);
         border-color: var(--clr-green-300);
-        box-shadow:
-          0 20px 25px -5px rgba(18, 165, 136, 0.08),
-          0 10px 10px -5px rgba(18, 165, 136, 0.04);
 
         .icon {
           transform: scale(1.15) rotate(5deg);
@@ -136,5 +132,5 @@ export const featureCards: FeatureCard[] = [
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeatureCardComponent {
+export class FeatureCard {
 }

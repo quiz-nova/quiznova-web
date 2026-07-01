@@ -2,18 +2,18 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
-import { FeatureCardComponent, featureCards } from './feature-card';
+import { FeatureCard, featureCards } from './feature-card';
 
 @Component({
   selector: 'app-features',
-  imports: [FadeInOnScrollDirective, FeatureCardComponent],
+  imports: [FadeInOnScrollDirective, FeatureCard],
   template: `
     <section class="features" id="features">
       <div class="container">
         <article class="section-heading">
           <h2 appFadeInOnScroll>
             Everything you need to
-            <span class="gradient-text">assess brilliance</span>
+            <span class="accent-word">assess brilliance</span>
           </h2>
           <p [delay]="100" appFadeInOnScroll>
             A complete platform for creating, managing, and analyzing educational assessments at
@@ -35,14 +35,14 @@ import { FeatureCardComponent, featureCards } from './feature-card';
   styleUrls: ['./shared/landing-shared.css'],
   styles: `
     .features {
-      padding-block: 2.5rem;
+      padding-block: 5rem;
       background-color: var(--clr-gray-100);
     }
 
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
     .cards app-feature-card .card-title {
@@ -53,6 +53,10 @@ import { FeatureCardComponent, featureCards } from './feature-card';
       color: var(--clr-gray-600);
       font-size: var(--fs-400);
       word-spacing: 3px;
+    }
+
+    .accent-word {
+      color: var(--clr-green-400);
     }
 
     .cards app-feature-card i {

@@ -239,12 +239,6 @@
     min-width: 18rem;
   }
 
-  .gradient-text {
-    background: var(--gradient-main);
-    background-clip: text;
-    color: var(--clr-transparent);
-  }
-
   .focus-green-ring {
     border: 1px solid var(--clr-gray-500);
     &:focus-visible {
@@ -326,5 +320,14 @@
   .fade-in.appear {
     transform: translateY(0);
     opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in,
+    .fade-in.appear {
+      transition-duration: 120ms;
+      transform: none;
+      opacity: 1;
+    }
   }
 }

@@ -72,7 +72,7 @@ test.describe('Quiz Attempt E2E & Countdown', () => {
     await page.goto('/auth/login');
     await page.locator('#login-email').fill('student1@quiznova.local');
     await page.locator('#login-password').fill('Student123!');
-    await page.locator('.role-box').filter({ hasText: 'Student' }).click();
+    await page.locator('.role-box').filter({ hasText: 'Student' }).locator('input').check({ force: true });
 
     await page.route(`**/students/*/quiz-attempts`, async (route) => {
       await route.fulfill({

@@ -40,7 +40,7 @@ import { ReviewQuizStore } from './review-quiz.store';
     }
 
     .status-card {
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       border: 1px solid var(--clr-gray-300);
       background: var(--clr-white);
       padding: 0.7rem 0.8rem;

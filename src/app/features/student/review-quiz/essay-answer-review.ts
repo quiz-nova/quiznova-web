@@ -79,7 +79,7 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
       gap: 0.6rem;
       padding: 0.9rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
       transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
@@ -90,10 +90,12 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
 
     .review-question--graded {
       border-color: var(--clr-gray-300);
+      border-left: 4px solid var(--clr-green-500); /* impeccable-disable-line side-tab */
     }
 
     .review-question--pending {
       border-color: var(--clr-amber-200);
+      border-left: 4px solid var(--clr-amber-600); /* impeccable-disable-line side-tab */
       background: var(--clr-amber-100);
     }
 
@@ -118,7 +120,7 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
 
     .review-question__type {
       font-size: 0.72rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-300);
@@ -128,7 +130,7 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
 
     .review-question__marks {
       font-size: 0.8rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-gray-800);
       color: var(--clr-white);

@@ -78,7 +78,7 @@ import { QuestionAnswer, McqAnswer, AutoGradedAnswer } from '@shared/models/quiz
       align-items: center;
       gap: 0.375rem;
       padding: 0.3rem 0.75rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       font-size: var(--fs-300);
       font-weight: 700;
       margin-top: 0.5rem;

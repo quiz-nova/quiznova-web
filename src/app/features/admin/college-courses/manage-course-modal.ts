@@ -210,7 +210,7 @@ import { ManageCourseStore } from './manage-course.store';
     .student-id {
       padding: 0.25rem 0.65rem;
       border: 1px solid var(--clr-gray-200);
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       color: var(--clr-gray-600);
       font-size: 0.8rem;
       font-weight: 700;

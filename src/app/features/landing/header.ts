@@ -131,19 +131,18 @@ export const headerLinks: HeaderLink[] = [
     .header__panel {
       @media (width < 768px) {
         width: 100%;
-        max-height: 0;
+        display: none;
+        opacity: 0;
         padding-inline: 1rem;
         background-color: var(--clr-transparent);
-        overflow: hidden;
-        visibility: hidden;
-        transition: max-height 0.3s ease-in-out, visibility 0.3s;
+        transition: opacity 0.2s var(--ease-standard);
       }
 
       &.menu-open {
         @media (width < 768px) {
-          max-height: 500px;
+          display: flex;
+          opacity: 1;
           padding-block: 1rem;
-          visibility: visible;
         }
       }
     }

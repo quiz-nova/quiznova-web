@@ -66,7 +66,7 @@ type AddQuestionFormGroup = FormGroup<{
         margin-top: 0;
         padding: 0.5rem;
         border: 1px solid var(--clr-gray-200);
-        border-radius: 999px;
+        border-radius: var(--radius-sm);
         background-color: var(--clr-white);
         box-shadow: 0 12px 32px rgb(15 23 42 / 16%);
       }
@@ -77,12 +77,12 @@ type AddQuestionFormGroup = FormGroup<{
 
       :host(.pill-style) .dropdown-field {
         min-width: 12rem;
-        border-radius: 100vh;
+        border-radius: var(--radius-md);
       }
 
       :host(.pill-style) .btn {
         min-height: 3rem;
-        border-radius: 999px;
+        border-radius: var(--radius-sm);
         padding-inline: 1.25rem;
       }
     `,

@@ -37,7 +37,7 @@ import { CourseChatStore } from './course-chat.store';
       gap: 0.25rem;
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-200);
-      border-radius: 12px;
+      border-radius: var(--radius-md);
       padding: 0.15rem 0.5rem;
       cursor: pointer;
       transition: all 0.2s ease;

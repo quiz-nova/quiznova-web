@@ -151,7 +151,7 @@ import { QuizService } from '@shared/services/quiz.service';
     .state {
       display: inline-flex;
       padding: 0.35rem 0.75rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       font-size: 0.875rem;
       font-weight: 700;
     }

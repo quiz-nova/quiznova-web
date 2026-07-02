@@ -34,7 +34,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       gap: 0.5rem;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 

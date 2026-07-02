@@ -108,7 +108,7 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       min-height: 1.75rem;
       padding: 0.2rem 0.75rem;
       border: 1px solid var(--clr-gray-500);
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       color: var(--clr-gray-800);
       font-size: var(--fs-300);
       font-weight: 700;

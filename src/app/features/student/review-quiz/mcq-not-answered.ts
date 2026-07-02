@@ -46,7 +46,7 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
       gap: 0.6rem;
       padding: 0.9rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 
@@ -71,7 +71,7 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
     .review-question__type {
       font-size: 0.72rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-300);
@@ -81,7 +81,7 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
     .review-question__marks {
       font-size: 0.8rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-gray-800);
       color: var(--clr-white);
@@ -137,7 +137,7 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
     .review-choice__pill {
       font-size: 0.7rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.1rem 0.45rem;
       border: 1px solid var(--clr-emerald-200);
       color: var(--clr-green-500);

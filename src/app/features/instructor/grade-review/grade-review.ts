@@ -146,7 +146,7 @@ import { NoAnswer } from './no-answer';
       align-items: center;
       gap: 0.375rem;
       padding: 0.25rem 0.75rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       font-size: var(--fs-300);
       font-weight: 600;
       margin-bottom: 0.5rem;

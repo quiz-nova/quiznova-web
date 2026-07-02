@@ -120,6 +120,7 @@ type LoginFormGroup = FormGroup<{
           <button
             class="auth-submit"
             [loading]="isLogging()"
+            [disabled]="loginForm.invalid"
             appButton
             variant="green"
             type="submit"

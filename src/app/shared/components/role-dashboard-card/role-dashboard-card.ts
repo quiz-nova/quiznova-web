@@ -35,7 +35,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         padding: 1.75rem;
         background: var(--clr-white);
         border: 1px solid var(--clr-gray-200);
-        border-radius: var(--radius-lg, 1rem);
+        border-radius: var(--radius-lg, var(--radius-lg));
         box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
         transition:
           transform 0.3s var(--ease-spring),
@@ -95,7 +95,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         justify-content: center;
         width: 3rem;
         height: 3rem;
-        border-radius: var(--radius-md, 0.875rem);
+        border-radius: var(--radius-md, var(--radius-md));
         font-size: 1.35rem;
         transition: 
           transform 0.3s var(--ease-spring),

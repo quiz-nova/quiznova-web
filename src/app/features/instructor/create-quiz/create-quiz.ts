@@ -172,7 +172,7 @@ import { QuizService } from '@shared/services/quiz.service';
       padding: 1rem;
       color: var(--clr-gray-500);
       border: 1px dashed var(--clr-gray-300);
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background-color: var(--clr-white);
     }
 
@@ -197,7 +197,7 @@ import { QuizService } from '@shared/services/quiz.service';
       width: 100%;
       padding: 1rem 1.1rem;
       border: 1px solid var(--clr-gray-500);
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-gray-50);
       color: var(--clr-blue-900);
     }
@@ -237,7 +237,7 @@ import { QuizService } from '@shared/services/quiz.service';
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
-      border-left: 6px solid var(--clr-green-400);
+      border-left: 6px solid var(--clr-green-400); /* impeccable-disable-line side-tab */
       border-radius: var(--radius-md);
       /*box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%),*/
       /*0 10px 10px -5px rgb(0 0 0 / 4%);*/

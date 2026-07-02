@@ -105,7 +105,7 @@ type EssayFormGroup = FormGroup<{
     .answer-input {
       padding: 1rem 1.1rem;
       border: 1px solid var(--clr-gray-500);
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-gray-50);
       color: var(--clr-blue-900);
       width: 100%;

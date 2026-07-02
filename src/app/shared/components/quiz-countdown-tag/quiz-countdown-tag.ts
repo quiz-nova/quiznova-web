@@ -31,7 +31,7 @@ import {
       min-height: 1.85rem;
       padding: 0.25rem 0.7rem;
       border: 1px solid color-mix(in srgb, var(--clr-green-400) 30%, var(--clr-white));
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background-color: var(--clr-green-100);
       color: var(--clr-green-400);
       font-size: var(--fs-300);

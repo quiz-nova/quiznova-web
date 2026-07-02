@@ -37,7 +37,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       gap: 0.75rem;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 
@@ -62,7 +62,7 @@ import { QuizAttemptStore } from './quiz-attempt.store';
     .chip {
       padding: 0.35rem 0.65rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       font-size: 0.875rem;
       font-weight: 600;
       color: var(--clr-gray-600);

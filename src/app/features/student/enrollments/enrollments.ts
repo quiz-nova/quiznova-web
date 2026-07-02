@@ -96,7 +96,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       gap: 1.25rem;
       padding: 1.5rem;
       border: 1px solid var(--clr-gray-200);
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-white);
       box-shadow:
         0 4px 6px -1px rgb(0 0 0 / 0.1),
@@ -134,7 +134,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       justify-content: center;
       width: 3rem;
       height: 3rem;
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-green-100);
       color: var(--clr-green-400);
       font-size: 1.25rem;

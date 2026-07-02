@@ -32,7 +32,7 @@ import { Button } from '@shared/components/button/button';
       display: block;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 

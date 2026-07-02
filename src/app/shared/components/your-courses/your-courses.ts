@@ -96,7 +96,7 @@ interface SidebarCourse {
 
     .course-list::-webkit-scrollbar-thumb {
       background: var(--clr-gray-200);
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
     }
 
     .course-item {

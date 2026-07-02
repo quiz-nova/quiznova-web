@@ -20,7 +20,7 @@ test.describe('Authentication - Real Integration E2E', () => {
     await emailInput.fill('instructor1@quiznova.local');
     await passwordInput.fill('Instructor123!');
 
-    await roleBox.filter({ hasText: 'Instructor' }).click();
+    await roleBox.filter({ hasText: 'Instructor' }).locator('input').check({ force: true });
 
     await submitButton.click();
 
@@ -41,7 +41,7 @@ test.describe('Authentication - Real Integration E2E', () => {
   }) => {
     await emailInput.fill('student1@quiznova.local');
     await passwordInput.fill('Student123!');
-    await roleBox.filter({ hasText: 'Student' }).click();
+    await roleBox.filter({ hasText: 'Student' }).locator('input').check({ force: true });
     await submitButton.click();
 
     await expect(page).toHaveURL('/student/dashboard');
@@ -52,7 +52,7 @@ test.describe('Authentication - Real Integration E2E', () => {
   }) => {
     await emailInput.fill('admin@quiznova.local');
     await passwordInput.fill('Admin123!');
-    await roleBox.filter({ hasText: 'Admin' }).click();
+    await roleBox.filter({ hasText: 'Admin' }).locator('input').check({ force: true });
     await submitButton.click();
 
     await expect(page).toHaveURL('/admin/dashboard');
@@ -61,7 +61,7 @@ test.describe('Authentication - Real Integration E2E', () => {
   test('should show validation/incorrect login error on invalid credentials', async ({ page }) => {
     await emailInput.fill('instructor1@quiznova.local');
     await passwordInput.fill('WrongPassword!');
-    await roleBox.filter({ hasText: 'Instructor' }).click();
+    await roleBox.filter({ hasText: 'Instructor' }).locator('input').check({ force: true });
     await submitButton.click();
 
     const alert = page.locator('.login-failed');
@@ -72,7 +72,7 @@ test.describe('Authentication - Real Integration E2E', () => {
   test('should show error when logging in with a role mismatch', async ({ page }) => {
     await emailInput.fill('student1@quiznova.local');
     await passwordInput.fill('Student123!');
-    await roleBox.filter({ hasText: 'Admin' }).click();
+    await roleBox.filter({ hasText: 'Admin' }).locator('input').check({ force: true });
     await submitButton.click();
 
     const alert = page.locator('.login-failed');
@@ -119,7 +119,7 @@ test.describe('Authentication - Mocked Network E2E (Fast & Decoupled)', () => {
 
     await emailInput.fill('student-mock@quiznova.local');
     await passwordInput.fill('AnyPassword!');
-    await roleBox.filter({ hasText: 'Student' }).click();
+    await roleBox.filter({ hasText: 'Student' }).locator('input').check({ force: true });
     await submitButton.click();
 
     await expect(page).toHaveURL('/student/dashboard');
@@ -136,7 +136,7 @@ test.describe('Authentication - Mocked Network E2E (Fast & Decoupled)', () => {
 
     await emailInput.fill('student-mock@quiznova.local');
     await passwordInput.fill('AnyPassword!');
-    await roleBox.filter({ hasText: 'Student' }).click();
+    await roleBox.filter({ hasText: 'Student' }).locator('input').check({ force: true });
     await submitButton.click();
 
     const alert = page.locator('.login-failed');

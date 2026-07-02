@@ -108,7 +108,6 @@ export const featureCards: FeatureCardData[] = [
 
         .icon {
           transform: scale(1.15) rotate(5deg);
-          background: var(--clr-green-400);
           color: var(--clr-white);
         }
       }
@@ -132,5 +131,4 @@ export const featureCards: FeatureCardData[] = [
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeatureCard {
-}
+export class FeatureCard {}

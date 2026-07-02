@@ -34,7 +34,7 @@ test.describe('Quiz Creation E2E & Validations', () => {
     await page.goto('/auth/login');
     await page.locator('#login-email').fill('instructor1@quiznova.local');
     await page.locator('#login-password').fill('Instructor123!');
-    await page.locator('.role-box').filter({ hasText: 'Instructor' }).click();
+    await page.locator('.role-box').filter({ hasText: 'Instructor' }).locator('input').check({ force: true });
     await page.locator('button.auth-submit').click();
 
     await expect(page).toHaveURL('/instructor/dashboard');

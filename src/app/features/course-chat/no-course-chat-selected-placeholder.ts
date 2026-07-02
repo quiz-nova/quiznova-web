@@ -31,7 +31,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       text-align: center;
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-200);
-      border-radius: 24px;
+      border-radius: var(--radius-lg);
       padding: 3rem 2.5rem;
     }
 
@@ -42,7 +42,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       display: inline-block;
       padding: 1.25rem;
       background: var(--clr-green-50);
-      border-radius: 20px;
+      border-radius: var(--radius-md);
     }
 
     .placeholder-card h3 {

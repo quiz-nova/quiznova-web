@@ -52,7 +52,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
       margin-block: 1rem;
       padding: 0.5rem 1rem;
       border: 1px solid var(--clr-green-100);
-      border-radius: 9999px;
+      border-radius: 9999px; /* impeccable-disable-line design-system-radius */
       background-color: var(--clr-green-50);
       color: var(--clr-green-800);
       font-weight: 600;

@@ -103,7 +103,7 @@ import { shortId } from '@shared/utils/utilities';
       gap: 1rem;
       padding: 1.5rem;
       border: 1px solid var(--clr-gray-250);
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-white);
       box-shadow: 0 12px 30px rgb(15 23 42 / 8%);
     }
@@ -138,7 +138,7 @@ import { shortId } from '@shared/utils/utilities';
       justify-content: center;
       width: 2.75rem;
       height: 2.75rem;
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-green-50);
       color: var(--clr-green-600);
       font-size: 1.2rem;

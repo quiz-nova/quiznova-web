@@ -54,7 +54,7 @@ export interface GradingStat {
       justify-content: center;
       width: 3rem;
       height: 3rem;
-      border-radius: 0.875rem;
+      border-radius: var(--radius-md);
       font-size: 1.25rem;
       flex-shrink: 0;
     }

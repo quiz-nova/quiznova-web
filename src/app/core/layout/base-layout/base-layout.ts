@@ -100,7 +100,7 @@ import { map } from 'rxjs/operators';
       .base-layout__backdrop {
         position: fixed;
         inset: 4.25rem 0 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: color-mix(in srgb, var(--clr-black-900) 50%, transparent);
         z-index: 999;
       }
     }

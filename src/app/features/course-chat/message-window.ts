@@ -97,7 +97,7 @@ import { ReactionList } from './reaction-list';
 
     .messages-window::-webkit-scrollbar-thumb {
       background: var(--clr-gray-200);
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
     }
 
     .centered-state {
@@ -191,7 +191,7 @@ import { ReactionList } from './reaction-list';
     .message-bubble {
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-200);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       border-top-left-radius: 4px;
       padding: 0.75rem 1rem;
       color: var(--clr-blue-900);
@@ -201,7 +201,7 @@ import { ReactionList } from './reaction-list';
     .outgoing .message-bubble {
       background: var(--clr-green-50);
       border-color: var(--clr-green-200);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       border-top-right-radius: 4px;
     }
 
@@ -242,7 +242,8 @@ import { ReactionList } from './reaction-list';
 
     .replied-preview {
       background: var(--clr-white);
-      border-left: 3px solid var(--clr-green-400);
+      border: 1px solid var(--clr-green-300);
+      border-left: 3px solid var(--clr-green-400); /* impeccable-disable-line side-tab */
       padding: 0.35rem 0.75rem;
       border-radius: var(--radius-sm);
       margin-bottom: 0.25rem;

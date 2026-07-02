@@ -77,7 +77,7 @@ import { Button } from '@shared/components/button/button';
       max-width: 28rem;
       width: 90%;
       padding: 1.75rem;
-      border-radius: 1rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-white);
       box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
       animation: modal-enter 0.2s ease-out;
@@ -124,7 +124,7 @@ import { Button } from '@shared/components/button/button';
       gap: 0.5rem;
       padding: 0.75rem 1rem;
       border: 1px solid var(--clr-red-200);
-      border-radius: 0.5rem;
+      border-radius: var(--radius-sm);
       background-color: var(--clr-red-50);
       color: var(--clr-red-800);
       font-size: var(--fs-400);
@@ -145,7 +145,7 @@ import { Button } from '@shared/components/button/button';
       width: 100%;
       padding: 0.65rem 0.85rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.5rem;
+      border-radius: var(--radius-sm);
       font-size: var(--fs-400);
     }
 

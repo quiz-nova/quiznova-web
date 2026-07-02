@@ -53,7 +53,7 @@ import { ReviewQuizStore } from './review-quiz.store';
 
     .review-header__chip {
       border: 1px solid var(--clr-gray-300);
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.2rem 0.55rem;
       font-size: 0.75rem;
       color: var(--clr-gray-800);

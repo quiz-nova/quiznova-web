@@ -37,7 +37,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       justify-content: center;
       width: 4rem;
       height: 4rem;
-      border-radius: 1.25rem;
+      border-radius: var(--radius-md);
       background: var(--clr-green-100);
       color: var(--clr-green-400);
       font-size: 1.75rem;

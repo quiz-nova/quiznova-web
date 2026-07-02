@@ -208,9 +208,8 @@ export type QuizHeaderFormGroup = FormGroup<{
       gap: 1.5rem;
       padding: 1.5rem;
       border: 1px solid var(--clr-gray-200);
-      border-radius: 1.25rem;
+      border-radius: var(--radius-lg);
       background: var(--clr-white);
-      box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
       min-width: 0;
     }
 

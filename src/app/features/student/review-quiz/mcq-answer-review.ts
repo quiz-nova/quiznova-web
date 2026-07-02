@@ -61,12 +61,14 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
       gap: 0.6rem;
       padding: 0.9rem;
       border: 1px solid var(--clr-red-200);
-      border-radius: 0.75rem;
+      border-left: 4px solid var(--clr-red-500); /* impeccable-disable-line side-tab */
+      border-radius: var(--radius-md);
       background: var(--clr-red-50);
     }
 
     .review-question--correct {
       border-color: var(--clr-emerald-200);
+      border-left: 4px solid var(--clr-green-500); /* impeccable-disable-line side-tab */
       background: var(--clr-emerald-50);
     }
 
@@ -91,7 +93,7 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
 
     .review-question__type {
       font-size: 0.72rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-300);
@@ -101,7 +103,7 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
 
     .review-question__marks {
       font-size: 0.8rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
       background: var(--clr-red-600);
       color: var(--clr-white);
@@ -159,7 +161,7 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
 
     .review-choice__pill {
       font-size: 0.7rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       padding: 0.1rem 0.45rem;
       border: 1px solid var(--clr-red-200);
       color: var(--clr-red-600);

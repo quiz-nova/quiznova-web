@@ -191,7 +191,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       color: var(--clr-gray-500);
       background: var(--clr-gray-100);
       padding: 0.1rem 0.4rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
     }
 
     .score-input,
@@ -277,7 +277,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       align-items: center;
       gap: 0.375rem;
       padding: 0.3rem 0.75rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background: var(--clr-emerald-50);
       color: var(--clr-green-500);
       font-size: var(--fs-300);

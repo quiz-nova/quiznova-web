@@ -47,7 +47,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       align-items: center;
       gap: 1rem;
       padding: 1rem;
-      border-radius: 0.85rem;
+      border-radius: var(--radius-md);
       border: 1px solid var(--clr-blue-400);
       background: var(--clr-blue-400);
     }
@@ -57,7 +57,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       place-items: center;
       width: 4rem;
       height: 4rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background: var(--clr-blue-400);
       color: var(--clr-white);
       font-size: 1.5rem;
@@ -85,7 +85,7 @@ import {ReviewQuizStore} from './review-quiz.store';
     }
 
     .result-banner__badge {
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background: var(--clr-blue-000);
       color: var(--clr-white);
       font-size: 0.72rem;
@@ -105,7 +105,7 @@ import {ReviewQuizStore} from './review-quiz.store';
       margin-top: 0.35rem;
       width: 100%;
       height: 0.38rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background: var(--clr-gray-200);
       overflow: hidden;
     }

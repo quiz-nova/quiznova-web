@@ -69,7 +69,8 @@ import { CourseChatStore } from './course-chat.store';
       justify-content: space-between;
       align-items: center;
       background: var(--clr-green-50);
-      border-left: 4px solid var(--clr-green-400);
+      border: 1px solid var(--clr-green-300);
+      border-left: 4px solid var(--clr-green-400); /* impeccable-disable-line side-tab */
       border-radius: var(--radius-sm);
       padding: 0.5rem 1rem;
     }

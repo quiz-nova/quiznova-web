@@ -47,13 +47,13 @@ import { Button } from '@shared/components/button/button';
       width: 100%;
       margin: 4rem auto;
       text-align: center;
-      animation: fadeInUp 0.4s var(--ease-spring);
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .quiz-completed-card__icon {
       font-size: 3.5rem;
       color: var(--clr-green-400);
-      animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .quiz-completed-card__title {

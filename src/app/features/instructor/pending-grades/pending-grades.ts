@@ -256,7 +256,7 @@ import { PendingGradesStats } from './pending-grades-stats';
       align-items: center;
       gap: 0.375rem;
       padding: 0.3rem 0.75rem;
-      border-radius: 999px;
+      border-radius: var(--radius-sm);
       background: var(--clr-amber-100);
       color: var(--clr-amber-800);
       font-size: var(--fs-300);

@@ -54,7 +54,7 @@ export type McqAttemptForm = FormGroup<{
       gap: 0.75rem;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 

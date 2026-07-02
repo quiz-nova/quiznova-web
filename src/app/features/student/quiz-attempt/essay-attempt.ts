@@ -55,7 +55,7 @@ export type EssayAttemptForm = FormGroup<{
       gap: 0.75rem;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.75rem;
+      border-radius: var(--radius-md);
       background: var(--clr-white);
     }
 
@@ -73,7 +73,7 @@ export type EssayAttemptForm = FormGroup<{
       width: 100%;
       padding: 1rem;
       border: 1px solid var(--clr-gray-300);
-      border-radius: 0.5rem;
+      border-radius: var(--radius-sm);
       background: var(--clr-gray-50);
       resize: vertical;
       font-family: inherit;

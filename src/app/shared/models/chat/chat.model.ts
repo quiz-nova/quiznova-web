@@ -6,7 +6,7 @@ export enum ChatStatus {
   OpenForInstructor = 2,
 }
 
-export interface React {
+export interface Reaction {
   id: string;
   messageId: string;
   reactorId: string;
@@ -21,7 +21,7 @@ export interface Message {
   replyOnId: string | null;
   createdAt: string;
   content: { text: string };
-  reacts: React[];
+  reacts: Reaction[];
 }
 
 export interface CourseChatRoom {

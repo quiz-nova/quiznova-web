@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { map, Observable } from 'rxjs';
 
-import { CourseChatRoom, Message, React } from '@shared/models/chat/chat.model';
+import { CourseChatRoom, Message, Reaction } from '@shared/models/chat/chat.model';
 import { parseUserRole } from '@shared/utils/utilities';
 
 export type RawMessage = Omit<Message, 'sender'> & {
@@ -13,7 +13,7 @@ export type RawMessage = Omit<Message, 'sender'> & {
     name: string;
     role: string;
   };
-  reacts: React[];
+  reacts: Reaction[];
 };
 
 type RawCourseChatRoom = Omit<CourseChatRoom, 'messages'> & {

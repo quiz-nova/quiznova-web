@@ -5,7 +5,7 @@ import { AuthService } from '@Features/auth/auth.service';
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 
-import { Message, React } from '@shared/models/chat/chat.model';
+import { Message, Reaction } from '@shared/models/chat/chat.model';
 import { ChatService, RawMessage } from '@shared/services/chat.service';
 
 @Injectable({
@@ -18,8 +18,8 @@ export class ChatHubService {
   private hubConnection: HubConnection | null = null;
 
   readonly messageReceived$ = new Subject<Message>();
-  readonly reactionReceived$ = new Subject<React>();
-  readonly reactionRemoved$ = new Subject<React>();
+  readonly reactionReceived$ = new Subject<Reaction>();
+  readonly reactionRemoved$ = new Subject<Reaction>();
   readonly connectionState = signal<HubConnectionState>(HubConnectionState.Disconnected);
 
   async startConnection(roomId: string): Promise<void> {
@@ -39,11 +39,11 @@ export class ChatHubService {
       this.messageReceived$.next(this.chatService.mapMessage(message));
     });
 
-    this.hubConnection.on('ReceiveReaction', (reaction: React) => {
+    this.hubConnection.on('ReceiveReaction', (reaction: Reaction) => {
       this.reactionReceived$.next(reaction);
     });
 
-    this.hubConnection.on('ReceiveReactionRemoved', (reaction: React) => {
+    this.hubConnection.on('ReceiveReactionRemoved', (reaction: Reaction) => {
       this.reactionRemoved$.next(reaction);
     });
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 
-import { Message, React } from '@shared/models/chat/chat.model';
+import { Message, Reaction } from '@shared/models/chat/chat.model';
 
 import { CourseChatStore } from './course-chat.store';
 
@@ -69,7 +69,7 @@ export class ReactionList {
   readonly message = input.required<Message>();
 
   readonly groups = computed(() => {
-    const groups: Record<string, React[]> = {};
+    const groups: Record<string, Reaction[]> = {};
     this.message().reacts.forEach((r) => {
       if (!groups[r.emoji]) {
         groups[r.emoji] = [];

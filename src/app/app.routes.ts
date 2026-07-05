@@ -26,7 +26,6 @@ export const routes: Routes = [
   {
     path: 'admin',
     canMatch: [roleGuard(UserRole.admin)],
-    loadComponent: () => import('@Features/admin/admin').then((m) => m.Admin),
     loadChildren: () => import('./admin.routes').then((m) => m.adminRoutes),
   },
   {

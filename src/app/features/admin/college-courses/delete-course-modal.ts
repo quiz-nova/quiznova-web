@@ -94,7 +94,6 @@ export class DeleteCourseModal {
 
     this.isDialogOpen.set(true);
   }
-  // TODO Probably we didn't need the signals is submitting because we do optimistic ui updates but we can keep it like this right now
   protected onDelete(): void {
     this.isSubmitting.set(true);
     this.submitError.set(false);

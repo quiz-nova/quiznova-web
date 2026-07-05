@@ -20,7 +20,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                 <th>Course</th>
                 <th>Questions</th>
                 <th>Duration</th>
-                <th>Starts In</th>
                 <th>Starts On</th>
                 <th>Status</th>
               </tr>
@@ -32,7 +31,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                   <td>{{ quiz.courseName }}</td>
                   <td>{{ quiz.questionsCount }}</td>
                   <td>{{ durationInMinutes(quiz) }} min</td>
-                  <td>{{ startsInLabel(quiz.startsAtUtc) }}</td>
                   <td>{{ quiz.startsAtUtc | date: 'short' }}</td>
                   <td><span class="locked-tag">Locked</span></td>
                 </tr>
@@ -126,7 +124,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
 export class StudentScheduledQuizzes {
   readonly quizzes = input.required<StudentQuizApiDto[]>();
   readonly serverUtc = input.required<string>();
-  // TODO we should remove this and put it shared calss due it is duplicate
   protected durationInMinutes(quiz: StudentQuizApiDto): number {
     const startsAtMs = new Date(quiz.startsAtUtc).getTime();
     const endsAtMs = new Date(quiz.endsAtUtc).getTime();
@@ -135,23 +132,5 @@ export class StudentScheduledQuizzes {
       return 0;
     }
     return Math.max(0, Math.round((endsAtMs - startsAtMs) / 60000));
-  }
-
-  protected startsInLabel(startsAtUtc: string): string {
-    const serverMs = new Date(this.serverUtc()).getTime();
-    const startsAtMs = new Date(startsAtUtc).getTime();
-
-    if (!Number.isFinite(serverMs) || !Number.isFinite(startsAtMs)) {
-      return 'Unknown';
-    }
-
-    const diffSeconds = Math.max(0, Math.floor((startsAtMs - serverMs) / 1000));
-    const hours = Math.floor(diffSeconds / 3600);
-    const minutes = Math.floor((diffSeconds % 3600) / 60);
-    const seconds = diffSeconds % 60;
-
-    return `${hours.toString().padStart(2, '0')}:${minutes
-      .toString()
-      .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 }

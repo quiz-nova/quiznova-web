@@ -87,7 +87,10 @@ export const EditQuizStore = signalStore(
               );
             }),
             catchError((err) => {
-              patchState(store, setError('loadQuiz', getApiErrorMessage(err, 'Failed to load quiz.')));
+              patchState(
+                store,
+                setError('loadQuiz', getApiErrorMessage(err, 'Failed to load quiz.')),
+              );
               return EMPTY;
             }),
           );
@@ -107,12 +110,12 @@ export const EditQuizStore = signalStore(
           patchState(store, (state) => ({
             quiz: state.quiz
               ? {
-                ...state.quiz,
-                title: metadata.title,
-                courseId: metadata.courseId,
-                startsAtUtc: metadata.startsAtUtc.toISOString(),
-                endsAtUtc: metadata.endsAtUtc.toISOString(),
-              }
+                  ...state.quiz,
+                  title: metadata.title,
+                  courseId: metadata.courseId,
+                  startsAtUtc: metadata.startsAtUtc.toISOString(),
+                  endsAtUtc: metadata.endsAtUtc.toISOString(),
+                }
               : null,
           }));
 
@@ -137,10 +140,10 @@ export const EditQuizStore = signalStore(
               patchState(store, (state) => ({
                 quiz: state.quiz
                   ? {
-                    ...state.quiz,
-                    courseId: newCourseId,
-                    questions: [],
-                  }
+                      ...state.quiz,
+                      courseId: newCourseId,
+                      questions: [],
+                    }
                   : null,
                 activeQuestionId: null,
                 remainingMarks: null,
@@ -175,9 +178,9 @@ export const EditQuizStore = signalStore(
               patchState(store, (state) => ({
                 quiz: state.quiz
                   ? {
-                    ...state.quiz,
-                    questions: [...state.quiz.questions, savedQuestion],
-                  }
+                      ...state.quiz,
+                      questions: [...state.quiz.questions, savedQuestion],
+                    }
                   : null,
                 activeQuestionId: savedQuestion.id,
               }));
@@ -195,7 +198,6 @@ export const EditQuizStore = signalStore(
           );
         }),
       ),
-      // TODO we want to think can we combine it with update question text or not
       updateQuestion: rxMethod<Question>(
         concatMap((updatedQuestion) => {
           const quizId = store.quizId();
@@ -220,11 +222,11 @@ export const EditQuizStore = signalStore(
           patchState(store, (state) => ({
             quiz: state.quiz
               ? {
-                ...state.quiz,
-                questions: state.quiz.questions.map((q) =>
-                  q.id === updatedQuestion.id ? updatedQuestion : q,
-                ),
-              }
+                  ...state.quiz,
+                  questions: state.quiz.questions.map((q) =>
+                    q.id === updatedQuestion.id ? updatedQuestion : q,
+                  ),
+                }
               : null,
             remainingMarks: state.remainingMarks !== null ? state.remainingMarks - marksDiff : null,
           }));
@@ -237,21 +239,6 @@ export const EditQuizStore = signalStore(
           );
         }),
       ),
-
-      updateQuestionText(questionId: string, questionText: string): void {
-        // TODO we must call the backend to update the state there
-        patchState(store, (state) => ({
-          quiz: state.quiz
-            ? {
-              ...state.quiz,
-              questions: state.quiz.questions.map((question) =>
-                question.id === questionId ? { ...question, questionText } : question,
-              ),
-            }
-            : null,
-        }));
-      },
-
       // concat map here because we do optimistic updates so we take all his deletes and one after another if we used exhaustMap he will feel the screen is frozen
       removeQuestion: rxMethod<string>(
         concatMap((questionId) => {
@@ -291,11 +278,18 @@ export const EditQuizStore = signalStore(
                 if (!state.quiz || !removedQuestion) return {};
                 return {
                   quiz: { ...state.quiz, questions: [...state.quiz.questions, removedQuestion] },
-                  activeQuestionId: state.activeQuestionId === null ? (removedQuestion.id ?? null) : state.activeQuestionId,
-                  remainingMarks: state.remainingMarks !== null ? state.remainingMarks - removedMarks : null,
+                  activeQuestionId:
+                    state.activeQuestionId === null
+                      ? (removedQuestion.id ?? null)
+                      : state.activeQuestionId,
+                  remainingMarks:
+                    state.remainingMarks !== null ? state.remainingMarks - removedMarks : null,
                 };
               });
-              patchState(store, setError('removeQuestion', getApiErrorMessage(err, "Failed to remove question.")));
+              patchState(
+                store,
+                setError('removeQuestion', getApiErrorMessage(err, 'Failed to remove question.')),
+              );
               return EMPTY;
             }),
           );

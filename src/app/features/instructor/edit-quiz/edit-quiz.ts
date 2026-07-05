@@ -1,5 +1,5 @@
 import { NgComponentOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit, viewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { AddQuestion } from '@Features/instructor/shared/add-question';
@@ -11,7 +11,6 @@ import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form
 
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
-import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
@@ -97,7 +96,9 @@ import { EditQuizStore } from './edit-quiz.store';
                     </app-question-header>
 
                     <ng-container
-                      [ngComponentOutlet]="mapperService.getSuitableQuestionFormComponent(question.type)"
+                      [ngComponentOutlet]="
+                        mapperService.getSuitableQuestionFormComponent(question.type)
+                      "
                       [ngComponentOutletInputs]="{ initialData: question }"
                     ></ng-container>
                   </div>
@@ -235,37 +236,6 @@ export class EditQuiz implements OnInit {
   protected readonly store = inject(EditQuizStore);
   private readonly route = inject(ActivatedRoute);
   protected readonly mapperService = inject(QuestionComponentMapperService);
-
-  private readonly formOutlets = viewChildren(NgComponentOutlet);
-
-  constructor() {
-    effect((onCleanup) => {
-      const activeOutlets = this.formOutlets();
-      const activeSubscriptions: { unsubscribe(): void }[] = [];
-
-      activeOutlets.forEach((outlet) => {
-        const instance = outlet.componentInstance as QuestionFormContract | null;
-        if (instance) {
-          if (instance.blurEvent) {
-            activeSubscriptions.push(
-              instance.blurEvent.subscribe((q) => this.store.updateQuestion(q))
-            );
-          }
-          if (instance.questionTextBlur) {
-            activeSubscriptions.push(
-              instance.questionTextBlur.subscribe((event) =>
-                this.store.updateQuestionText(event.questionId, event.text)
-              )
-            );
-          }
-        }
-      });
-
-      onCleanup(() => {
-        activeSubscriptions.forEach((sub) => sub.unsubscribe());
-      });
-    });
-  }
 
   ngOnInit() {
     // Assuming the route is configured like: 'edit/:id'

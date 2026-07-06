@@ -1,11 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const recordVideo = process.env['VIDEO'] === 'on';
-
-/**
- * See https://playwright.dev/docs/test-configuration for more details.
- */
 export default defineConfig({
   testDir: './e2e',
   timeout: 30 * 1000,

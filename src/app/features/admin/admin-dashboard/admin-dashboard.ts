@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
+import { AdminDashboardCharts } from '@Features/admin/admin-dashboard/admin-dashboard-charts';
 import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { CourseEnrollmentCount } from '@shared/models/enrollment/course-enrollment-count.model';
 import { CollegeService } from '@shared/services/college.service';
+import { EnrollmentService } from '@shared/services/enrollment.service';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard],
+  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard, AdminDashboardCharts],
   template: `
     <section class="page">
       <header class="page-header">
@@ -40,6 +43,11 @@ import { CollegeService } from '@shared/services/college.service';
             />
           }
         </section>
+
+        <app-admin-dashboard-charts
+          [summary]="summaryResource.value() ?? null"
+          [enrollmentCounts]="enrollmentResource.value()"
+        />
       }
     </section>
   `,
@@ -68,11 +76,17 @@ import { CollegeService } from '@shared/services/college.service';
 export class AdminDashboard {
   private readonly authService = inject(AuthService);
   private readonly collegeService = inject(CollegeService);
+  private readonly enrollmentService = inject(EnrollmentService);
 
   protected readonly welcomeName = computed(() => this.authService.currentUser()?.personalInformation?.name || 'Admin');
 
   protected readonly summaryResource = rxResource({
     stream: () => this.collegeService.getCollegeSummary(),
+  });
+
+  protected readonly enrollmentResource = rxResource({
+    stream: () => this.enrollmentService.getAllCoursesEnrollmentCounts(),
+    defaultValue: [] as CourseEnrollmentCount[],
   });
 
   protected readonly cards = computed(() => {

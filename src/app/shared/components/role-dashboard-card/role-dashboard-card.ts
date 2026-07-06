@@ -137,6 +137,18 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         --theme-text: var(--clr-green-400);
         --theme-border: var(--clr-green-400);
       }
+      /* Theme: Red */
+      .theme-red {
+        --theme-bg: var(--clr-red-50);
+        --theme-text: var(--clr-red-600);
+        --theme-border: var(--clr-red-200);
+      }
+      /* Theme: Gray */
+      .theme-gray {
+        --theme-bg: var(--clr-gray-100);
+        --theme-text: var(--clr-gray-600);
+        --theme-border: var(--clr-gray-300);
+      }
 
       /* Applying Theme Colors */
       .dashboard-card {
@@ -156,5 +168,5 @@ export class RoleDashboardCard {
   readonly value = input.required<string | number>();
   readonly icon = input.required<string>();
   readonly caption = input<string>();
-  readonly theme = input<'green' | 'amber' | 'violet' | 'cyan' | 'primary'>('green');
+  readonly theme = input<'green' | 'amber' | 'violet' | 'cyan' | 'primary' | 'red' | 'gray'>('green');
 }

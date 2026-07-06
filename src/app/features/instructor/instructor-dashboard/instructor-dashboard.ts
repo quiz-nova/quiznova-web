@@ -8,13 +8,23 @@ import { of, forkJoin } from 'rxjs';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
+import { CoursePerformance } from '@shared/models/course/course-performance.model';
+import { Course } from '@shared/models/course/course.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { QuizService } from '@shared/services/quiz.service';
+
+import { InstructorDashboardCharts } from './instructor-dashboard-charts';
 
 
 @Component({
   selector: 'app-instructor-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader, OperationFailed, RoleDashboardCard],
+  imports: [
+    ProgressSpinner,
+    RoleDashboardHeader,
+    OperationFailed,
+    RoleDashboardCard,
+    InstructorDashboardCharts,
+  ],
   template: `
     <section class="dashboard">
       <header class="dashboard-header">
@@ -43,6 +53,11 @@ import { QuizService } from '@shared/services/quiz.service';
             />
           }
         </section>
+
+        <app-instructor-dashboard-charts
+          [coursesList]="summaryResource.value().coursesList"
+          [performanceList]="summaryResource.value().performanceList"
+        />
       }
     </section>
   `,
@@ -97,27 +112,25 @@ export class InstructorDashboard {
 
       if (!instructorId) {
         return of({
-          courses: {
-            coursesCount: 0,
-          },
-          quizzes: {
-            quizzesCount: 0,
-          },
+          courses: { coursesCount: 0 },
+          quizzes: { quizzesCount: 0 },
+          coursesList: [] as Course[],
+          performanceList: [] as CoursePerformance[],
         });
       }
 
       return forkJoin({
         courses: this.coursesService.getInstructorCoursesCount(instructorId),
         quizzes: this.quizService.getInstructorQuizzesCount(instructorId),
+        coursesList: this.coursesService.getInstructorCourses(instructorId),
+        performanceList: this.coursesService.getInstructorCoursesPerformance(instructorId),
       });
     },
     defaultValue: {
-      courses: {
-        coursesCount: 0,
-      },
-      quizzes: {
-        quizzesCount: 0,
-      },
+      courses: { coursesCount: 0 },
+      quizzes: { quizzesCount: 0 },
+      coursesList: [] as Course[],
+      performanceList: [] as CoursePerformance[],
     },
   });
 
@@ -135,8 +148,9 @@ export class InstructorDashboard {
         title: 'Total Quizzes',
         value: summary.quizzes.quizzesCount,
         icon: 'fa-regular fa-clipboard',
-        theme: 'violet' as const,
+        theme: 'gray' as const,
       },
     ];
   });
 }
+

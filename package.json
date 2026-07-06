@@ -26,6 +26,7 @@
     "@microsoft/signalr": "^8.0.7",
     "@ngrx/signals": "^21.1.0",
     "@primeuix/themes": "^2.0.3",
+    "chart.js": "^4.4.8",
     "emoji-picker-element": "^1.29.1",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.5",

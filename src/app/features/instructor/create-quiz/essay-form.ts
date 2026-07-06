@@ -7,7 +7,6 @@ import {
   output,
   OnDestroy,
   OnInit,
-  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -155,12 +154,6 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
     ],
   });
 
-  constructor() {
-    effect(() => {
-      this.populateForm(this.essay());
-    });
-  }
-
   protected get questionTextControl() {
     return this.essayForm.controls.questionText;
   }
@@ -179,16 +172,6 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.formDestroyed.emit(this.essayForm);
-  }
-
-  private populateForm(essay: Essay) {
-    this.essayForm.patchValue(
-      {
-        questionText: essay.questionText,
-        answerReference: essay.answerReference,
-      },
-      { emitEvent: false },
-    );
   }
 
   protected onTitleBlur(text: string) {

@@ -2,7 +2,6 @@ import { computed, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AuthService } from '@Features/auth/auth.service';
-import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
 import {
   patchState,
   signalStore,
@@ -17,6 +16,8 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
+
+import { CreateQuiz } from './create-quiz.model';
 
 const createInitialQuiz = (): CreateQuiz => ({
   title: '',
@@ -41,9 +42,7 @@ const initialState: CreateQuizState = {
   remainingMarks: null,
 };
 
-
 export const CreateQuizStore = signalStore(
-  { providedIn: 'root' },
   withState<CreateQuizState>(initialState),
   withRequestStatus(),
   withComputed((store) => ({
@@ -74,8 +73,34 @@ export const CreateQuizStore = signalStore(
       const starts = new Date(quiz.startsAtUtc).getTime();
       const ends = new Date(quiz.endsAtUtc).getTime();
       return (
-        ends >= starts + 10 * 60 * 1000 && forms.every((f) => f.valid) && quiz.courseId !== ''
+        quiz.questions.length > 0 &&
+        ends >= starts + 10 * 60 * 1000 &&
+        forms.every((f) => f.valid) &&
+        quiz.courseId !== ''
       );
+    }),
+    publishDisabledReason: computed(() => {
+      const quiz = store.quiz();
+      const forms = store.registeredForms();
+      const starts = new Date(quiz.startsAtUtc).getTime();
+      const ends = new Date(quiz.endsAtUtc).getTime();
+
+      if (quiz.courseId === '') {
+        return 'Select a course first';
+      }
+      if (quiz.questions.length === 0) {
+        return 'Add at least 1 question';
+      }
+      if (starts >= ends) {
+        return 'Start time must be before end time';
+      }
+      if (ends < starts + 10 * 60 * 1000) {
+        return 'Duration must be at least 10 minutes';
+      }
+      if (!forms.every((f) => f.valid)) {
+        return 'Complete all required form fields';
+      }
+      return '';
     }),
   })),
   withMethods((store, coursesService = inject(CoursesService)) => ({

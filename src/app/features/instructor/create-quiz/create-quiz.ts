@@ -1,16 +1,25 @@
 import { NgComponentOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, inject, signal, Signal, viewChildren } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  signal,
+  Signal,
+  viewChildren,
+} from '@angular/core';
 
+import { AddQuestion } from '@Features/instructor/create-quiz/add-question';
 import { CreateQuiz as CreateQuizModel } from '@Features/instructor/create-quiz/create-quiz.model';
 import { CreateQuizStore } from '@Features/instructor/create-quiz/create-quiz.store';
-import { AddQuestion } from '@Features/instructor/shared/add-question';
-import { NoQuestions } from '@Features/instructor/shared/no-questions';
-import { QuestionHeader } from '@Features/instructor/shared/question-header';
-import { QuestionsOutline } from '@Features/instructor/shared/questions-outline';
-import { QuizHeader } from '@Features/instructor/shared/quiz-header';
-import { QuizMetadataForm } from '@Features/instructor/shared/quiz-metadata-form';
+import { NoQuestions } from '@Features/instructor/create-quiz/no-questions';
+import { QuestionHeader } from '@Features/instructor/create-quiz/question-header';
+import { QuestionsOutline } from '@Features/instructor/create-quiz/questions-outline';
+import { QuestionsOutlinePlaceholder } from '@Features/instructor/create-quiz/questions-outline-placeholder';
+import { QuizHeader } from '@Features/instructor/create-quiz/quiz-header';
+import { QuizMetadataForm } from '@Features/instructor/create-quiz/quiz-metadata-form';
+import { QuizPublishPanel } from '@Features/instructor/create-quiz/quiz-publish-panel';
 
-import { Button } from '@shared/components/button/button';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
@@ -27,24 +36,20 @@ import { QuizService } from '@shared/services/quiz.service';
     QuizMetadataForm,
     ObserveVisibilityDirective,
     QuestionsOutline,
+    QuestionsOutlinePlaceholder,
+    QuizPublishPanel,
     NgComponentOutlet,
     RoleDashboardHeader,
-    Button,
   ],
   template: `
     <section class="create-quiz">
       <div class="outline">
         @if (numberOfQuestions() > 0) {
           <app-questions-outline
-            [questions]="quiz().questions"
-            [activeQuestionId]="createQuizStore.activeQuestionId()"
-            [remainingMarks]="createQuizStore.effectiveRemainingMarks()"
             (questionSelect)="createQuizStore.setCurrentQuestionId($event)"
           ></app-questions-outline>
         } @else {
-          <div class="empty-outline-placeholder">
-            <p class="placeholder-text">Your quiz outline will appear here as you add questions.</p>
-          </div>
+          <app-questions-outline-placeholder />
         }
       </div>
       <main class="main">
@@ -53,15 +58,7 @@ import { QuizService } from '@shared/services/quiz.service';
             title="Create Quiz"
             description="Build your quiz by adding questions below"
           />
-          <button
-            appButton
-            variant="green"
-            [disabled]="!createQuizStore.isEntireQuizValid()"
-            (click)="onPublishQuiz()"
-            type="button"
-          >
-            Publish Quiz
-          </button>
+          <app-quiz-publish-panel (publish)="onPublishQuiz()" />
         </header>
         <app-quiz-metadata-form
           (formReady)="createQuizStore.registerForm($event)"
@@ -69,11 +66,7 @@ import { QuizService } from '@shared/services/quiz.service';
           (valueChange)="createQuizStore.setHeaderMetadata($event)"
           (courseIdChanged)="onCourseIdChanged($event)"
         ></app-quiz-metadata-form>
-        <app-quiz-header
-          [numberOfQuestions]="numberOfQuestions()"
-          [totalMarks]="createQuizStore.totalMarks()"
-          [remainingMarks]="createQuizStore.effectiveRemainingMarks()"
-        ></app-quiz-header>
+        <app-quiz-header />
         <div class="questions-workspace">
           <div class="questions-content">
             <div class="questions-list">
@@ -92,7 +85,9 @@ import { QuizService } from '@shared/services/quiz.service';
                     [question]="question"
                     [maxMarks]="getMaxMarksForQuestion(question.marks)"
                     (deleteQuestion)="createQuizStore.removeQuestion($event)"
-                    (marksChange)="createQuizStore.updateQuestionMarks($event.questionId, $event.marks)"
+                    (marksChange)="
+                      createQuizStore.updateQuestionMarks($event.questionId, $event.marks)
+                    "
                   >
                     <ng-container
                       [ngComponentOutlet]="mapperService.getSuitableQuestionTag(question.type)"
@@ -100,7 +95,9 @@ import { QuizService } from '@shared/services/quiz.service';
                   </app-question-header>
 
                   <ng-container
-                    [ngComponentOutlet]="mapperService.getSuitableQuestionFormComponent(question.type)"
+                    [ngComponentOutlet]="
+                      mapperService.getSuitableQuestionFormComponent(question.type)
+                    "
                     [ngComponentOutletInputs]="{ initialData: question }"
                   ></ng-container>
                 </div>
@@ -113,9 +110,6 @@ import { QuizService } from '@shared/services/quiz.service';
               appObserveVisibility
             >
               <app-add-question
-                [disabled]="!createQuizStore.canAddMoreQuestions()"
-                [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
-                [nextDisplayOrder]="numberOfQuestions()"
                 (questionAdded)="createQuizStore.addQuestion($event)"
               ></app-add-question>
             </div>
@@ -123,9 +117,6 @@ import { QuizService } from '@shared/services/quiz.service';
               <div class="add-question-sticky-container">
                 <app-add-question
                   class="pill-style"
-                  [disabled]="!createQuizStore.canAddMoreQuestions()"
-                  [remainingMarks]="createQuizStore.effectiveRemainingMarks() ?? 0"
-                  [nextDisplayOrder]="numberOfQuestions()"
                   (questionAdded)="createQuizStore.addQuestion($event)"
                   animate.leave="float-add-question-button-leave"
                   animate.enter="float-add-question-button-enter"
@@ -162,18 +153,6 @@ import { QuizService } from '@shared/services/quiz.service';
     .main {
       display: grid;
       gap: 1.5rem;
-    }
-
-    .empty-outline-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 1rem;
-      color: var(--clr-gray-500);
-      border: 1px dashed var(--clr-gray-300);
-      border-radius: var(--radius-lg);
-      background-color: var(--clr-white);
     }
 
     .header {
@@ -237,10 +216,8 @@ import { QuizService } from '@shared/services/quiz.service';
     .question {
       padding: 1rem;
       border: 1px solid var(--clr-gray-500);
-      border-left: 6px solid var(--clr-green-400); /* impeccable-disable-line side-tab */
+      border-left: 6px solid var(--clr-green-400);
       border-radius: var(--radius-md);
-      /*box-shadow: 0 20px 25px -5px rgb(0 0 0 / 10%),*/
-      /*0 10px 10px -5px rgb(0 0 0 / 4%);*/
     }
 
     .float-add-question-button-enter {
@@ -299,6 +276,7 @@ import { QuizService } from '@shared/services/quiz.service';
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [CreateQuizStore],
 })
 export class CreateQuiz {
   protected readonly quizService = inject(QuizService);
@@ -322,36 +300,36 @@ export class CreateQuiz {
         if (instance) {
           if (instance.formReady) {
             activeSubscriptions.push(
-              instance.formReady.subscribe((form) => this.createQuizStore.registerForm(form))
+              instance.formReady.subscribe((form) => this.createQuizStore.registerForm(form)),
             );
           }
           if (instance.formDestroyed) {
             activeSubscriptions.push(
-              instance.formDestroyed.subscribe((form) => this.createQuizStore.unregisterForm(form))
+              instance.formDestroyed.subscribe((form) => this.createQuizStore.unregisterForm(form)),
             );
           }
           if (instance.valueChange) {
             activeSubscriptions.push(
-              instance.valueChange.subscribe((q) => this.createQuizStore.updateQuestion(q))
+              instance.valueChange.subscribe((q) => this.createQuizStore.updateQuestion(q)),
             );
           }
           if (instance.blurEvent) {
             activeSubscriptions.push(
-              instance.blurEvent.subscribe((q) => this.createQuizStore.updateQuestion(q))
+              instance.blurEvent.subscribe((q) => this.createQuizStore.updateQuestion(q)),
             );
           }
           if (instance.questionTextBlur) {
             activeSubscriptions.push(
               instance.questionTextBlur.subscribe((event) =>
-                this.createQuizStore.updateQuestionText(event.questionId, event.text)
-              )
+                this.createQuizStore.updateQuestionText(event.questionId, event.text),
+              ),
             );
           }
           if (instance.deleteChoice) {
             activeSubscriptions.push(
               instance.deleteChoice.subscribe((event) =>
-                this.createQuizStore.deleteChoiceFromMcq(event.questionId, event.choiceId)
-              )
+                this.createQuizStore.deleteChoiceFromMcq(event.questionId, event.choiceId),
+              ),
             );
           }
         }

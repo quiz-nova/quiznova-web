@@ -1,9 +1,9 @@
+import { EssayForm } from '@Features/instructor/create-quiz/essay-form';
+import { McqForm } from '@Features/instructor/create-quiz/mcq-form';
+import { TfForm } from '@Features/instructor/create-quiz/tf-form';
 import { EssayAnswerGrading } from '@Features/instructor/grade-review/essay-answer-grading';
 import { McqAnswerReview } from '@Features/instructor/grade-review/mcq-answer-review';
 import { TfAnswerReview } from '@Features/instructor/grade-review/tf-answer-review';
-import { EssayForm } from '@Features/instructor/shared/essay-form';
-import { McqForm } from '@Features/instructor/shared/mcq-form';
-import { TfForm } from '@Features/instructor/shared/tf-form';
 import { EssayAttempt } from '@Features/student/quiz-attempt/essay-attempt';
 import { McqAttempt } from '@Features/student/quiz-attempt/mcq-attempt';
 import { TfAttempt } from '@Features/student/quiz-attempt/tf-attempt';

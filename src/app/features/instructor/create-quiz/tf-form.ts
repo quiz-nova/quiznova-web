@@ -7,7 +7,6 @@ import {
   output,
   OnDestroy,
   OnInit,
-  effect
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -126,16 +125,6 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
     ],
     answer: [null as boolean | null, [Validators.required]],
   });
-
-  constructor() {
-    effect(() => {
-      const data = this.tf();
-      this.tfForm.patchValue({
-        text: data.questionText,
-        answer: data.correctChoice
-      }, { emitEvent: false });
-    });
-  }
 
   protected get questionTextControl() {
     return this.tfForm.controls.text;

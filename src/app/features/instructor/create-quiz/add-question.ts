@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -6,12 +6,14 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
-import { mapQuestionTypeToQuestion } from '@Features/instructor/shared/question-type.mapper';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 
 import { Button } from '@shared/components/button/button';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
+
+import { CreateQuizStore } from './create-quiz.store';
+import { mapQuestionTypeToQuestion } from './question-type.mapper';
 
 type AddQuestionFormGroup = FormGroup<{
   questionType: FormControl<QuestionType>;
@@ -34,7 +36,7 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button appButton variant="green" [disabled]="disabled()" (click)="onAddQuestion()" type="button">
+      <button appButton variant="green" [disabled]="!store.canAddMoreQuestions()" (click)="onAddQuestion()" type="button">
         +Add Question
       </button>
     </div>
@@ -91,10 +93,8 @@ type AddQuestionFormGroup = FormGroup<{
 })
 export class AddQuestion {
   private readonly fb = inject(NonNullableFormBuilder);
+  protected readonly store = inject(CreateQuizStore);
 
-  readonly disabled = input<boolean>(false);
-  readonly remainingMarks = input.required<number>();
-  readonly nextDisplayOrder = input.required<number>();
   readonly questionAdded = output<Question>();
 
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
@@ -113,11 +113,11 @@ export class AddQuestion {
 
   onAddQuestion(): void {
     const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
-      remainingMarks: this.remainingMarks(),
-      displayOrder: this.nextDisplayOrder(),
+      remainingMarks: this.store.effectiveRemainingMarks() ?? 0,
+      displayOrder: this.store.numberOfQuestions(),
     });
     if (question) {
       this.questionAdded.emit(question);
-    }
+  }
   }
 }

@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
+
+import { CreateQuizStore } from './create-quiz.store';
+
 
 @Component({
   selector: 'app-questions-outline',
@@ -234,10 +237,11 @@ import { Question, QuestionType } from '@shared/models/quiz/question.model';
   `,
 })
 export class QuestionsOutline {
-  readonly questions = input.required<Question[]>();
-  readonly activeQuestionId = input.required<string | null>();
-  readonly remainingMarks = input<number | null>(null);
+  private readonly store = inject(CreateQuizStore);
 
+  protected readonly questions = this.store.questions;
+  protected readonly activeQuestionId = this.store.activeQuestionId;
+  protected readonly remainingMarks = this.store.effectiveRemainingMarks;
   readonly questionSelect = output<string>();
 
   protected onQuestionSelect(questionId: string): void {

@@ -38,7 +38,6 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

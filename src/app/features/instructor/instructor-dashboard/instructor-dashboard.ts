@@ -64,7 +64,6 @@ import { InstructorDashboardCharts } from './instructor-dashboard-charts';
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

@@ -37,7 +37,6 @@ import { chartColor } from '@shared/utils/chart-colors';
   styles: `
     :host {
       display: block;
-      width: 100%;
     }
 
     .charts-grid {

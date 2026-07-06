@@ -71,7 +71,6 @@ import {
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

@@ -66,7 +66,6 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

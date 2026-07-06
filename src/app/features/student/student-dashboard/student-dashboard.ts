@@ -58,7 +58,6 @@ import { QuizService } from '@shared/services/quiz.service';
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

@@ -11,7 +11,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styles: `
     :host {
       display: block;
-      width: 100%;
       height: 300px;
     }
 

@@ -29,7 +29,6 @@ import { User } from '@shared/models/users/user.model';
     `
       :host {
         display: block;
-        width: 100%;
       }
 
       .side-bar {

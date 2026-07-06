@@ -28,7 +28,6 @@ import { Button } from '@shared/components/button/button';
   styles: `
     :host {
       display: block;
-      width: 100%;
     }
 
     .quiz-completed-card {

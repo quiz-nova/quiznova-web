@@ -13,8 +13,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     `
       :host {
         display: block;
-        width: 100%;
-      }
+        }
 
       .status-container {
         display: flex;

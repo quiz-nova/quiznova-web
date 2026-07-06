@@ -139,7 +139,6 @@ import { PendingGradesStats } from './pending-grades-stats';
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
 

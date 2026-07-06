@@ -28,7 +28,6 @@ export interface GradingStat {
   styles: `
     :host {
       display: block;
-      width: 100%;
     }
 
     .stats-row {

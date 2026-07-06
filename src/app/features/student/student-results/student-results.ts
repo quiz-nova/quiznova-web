@@ -19,7 +19,6 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
   styles: `
     :host {
       display: block;
-      width: 100%;
       background-color: var(--clr-gray-50);
     }
     .page {

@@ -104,7 +104,6 @@ import { QuizFinishedMessage } from './quiz-finished-message';
     :host {
       display: block;
       padding: 1rem;
-      width: 100%;
     }
 
     .attempt-layout {

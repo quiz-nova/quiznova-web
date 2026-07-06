@@ -7,6 +7,7 @@ import { UpdateCourseInstructor } from '@Features/admin/models/update-course-ins
 import { Observable, of } from 'rxjs';
 
 import { CourseCount } from '@shared/models/course/course-count.model';
+import { CoursePerformance } from '@shared/models/course/course-performance.model';
 import { Course } from '@shared/models/course/course.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
 import { PaginatedQuery } from '@shared/models/pagination/paginated-query.model';
@@ -65,6 +66,16 @@ export class CoursesService {
 
     return this.http.get<CourseCount>(
       `${this.appSettings.apiBaseUrl}/instructor/${instructorId}/courses/count`,
+    );
+  }
+
+  getInstructorCoursesPerformance(instructorId: string): Observable<CoursePerformance[]> {
+    if (!instructorId || instructorId === 'undefined' || instructorId === 'null') {
+      return of([]);
+    }
+
+    return this.http.get<CoursePerformance[]>(
+      `${this.appSettings.apiBaseUrl}/instructors/${instructorId}/courses/performance`,
     );
   }
 }

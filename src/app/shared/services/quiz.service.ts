@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
-import { type QuizMetadataValue } from '@Features/instructor/shared/quiz-metadata-form';
+import { type QuizMetadataValue } from '@Features/instructor/create-quiz/quiz-metadata-form';
 import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 import { Observable } from 'rxjs';
 

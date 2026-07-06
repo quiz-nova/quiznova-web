@@ -4,6 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { Observable, of } from 'rxjs';
 
+import { CourseEnrollmentCount } from '@shared/models/enrollment/course-enrollment-count.model';
 import { EnrollmentCount } from '@shared/models/enrollment/enrollment-count.model';
 import { Enrollment } from '@shared/models/enrollment/enrollment.model';
 
@@ -27,6 +28,12 @@ export class EnrollmentService {
 
     return this.http.get<EnrollmentCount>(
       `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments/count`
+    );
+  }
+
+  getAllCoursesEnrollmentCounts(): Observable<CourseEnrollmentCount[]> {
+    return this.http.get<CourseEnrollmentCount[]>(
+      `${this.appSettings.apiBaseUrl}/courses/enrollments/count`
     );
   }
 

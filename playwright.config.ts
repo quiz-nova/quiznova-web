@@ -17,11 +17,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     deviceScaleFactor: 2,
     viewport: { width: 1920, height: 1080 },
-    video: (process.env['VIDEO'] || (process.env['CI'] ? 'on' : 'off')) as
-      | 'off'
-      | 'on'
-      | 'retain-on-failure'
-      | 'on-first-retry',
+    video: (process.env['VIDEO'] === 'on' || process.env['CI'])
+      ? { mode: 'on', size: { width: 1920, height: 1080 } }
+      : 'off',
   },
 
   projects: [
@@ -33,7 +31,8 @@ export default defineConfig({
   ...(!process.env['CI']
     ? {
         webServer: {
-          command: 'docker compose --project-directory ../../ up --build -d db api client',
+          command:
+            'bash -c "trap \"docker compose --project-directory ../../ down -v\" EXIT; docker compose --project-directory ../../ up --build --abort-on-container-exit db api client"',
           url: 'http://localhost:4200',
           reuseExistingServer: true,
           timeout: 120 * 1000,

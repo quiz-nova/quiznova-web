@@ -7,6 +7,7 @@ import {
   output,
   OnDestroy,
   OnInit,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -25,7 +26,7 @@ import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
@@ -206,6 +207,12 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     correctChoiceId: [null as string | null, [Validators.required]],
   });
 
+  constructor() {
+    effect(() => {
+      this.populateForm(this.mcq());
+    });
+  }
+
   protected get questionTextControl() {
     return this.mcqForm.controls.questionText;
   }
@@ -228,6 +235,47 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.formDestroyed.emit(this.mcqForm);
+  }
+
+  private populateForm(mcq: Mcq) {
+    const currentQuestionText = this.mcqForm.controls.questionText.value;
+    const currentCorrectChoiceId = this.mcqForm.controls.correctChoiceId.value;
+    const currentChoices = this.choicesArray.controls.map((c) => c.value);
+    const incomingChoices = mcq.choices.map((c) => c.text);
+    const choicesMatch = currentChoices.every((val, i) => val === incomingChoices[i]);
+    const idsMatch = this.choiceIds.every((id, i) => id === mcq.choices[i].id);
+
+    if (
+      currentQuestionText === mcq.questionText &&
+      currentCorrectChoiceId === mcq.correctChoiceId &&
+      choicesMatch &&
+      idsMatch
+    ) {
+      return;
+    }
+
+    this.mcqForm.patchValue(
+      {
+        questionText: mcq.questionText,
+        correctChoiceId: mcq.correctChoiceId,
+      },
+      { emitEvent: false },
+    );
+
+    this.choicesArray.clear({ emitEvent: false });
+    this.choiceIds = [];
+
+    mcq.choices.forEach((choice: Choice) => {
+      this.choiceIds.push(choice.id);
+      this.choicesArray.push(
+        this.fb.control(choice.text, [
+          Validators.required,
+          CustomValidators.trimMinLength(3),
+          CustomValidators.trimMaxLength(100),
+        ]),
+        { emitEvent: false },
+      );
+    });
   }
 
   protected getChoiceId(index: number): string {

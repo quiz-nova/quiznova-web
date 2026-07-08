@@ -10,20 +10,16 @@ import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
-import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { User } from '@shared/models/users/user.model';
 import { AdminService } from '@shared/services/admin.service';
 
 import { AddAdminModal } from './add-admin-modal';
-import { DeleteAdminModal } from './delete-admin-modal';
-import { EditAdminModal } from './edit-admin-modal';
 
 @Component({
   selector: 'app-college-admins',
@@ -31,12 +27,8 @@ import { EditAdminModal } from './edit-admin-modal';
     TableModule,
     SkeletonModule,
     AddAdminModal,
-    EditAdminModal,
-    DeleteAdminModal,
     FormsModule,
     InputText,
-    InputNumber,
-    NavigationButtons,
     RoleDashboardHeader,
   ],
   template: `
@@ -62,26 +54,26 @@ import { EditAdminModal } from './edit-admin-modal';
           />
         </div>
 
-        <div class="filter-item">
-          <label for="page-size">Page size</label>
-          <p-inputnumber
-            [(ngModel)]="pageSize"
-            [min]="1"
-            [max]="100"
-            [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
-            inputId="page-size"
-          ></p-inputnumber>
-        </div>
+
       </div>
 
       <div class="table-shell">
-        <p-table [value]="tableData()" [tableStyle]="{ 'min-width': '50rem' }">
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="adminsResource.value()?.totalCount ?? 0"
+          [lazy]="true"
+          [first]="(pageNumber() - 1) * pageSize()"
+          [showFirstLastIcon]="false"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
+        >
           <ng-template #header>
             <tr>
               <th>Name</th>
               <th>Email</th>
-              <th style="width: 8rem">Actions</th>
             </tr>
           </ng-template>
           <ng-template #body let-admin>
@@ -89,28 +81,15 @@ import { EditAdminModal } from './edit-admin-modal';
               @if (adminsResource.isLoading()) {
                 <td><p-skeleton width="60%" height="1.5rem" /></td>
                 <td><p-skeleton width="80%" height="1.5rem" /></td>
-                <td><p-skeleton width="4rem" height="1.5rem" /></td>
               } @else {
                 <td>{{ admin.personalInformation.name }}</td>
                 <td>{{ admin.personalInformation.email }}</td>
-                <td>
-                  <div class="actions">
-                    <app-edit-admin-modal
-                      [admin]="admin"
-                      (updated)="reloadAdmins()"
-                    ></app-edit-admin-modal>
-                    <app-delete-admin-modal
-                      [admin]="admin"
-                      (deleted)="reloadAdmins()"
-                    ></app-delete-admin-modal>
-                  </div>
-                </td>
               }
             </tr>
           </ng-template>
           <ng-template #emptymessage>
             <tr>
-              <td colspan="3">
+              <td colspan="2">
                 @if (adminsResource.error()) {
                   <div class="error">
                     <p>Failed to load admin data.</p>
@@ -124,21 +103,7 @@ import { EditAdminModal } from './edit-admin-modal';
         </p-table>
       </div>
 
-      <div class="pagination-row">
-        <p class="page-info">
-          Page {{ adminsResource.value()?.pageNumber ?? 1 }} of
-          {{ adminsResource.value()?.totalPages ?? 1 }}
-        </p>
-        <app-navigation-buttons
-          [canGoPrevious]="adminsResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="adminsResource.value()?.hasNextPage ?? false"
-          (previousButtonClicked)="goToPreviousPage()"
-          (nextButtonClicked)="goToNextPage()"
-          ariaLabel="Admins pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
-        />
-      </div>
+
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -207,23 +172,9 @@ export class CollegeAdmins {
     this.pageNumber.set(1);
   }
 
-  protected onPageSizeChange(value: number | null | undefined): void {
-    if (!value || value <= 0) {
-      this.pageSize.set(10);
-    }
-    this.pageNumber.set(1);
-  }
-
-  protected goToPreviousPage(): void {
-    if (this.adminsResource.value()?.hasPreviousPage) {
-      this.pageNumber.update((value) => Math.max(1, value - 1));
-    }
-  }
-
-  protected goToNextPage(): void {
-    if (this.adminsResource.value()?.hasNextPage) {
-      this.pageNumber.update((value) => value + 1);
-    }
+  protected onPageChange(event: TablePageEvent): void {
+    this.pageNumber.set(event.first / event.rows + 1);
+    this.pageSize.set(event.rows);
   }
 
   protected reloadAdmins(): void {

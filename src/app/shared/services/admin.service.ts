@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CreateAdmin } from '@Features/admin/models/create-admin.model';
-import { UpdateAdmin } from '@Features/admin/models/update-admin.model';
 import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
@@ -28,11 +27,4 @@ export class AdminService {
     return this.http.post<Admin>(`${this.appSettings.apiBaseUrl}/admins`, admin);
   }
 
-  updateAdmin(adminId: string, admin: UpdateAdmin): Observable<Admin> {
-    return this.http.put<Admin>(`${this.appSettings.apiBaseUrl}/admins/${adminId}`, admin);
-  }
-
-  deleteAdmin(adminId: string): Observable<void> {
-    return this.http.delete<void>(`${this.appSettings.apiBaseUrl}/admins/${adminId}`);
-  }
 }

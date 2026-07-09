@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { describe, it, expect } from 'vitest';
 
-import { initials, getApiErrorMessage, normalizeBaseUrl, shortId } from './utilities';
+import { initials, getApiErrorMessage, normalizeBaseUrl, shortId, durationInMinutes } from './utilities';
 
 const fallback = 'Something went wrong';
 
@@ -86,6 +86,15 @@ describe('getApiErrorMessage', () => {
     expect(getApiErrorMessage(err, fallback)).toBe('Quiz not found');
   });
 
+  it('returns detail if present in single problem responses', () => {
+    const err = new HttpErrorResponse({
+      status: 500,
+      error: { title: 'Application error', detail: 'Actual stack trace or exception message' },
+    });
+
+    expect(getApiErrorMessage(err, fallback)).toBe('Actual stack trace or exception message');
+  });
+
   it('returns fallback for generic validation title without errors map', () => {
     const err = new HttpErrorResponse({
       status: 400,
@@ -147,3 +156,29 @@ describe('shortId', () => {
     expect(shortId('abc')).toBe('abc');
   });
 });
+
+describe('durationInMinutes', () => {
+  it('should return correct duration in minutes for valid ISO string dates', () => {
+    const start = '2026-07-08T03:00:00Z';
+    const end = '2026-07-08T03:45:00Z';
+    expect(durationInMinutes(start, end)).toBe(45);
+  });
+
+  it('should return correct duration in minutes for Date objects', () => {
+    const start = new Date('2026-07-08T03:00:00Z');
+    const end = new Date('2026-07-08T04:15:30Z');
+    expect(durationInMinutes(start, end)).toBe(76); // rounds to nearest minute (75.5 -> 76)
+  });
+
+  it('should return 0 if start date is after end date', () => {
+    const start = '2026-07-08T04:00:00Z';
+    const end = '2026-07-08T03:00:00Z';
+    expect(durationInMinutes(start, end)).toBe(0);
+  });
+
+  it('should return 0 for invalid dates', () => {
+    expect(durationInMinutes('invalid', '2026-07-08T03:00:00Z')).toBe(0);
+    expect(durationInMinutes('2026-07-08T03:00:00Z', 'invalid')).toBe(0);
+  });
+});
+

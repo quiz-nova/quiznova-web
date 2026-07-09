@@ -5,7 +5,7 @@ import { UserRole } from '@shared/models/users/user-role.model';
 export function initials(name: string): string {
   return name
     .trim()
-    .split(/\s+/) // split by one or more spaces
+    .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? '')
@@ -25,6 +25,10 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
   }
 
   // Shape B: single Problem
+  if (typeof (body as { detail?: string }).detail === 'string' && (body as { detail: string }).detail) {
+    return (body as { detail: string }).detail;
+  }
+
   if (typeof (body as { title?: string }).title === 'string') {
     return (body as { title: string }).title;
   }
@@ -42,7 +46,7 @@ export function parseUserRole(role: string): UserRole {
   return normalizedRole as UserRole;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Record<string, any> matches Angular's HttpParams API which accepts arbitrary query params
 export function buildParameters(query: Record<string, any>): HttpParams {
   let params = new HttpParams();
 
@@ -62,3 +66,14 @@ export function shortId(id: string | null | undefined): string {
   if (!id) return '';
   return id.slice(0, 8);
 }
+
+export function durationInMinutes(startsAtUtc: string | Date, endsAtUtc: string | Date): number {
+  const startsAtMs = new Date(startsAtUtc).getTime();
+  const endsAtMs = new Date(endsAtUtc).getTime();
+
+  if (!Number.isFinite(startsAtMs) || !Number.isFinite(endsAtMs)) {
+    return 0;
+  }
+  return Math.max(0, Math.round((endsAtMs - startsAtMs) / 60000));
+}
+

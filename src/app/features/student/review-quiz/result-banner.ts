@@ -1,25 +1,18 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-import {ReviewQuizStore} from './review-quiz.store';
+import { ReviewQuizStore } from './review-quiz.store';
 
 @Component({
   selector: 'app-result-banner',
   imports: [],
   template: `
-    <section
-      class="result-banner"
-      aria-label="Attempt result summary"
-    >
-      <div class="result-banner__icon" aria-hidden="true">
-        📊
-      </div>
+    <section class="result-banner" aria-label="Attempt result summary">
+      <div class="result-banner__icon" aria-hidden="true">📊</div>
 
       <div class="result-banner__content">
         <div class="result-banner__head">
           <p class="result-banner__score">{{ scorePercentage() }}%</p>
-          <span class="result-banner__badge">
-            COMPLETED
-          </span>
+          <span class="result-banner__badge"> COMPLETED </span>
         </div>
 
         <p class="result-banner__message">

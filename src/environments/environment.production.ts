@@ -4,4 +4,3 @@ export const environment = {
   apiUrl: 'https://quiznova-api.purpleforest-454b82e9.swedencentral.azurecontainerapps.io/',
   enableDevTools: false,
 };
-

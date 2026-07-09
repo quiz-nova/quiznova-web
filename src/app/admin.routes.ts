@@ -25,7 +25,9 @@ export const adminRoutes: Routes = [
       {
         path: 'students',
         loadComponent: () =>
-          import('@Features/admin/college-students/college-students').then((m) => m.CollegeStudents),
+          import('@Features/admin/college-students/college-students').then(
+            (m) => m.CollegeStudents,
+          ),
       },
       {
         path: 'courses',

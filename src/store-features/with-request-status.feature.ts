@@ -18,9 +18,9 @@ export function withRequestStatus() {
         const status = statuses()[key];
         return typeof status === 'object' ? status.error : null;
       }),
-      isAnyPending: computed(() => Object.values(statuses()).some(s => s === 'pending')),
+      isAnyPending: computed(() => Object.values(statuses()).some((s) => s === 'pending')),
       anyError: computed(() => {
-        const firstError = Object.values(statuses()).find(s => typeof s === 'object');
+        const firstError = Object.values(statuses()).find((s) => typeof s === 'object');
         return firstError && typeof firstError === 'object' ? firstError.error : null;
       }),
     })),
@@ -29,18 +29,18 @@ export function withRequestStatus() {
 
 export function setPending(key: string) {
   return (state: RequestStatusState): RequestStatusState => ({
-    statuses: { ...state.statuses, [key]: 'pending' }
+    statuses: { ...state.statuses, [key]: 'pending' },
   });
 }
 
 export function setFulfilled(key: string) {
   return (state: RequestStatusState): RequestStatusState => ({
-    statuses: { ...state.statuses, [key]: 'fulfilled' }
+    statuses: { ...state.statuses, [key]: 'fulfilled' },
   });
 }
 
 export function setError(key: string, error: string) {
   return (state: RequestStatusState): RequestStatusState => ({
-    statuses: { ...state.statuses, [key]: { error } }
+    statuses: { ...state.statuses, [key]: { error } },
   });
 }

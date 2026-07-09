@@ -8,22 +8,10 @@ export interface ProductLinks {
   name: string;
 }
 
-export interface CompanyLinks {
-  id: number;
-  label: string;
-  name: string;
-}
-
 export const productLinks: ProductLinks[] = [
   { id: 1, label: 'Features', name: '#features' },
   { id: 2, label: 'About', name: '#about' },
   { id: 3, label: 'Login', name: '/auth/login' },
-];
-
-export const companyLinks: CompanyLinks[] = [
-  { id: 1, label: 'About', name: '#' },
-  { id: 2, label: 'Contact', name: '#contact' },
-  { id: 3, label: 'Careers', name: '#' },
 ];
 
 @Component({
@@ -35,20 +23,13 @@ export const companyLinks: CompanyLinks[] = [
         <div class="footer__top">
           <div class="footer__brand">
             <app-logo />
-            <p>The modern multi-tenant quiz platform built for educational institutions.</p>
+            <p>The modern quiz platform built for educational institutions.</p>
           </div>
 
           <div class="footer__columns">
             <div class="footer__column">
               <h4>Product</h4>
               @for (link of productLinks(); track link.id) {
-                <a [attr.href]="link.name">{{ link.label }}</a>
-              }
-            </div>
-
-            <div class="footer__column">
-              <h4>Company</h4>
-              @for (link of companyLinks(); track link.id) {
                 <a [attr.href]="link.name">{{ link.label }}</a>
               }
             </div>
@@ -148,5 +129,4 @@ export const companyLinks: CompanyLinks[] = [
 })
 export class Contact {
   protected readonly productLinks = signal<ProductLinks[]>(productLinks).asReadonly();
-  protected readonly companyLinks = signal<CompanyLinks[]>(companyLinks).asReadonly();
 }

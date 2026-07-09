@@ -4,7 +4,6 @@ import { Button } from '@shared/components/button/button';
 
 import { CreateQuizStore } from './create-quiz.store';
 
-
 @Component({
   selector: 'app-quiz-publish-panel',
   imports: [Button],
@@ -12,10 +11,10 @@ import { CreateQuizStore } from './create-quiz.store';
   template: `
     <div class="publish-group">
       <button
-        appButton
-        variant="green"
         [disabled]="!store.isEntireQuizValid()"
         (click)="publish.emit()"
+        appButton
+        variant="green"
         type="button"
       >
         Publish Quiz

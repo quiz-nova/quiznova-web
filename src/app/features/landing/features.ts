@@ -13,11 +13,11 @@ import { FeatureCard, featureCards } from './feature-card';
         <article class="section-heading">
           <h2 appFadeInOnScroll>
             Everything you need to
-            <span class="accent-word">assess brilliance</span>
+            <span class="accent-word">run your assessments</span>
           </h2>
           <p [delay]="100" appFadeInOnScroll>
-            A complete platform for creating, managing, and analyzing educational assessments at
-            scale.
+            From quiz creation and real-time exams to grade review and course communication —
+            QuizNova covers the full assessment lifecycle for your institution.
           </p>
         </article>
         <div class="cards">

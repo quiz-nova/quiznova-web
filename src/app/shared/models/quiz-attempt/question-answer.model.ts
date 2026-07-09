@@ -28,7 +28,6 @@ export interface TfAnswer extends AutoGradedAnswer {
   studentChoice: boolean;
 }
 
-
 export interface ManuallyGradedAnswer extends QuestionAnswer {
   answerType: typeof AnswerType.Manual;
   score: number | null;
@@ -42,14 +41,23 @@ export interface EssayAnswer extends ManuallyGradedAnswer {
 export type QuestionAnswerType = McqAnswer | TfAnswer | EssayAnswer;
 
 export function isMcqAnswer(answer: QuestionAnswer | null): answer is McqAnswer {
-  return !!answer && answer.answerType === AnswerType.Auto && (answer as AutoGradedAnswer).autoAnswerType === 'mcq';
+  return (
+    !!answer &&
+    answer.answerType === AnswerType.Auto &&
+    (answer as AutoGradedAnswer).autoAnswerType === 'mcq'
+  );
 }
 
 export function isTfAnswer(answer: QuestionAnswer | null): answer is TfAnswer {
-  return !!answer && answer.answerType === AnswerType.Auto && (answer as AutoGradedAnswer).autoAnswerType === 'tf';
-} 
-
-export function isManuallyGradedAnswer(answer: QuestionAnswer | null): answer is ManuallyGradedAnswer {
-  return !!answer && answer.answerType === AnswerType.Manual;
+  return (
+    !!answer &&
+    answer.answerType === AnswerType.Auto &&
+    (answer as AutoGradedAnswer).autoAnswerType === 'tf'
+  );
 }
 
+export function isManuallyGradedAnswer(
+  answer: QuestionAnswer | null,
+): answer is ManuallyGradedAnswer {
+  return !!answer && answer.answerType === AnswerType.Manual;
+}

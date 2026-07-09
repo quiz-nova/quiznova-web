@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-
 import { roleGuard } from '@Core/guards/role.guard';
 import { Login } from '@Features/auth/login/login';
 import { Landing } from '@Features/landing/landing';

@@ -26,5 +26,4 @@ export class AdminService {
   createAdmin(admin: CreateAdmin): Observable<Admin> {
     return this.http.post<Admin>(`${this.appSettings.apiBaseUrl}/admins`, admin);
   }
-
 }

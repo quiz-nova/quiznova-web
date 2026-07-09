@@ -22,7 +22,10 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
         </div>
 
         @if (isGraded()) {
-          <span class="review-question__marks" [class.review-question__marks--success]="score() > 0">
+          <span
+            class="review-question__marks"
+            [class.review-question__marks--success]="score() > 0"
+          >
             +{{ score() }}/{{ essay().marks }} pt
           </span>
         } @else {
@@ -37,9 +40,7 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
       <div class="review-question__answers">
         <!-- Student's Response -->
         <div class="review-answer review-answer--student">
-          <p class="review-answer__label">
-            <i class="fa-solid fa-pen-nib"></i> Your response
-          </p>
+          <p class="review-answer__label"><i class="fa-solid fa-pen-nib"></i> Your response</p>
           <blockquote class="review-answer__value">
             {{ essayAnswer().studentResponse || 'No response provided.' }}
           </blockquote>
@@ -81,7 +82,9 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
       border: 1px solid var(--clr-gray-300);
       border-radius: var(--radius-md);
       background: var(--clr-white);
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
     }
 
     .review-question:hover {
@@ -213,6 +216,8 @@ export class StudentEssayAnswerReview implements StudentAnswerReviewContract {
   protected readonly essay = computed(() => this.question() as Essay);
   protected readonly essayAnswer = computed(() => this.answer() as EssayAnswer);
 
-  protected readonly isGraded = computed(() => this.essayAnswer().score !== null && this.essayAnswer().score !== undefined);
+  protected readonly isGraded = computed(
+    () => this.essayAnswer().score !== null && this.essayAnswer().score !== undefined,
+  );
   protected readonly score = computed(() => this.essayAnswer().score ?? 0);
 }

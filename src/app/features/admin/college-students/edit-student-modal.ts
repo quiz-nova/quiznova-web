@@ -26,12 +26,17 @@ type EditStudentFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-student-modal',
-  imports: [ReactiveFormsModule, DialogModule, FloatLabel, InputText, EditButton, FieldError, Button],
+  imports: [
+    ReactiveFormsModule,
+    DialogModule,
+    FloatLabel,
+    InputText,
+    EditButton,
+    FieldError,
+    Button,
+  ],
   template: `
-    <app-edit-button
-      (editButtonClicked)="openDialog()"
-      ariaLabel="Edit student"
-    ></app-edit-button>
+    <app-edit-button (editButtonClicked)="openDialog()" ariaLabel="Edit student"></app-edit-button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -47,10 +52,10 @@ type EditStudentFormGroup = FormGroup<{
             <input
               id="edit-student-name"
               [fluid]="true"
-              pInputText
-              type="text"
               [formControl]="nameControl"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
+              pInputText
+              type="text"
               aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="edit-student-name">Name</label>
@@ -60,7 +65,9 @@ type EditStudentFormGroup = FormGroup<{
               <app-field-error id="name-is-required-error">Name is required.</app-field-error>
             }
             @if (nameControl.hasError('minlength')) {
-              <app-field-error id="name-minlength-error">Name must be at least 3 characters.</app-field-error>
+              <app-field-error id="name-minlength-error"
+                >Name must be at least 3 characters.</app-field-error
+              >
             }
           }
         </div>
@@ -70,10 +77,10 @@ type EditStudentFormGroup = FormGroup<{
             <input
               id="edit-student-email"
               [fluid]="true"
-              pInputText
-              type="email"
               [formControl]="emailControl"
               [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
+              pInputText
+              type="email"
               aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
             <label for="edit-student-email">Email</label>
@@ -82,7 +89,9 @@ type EditStudentFormGroup = FormGroup<{
             @if (emailControl.hasError('required')) {
               <app-field-error id="email-is-required-error">Email is required.</app-field-error>
             } @else if (emailControl.hasError('email')) {
-              <app-field-error id="please-enter-a-valid-email-address-error">Please enter a valid email address.</app-field-error>
+              <app-field-error id="please-enter-a-valid-email-address-error"
+                >Please enter a valid email address.</app-field-error
+              >
             }
           }
         </div>
@@ -92,23 +101,31 @@ type EditStudentFormGroup = FormGroup<{
             <input
               id="edit-student-phone"
               [fluid]="true"
+              [formControl]="phoneNumberControl"
+              [attr.aria-invalid]="
+                phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null
+              "
               pInputText
               type="text"
-              [formControl]="phoneNumberControl"
-              [attr.aria-invalid]="phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null"
               aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="edit-student-phone">Phone Number</label>
           </p-floatlabel>
           @if (phoneNumberControl.invalid && phoneNumberControl.touched) {
             @if (phoneNumberControl.hasError('required')) {
-              <app-field-error id="phone-number-is-required-error">Phone number is required.</app-field-error>
+              <app-field-error id="phone-number-is-required-error"
+                >Phone number is required.</app-field-error
+              >
             }
             @if (phoneNumberControl.hasError('minlength')) {
-              <app-field-error id="phone-minlength-error">Phone number must be at least 7 characters.</app-field-error>
+              <app-field-error id="phone-minlength-error"
+                >Phone number must be at least 7 characters.</app-field-error
+              >
             }
             @if (phoneNumberControl.hasError('maxlength')) {
-              <app-field-error id="phone-maxlength-error">Phone number cannot exceed 15 characters.</app-field-error>
+              <app-field-error id="phone-maxlength-error"
+                >Phone number cannot exceed 15 characters.</app-field-error
+              >
             }
           }
         </div>
@@ -118,8 +135,8 @@ type EditStudentFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
+          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
+          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
           </button>
         </div>
@@ -167,7 +184,10 @@ export class EditStudentModal {
   protected readonly EditStudentForm: EditStudentFormGroup = this.fb.group({
     name: ['', [Validators.required, CustomValidators.trimMinLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    phoneNumber: ['', [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)]],
+    phoneNumber: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(7), CustomValidators.trimMaxLength(15)],
+    ],
   });
 
   protected get nameControl() {

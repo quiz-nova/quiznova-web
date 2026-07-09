@@ -37,20 +37,20 @@ import { Button } from '@shared/components/button/button';
           </p>
           <input
             class="modal-confirm-input focus-green-ring"
+            id="confirm-action-input"
             [(ngModel)]="confirmationInput"
             type="text"
             placeholder="Type the phrase to confirm"
             autocomplete="off"
-            id="confirm-action-input"
           />
         </div>
         <div class="modal-actions">
-          <button appButton variant="gray" (click)="onCancel()" type="button">Cancel</button>
+          <button (click)="onCancel()" appButton variant="gray" type="button">Cancel</button>
           <button
-            appButton
             [variant]="confirmButtonVariant()"
             [disabled]="confirmationInput !== confirmationPhrase()"
             (click)="onConfirm()"
+            appButton
             type="button"
           >
             {{ confirmButtonText() }}
@@ -181,8 +181,6 @@ import { Button } from '@shared/components/button/button';
       justify-content: flex-end;
       gap: 0.75rem;
     }
-
-
   `,
 })
 export class ConfirmActionModal {

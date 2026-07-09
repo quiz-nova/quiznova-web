@@ -22,13 +22,10 @@ import { Question } from '@shared/models/quiz/question.model';
 import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
-import {
-  QuestionAnswer,
-} from '@shared/models/quiz-attempt/question-answer.model';
+import { QuestionAnswer } from '@shared/models/quiz-attempt/question-answer.model';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
-
 
 type ReviewQuestion = Mcq | Tf | Essay;
 type MaybeOriginalQuestionAnswer = QuestionAnswer & { originalQuestionId?: string };
@@ -127,7 +124,10 @@ export const ReviewQuizStore = signalStore(
               patchState(store, setFulfilled('load'));
             }),
             catchError((err) => {
-              patchState(store, setError('load', getApiErrorMessage(err, 'Failed to load quiz attempt.')));
+              patchState(
+                store,
+                setError('load', getApiErrorMessage(err, 'Failed to load quiz attempt.')),
+              );
               return EMPTY;
             }),
           );

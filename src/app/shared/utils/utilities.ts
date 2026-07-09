@@ -25,7 +25,10 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
   }
 
   // Shape B: single Problem
-  if (typeof (body as { detail?: string }).detail === 'string' && (body as { detail: string }).detail) {
+  if (
+    typeof (body as { detail?: string }).detail === 'string' &&
+    (body as { detail: string }).detail
+  ) {
     return (body as { detail: string }).detail;
   }
 
@@ -76,4 +79,3 @@ export function durationInMinutes(startsAtUtc: string | Date, endsAtUtc: string 
   }
   return Math.max(0, Math.round((endsAtMs - startsAtMs) / 60000));
 }
-

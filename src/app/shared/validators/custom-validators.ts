@@ -42,8 +42,8 @@ export class CustomValidators {
       const passwordValid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecial;
 
       return !passwordValid
-          ? { strongPassword: { hasUpperCase, hasLowerCase, hasNumeric, hasSpecial } }
-          : null;
+        ? { strongPassword: { hasUpperCase, hasLowerCase, hasNumeric, hasSpecial } }
+        : null;
     };
   }
 }

@@ -185,7 +185,9 @@ test.describe('Quiz Creation E2E & Validations', () => {
     await createQuizPage.selectQuestionType('Essay');
     await createQuizPage.addQuestionBtn.click();
 
-    await createQuizPage.essayTitleArea.fill('Explain polymorphism in Object-Oriented Programming.');
+    await createQuizPage.essayTitleArea.fill(
+      'Explain polymorphism in Object-Oriented Programming.',
+    );
     await createQuizPage.essayTitleArea.blur();
 
     await createQuizPage.essayReferenceArea.fill(

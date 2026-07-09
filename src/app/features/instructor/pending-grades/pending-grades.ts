@@ -1,11 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
@@ -70,10 +64,10 @@ import { PendingGradesStats } from './pending-grades-stats';
             @for (item of pendingList(); track item.attemptId) {
               <article
                 class="submission-row"
+                [attr.aria-label]="'Review submission by ' + item.studentName"
                 (click)="navigateToReview(item)"
                 (keydown.enter)="navigateToReview(item)"
                 tabindex="0"
-                [attr.aria-label]="'Review submission by ' + item.studentName"
                 role="button"
               >
                 <!-- Avatar + Student Name -->
@@ -122,13 +116,13 @@ import { PendingGradesStats } from './pending-grades-stats';
                 {{ pendingResource.value()?.totalPages ?? 1 }}
               </p>
               <app-navigation-buttons
-                ariaLabel="Pending grades pagination"
-                previousLabel="Previous page"
-                nextLabel="Next page"
                 [canGoPrevious]="pendingResource.value()?.hasPreviousPage ?? false"
                 [canGoNext]="pendingResource.value()?.hasNextPage ?? false"
                 (previousButtonClicked)="goToPreviousPage()"
                 (nextButtonClicked)="goToNextPage()"
+                ariaLabel="Pending grades pagination"
+                previousLabel="Previous page"
+                nextLabel="Next page"
               />
             </div>
           </section>
@@ -153,7 +147,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       align-items: flex-start;
       justify-content: space-between;
     }
-
 
     .list-container {
       background: var(--clr-white);
@@ -188,7 +181,9 @@ import { PendingGradesStats } from './pending-grades-stats';
       transition: background-color 0.15s ease;
     }
 
-    .submission-row:last-child { border-bottom: none; }
+    .submission-row:last-child {
+      border-bottom: none;
+    }
 
     .submission-row:hover,
     .submission-row:focus-visible {
@@ -235,9 +230,14 @@ import { PendingGradesStats } from './pending-grades-stats';
       margin-top: 0.2rem;
     }
 
-    .course-name i { font-size: 0.7rem; }
+    .course-name i {
+      font-size: 0.7rem;
+    }
 
-    .date-cell p { color: var(--clr-gray-800); font-weight: 500; }
+    .date-cell p {
+      color: var(--clr-gray-800);
+      font-weight: 500;
+    }
 
     .time {
       font-size: var(--fs-300);
@@ -261,7 +261,9 @@ import { PendingGradesStats } from './pending-grades-stats';
       display: flex;
       justify-content: flex-end;
       color: var(--clr-gray-500);
-      transition: transform 0.15s ease, color 0.15s ease;
+      transition:
+        transform 0.15s ease,
+        color 0.15s ease;
     }
 
     .submission-row:hover .arrow-cell,
@@ -300,7 +302,10 @@ export class PendingGrades {
 
   protected readonly pageNumber = signal(1);
 
-  protected readonly pendingResource = rxResource<PaginatedList<PendingManualAnswers>, { page: number }>({
+  protected readonly pendingResource = rxResource<
+    PaginatedList<PendingManualAnswers>,
+    { page: number }
+  >({
     params: () => ({ page: this.pageNumber() }),
     stream: ({ params }) => this.quizAttemptService.getPendingManualAnswers(params.page, 10),
   });
@@ -313,7 +318,10 @@ export class PendingGrades {
     const response = this.pendingResource.value();
     const totalCount = response?.totalCount ?? 0;
     const items = response?.items ?? [];
-    const totalUngraded = items.reduce((sum: number, item: PendingManualAnswers) => sum + item.ungradedCount, 0);
+    const totalUngraded = items.reduce(
+      (sum: number, item: PendingManualAnswers) => sum + item.ungradedCount,
+      0,
+    );
 
     return [
       {

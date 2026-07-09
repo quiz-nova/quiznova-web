@@ -12,7 +12,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     <ng-content></ng-content>
   `,
   host: {
-    'class': 'btn',
+    class: 'btn',
     '[class.btn-green]': 'variant() === "green"',
     '[class.btn-gray]': 'variant() === "gray"',
     '[class.btn-red]': 'variant() === "red"',
@@ -46,7 +46,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--clr-green-400) 25%, transparent);
     }
 
-    :host(:disabled), :host([disabled]) {
+    :host(:disabled),
+    :host([disabled]) {
       background-color: var(--clr-gray-100);
       color: var(--clr-gray-500);
       opacity: 0.6;

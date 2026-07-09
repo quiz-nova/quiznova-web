@@ -46,7 +46,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       .dashboard-card:hover {
         transform: translateY(-4px);
         border-color: var(--theme-border);
-        box-shadow: 
+        box-shadow:
           0 12px 24px -4px rgba(15, 23, 42, 0.06),
           0 8px 12px -6px rgba(15, 23, 42, 0.04);
       }
@@ -97,7 +97,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         height: 3rem;
         border-radius: var(--radius-md, var(--radius-md));
         font-size: 1.35rem;
-        transition: 
+        transition:
           transform 0.3s var(--ease-spring),
           background-color 0.3s var(--ease-spring),
           color 0.3s var(--ease-spring);
@@ -143,10 +143,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         --theme-border: var(--clr-gray-300);
       }
 
-      .dashboard-card {
-        border-color: var(--clr-gray-200);
-      }
-      
       .card-icon {
         background-color: var(--theme-bg);
         color: var(--theme-text);
@@ -160,5 +156,7 @@ export class RoleDashboardCard {
   readonly value = input.required<string | number>();
   readonly icon = input.required<string>();
   readonly caption = input<string>();
-  readonly theme = input<'green' | 'amber' | 'violet' | 'cyan' | 'primary' | 'red' | 'gray'>('green');
+  readonly theme = input<'green' | 'amber' | 'violet' | 'cyan' | 'primary' | 'red' | 'gray'>(
+    'green',
+  );
 }

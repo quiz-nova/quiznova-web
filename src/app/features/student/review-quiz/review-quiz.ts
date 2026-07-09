@@ -9,10 +9,7 @@ import { QuestionComponentMapperService } from '@shared/services/question-compon
 import { ResultBanner } from './result-banner';
 import { ReviewQuizHeader } from './review-quiz-header';
 import { ReviewQuizStatusCard } from './review-quiz-status-card';
-import {
-  ReviewQuizStore,
-} from './review-quiz.store';
-
+import { ReviewQuizStore } from './review-quiz.store';
 
 @Component({
   selector: 'app-review-quiz',
@@ -51,12 +48,20 @@ import {
             ) {
               @if (item.answer) {
                 <ng-container
-                  [ngComponentOutlet]="mapperService.getSuitableStudentAnswerReviewComponent(item.question.type)"
-                  [ngComponentOutletInputs]="{ question: item.question, answer: item.answer, questionNumber: i + 1 }"
+                  [ngComponentOutlet]="
+                    mapperService.getSuitableStudentAnswerReviewComponent(item.question.type)
+                  "
+                  [ngComponentOutletInputs]="{
+                    question: item.question,
+                    answer: item.answer,
+                    questionNumber: i + 1,
+                  }"
                 ></ng-container>
               } @else {
                 <ng-container
-                  [ngComponentOutlet]="mapperService.getSuitableQuestionNotAnsweredComponent(item.question.type)"
+                  [ngComponentOutlet]="
+                    mapperService.getSuitableQuestionNotAnsweredComponent(item.question.type)
+                  "
                   [ngComponentOutletInputs]="{ question: item.question, questionNumber: i + 1 }"
                 ></ng-container>
               }
@@ -118,4 +123,3 @@ export class ReviewQuiz implements OnInit {
     this.reviewQuizStore.load({ attemptId: this.attemptId() });
   }
 }
-

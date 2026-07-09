@@ -53,8 +53,6 @@ import { AddAdminModal } from './add-admin-modal';
             placeholder="Search by name or email"
           />
         </div>
-
-
       </div>
 
       <div class="table-shell">
@@ -67,8 +65,8 @@ import { AddAdminModal } from './add-admin-modal';
           [lazy]="true"
           [first]="(pageNumber() - 1) * pageSize()"
           [showFirstLastIcon]="false"
-          (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          (onPage)="onPageChange($event)"
         >
           <ng-template #header>
             <tr>
@@ -102,8 +100,6 @@ import { AddAdminModal } from './add-admin-modal';
           </ng-template>
         </p-table>
       </div>
-
-
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -119,9 +115,13 @@ export class CollegeAdmins {
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly tableData = computed<User[]>(() => {
     if (this.adminsResource.isLoading()) {
-      return Array.from<unknown, User>({ length: this.pageSize() }, (_, i) => ({
-        id: `skeleton-${i}`,
-      } as unknown as User));
+      return Array.from<unknown, User>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            id: `skeleton-${i}`,
+          }) as unknown as User,
+      );
     }
     if (this.adminsResource.error()) {
       return [];

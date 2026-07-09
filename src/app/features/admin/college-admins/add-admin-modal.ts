@@ -30,7 +30,7 @@ type AddAdminFormGroup = FormGroup<{
   selector: 'app-add-admin-modal',
   imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError, Button],
   template: `
-    <button appButton variant="green" (click)="openDialog()" type="button">Add Admin</button>
+    <button (click)="openDialog()" appButton variant="green" type="button">Add Admin</button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -47,9 +47,9 @@ type AddAdminFormGroup = FormGroup<{
               id="admin-name"
               [fluid]="true"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
+              [formControl]="nameControl"
               pInputText
               type="text"
-              [formControl]="nameControl"
               aria-describedby="name-is-required-error name-minlength-error"
             />
             <label for="admin-name">Name</label>
@@ -72,9 +72,9 @@ type AddAdminFormGroup = FormGroup<{
               id="admin-email"
               [fluid]="true"
               [attr.aria-invalid]="emailControl.invalid && emailControl.touched ? 'true' : null"
+              [formControl]="emailControl"
               pInputText
               type="email"
-              [formControl]="emailControl"
               aria-describedby="email-is-required-error please-enter-a-valid-email-address-error"
             />
             <label for="admin-email">Email</label>
@@ -99,8 +99,8 @@ type AddAdminFormGroup = FormGroup<{
               [attr.aria-invalid]="
                 passwordControl.invalid && passwordControl.touched ? 'true' : null
               "
-              inputId="admin-password"
               [formControl]="passwordControl"
+              inputId="admin-password"
               aria-describedby="password-is-required-error password-minlength-error password-strong-error"
             />
             <label for="admin-password">Password</label>
@@ -133,9 +133,9 @@ type AddAdminFormGroup = FormGroup<{
               [attr.aria-invalid]="
                 phoneNumberControl.invalid && phoneNumberControl.touched ? 'true' : null
               "
+              [formControl]="phoneNumberControl"
               pInputText
               type="text"
-              [formControl]="phoneNumberControl"
               aria-describedby="phone-number-is-required-error phone-minlength-error phone-maxlength-error"
             />
             <label for="admin-phone">Phone Number</label>
@@ -156,8 +156,8 @@ type AddAdminFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
+          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
+          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Admin' }}
           </button>
         </div>

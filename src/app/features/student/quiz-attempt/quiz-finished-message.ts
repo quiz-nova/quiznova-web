@@ -15,11 +15,11 @@ import { Button } from '@shared/components/button/button';
         You Have Compelete the Quiz Take a Rest Before you See you results 😉
       </p>
       <button
+        class="quiz-completed-card__btn"
+        (click)="seeResults.emit()"
         appButton
         variant="green"
-        (click)="seeResults.emit()"
         type="button"
-        class="quiz-completed-card__btn"
       >
         See Results
       </button>

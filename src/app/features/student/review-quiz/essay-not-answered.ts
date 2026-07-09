@@ -21,10 +21,7 @@ import { Essay } from '@shared/models/quiz/questions/essay.model';
       <p class="review-question__text">{{ question().questionText }}</p>
       <p class="review-question__note">Not answered</p>
 
-      <div
-        class="review-question__answers"
-        [class.single-column]="!essay().answerReference"
-      >
+      <div class="review-question__answers" [class.single-column]="!essay().answerReference">
         <div class="review-answer review-answer--student">
           <p class="review-answer__label">Your answer</p>
           <p class="review-answer__value">Not answered</p>

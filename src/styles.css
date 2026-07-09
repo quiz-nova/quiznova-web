@@ -286,7 +286,9 @@
 
   /* Fade in on scroll directive animations */
   .fade-in {
-    transition: opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring);
+    transition:
+      opacity 0.8s var(--ease-spring),
+      transform 0.8s var(--ease-spring);
     transform: translateY(24px);
     opacity: 0;
     will-change: opacity, transform;

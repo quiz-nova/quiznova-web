@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,11 +51,11 @@ import { EditInstructorModal } from './edit-instructor-modal';
         <div class="filter-item">
           <label for="instructor-search">Search</label>
           <input
-            id="instructor-search"
-            pInputText
             class="focus-green-ring"
+            id="instructor-search"
             [(ngModel)]="searchTerm"
             (ngModelChange)="pageNumber.set(1)"
+            pInputText
             placeholder="Search by name or email"
           />
         </div>
@@ -56,11 +63,11 @@ import { EditInstructorModal } from './edit-instructor-modal';
         <div class="filter-item">
           <label for="courses-count">Courses count</label>
           <p-inputnumber
-            inputId="courses-count"
             [(ngModel)]="coursesCount"
-            (ngModelChange)="onCoursesCountChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onCoursesCountChange($event)"
+            inputId="courses-count"
             placeholder="Any"
           ></p-inputnumber>
         </div>
@@ -68,11 +75,11 @@ import { EditInstructorModal } from './edit-instructor-modal';
         <div class="filter-item">
           <label for="quizzes-count">Quizzes count</label>
           <p-inputnumber
-            inputId="quizzes-count"
             [(ngModel)]="quizzesCount"
-            (ngModelChange)="onQuizzesCountChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onQuizzesCountChange($event)"
+            inputId="quizzes-count"
             placeholder="Any"
           ></p-inputnumber>
         </div>
@@ -88,8 +95,8 @@ import { EditInstructorModal } from './edit-instructor-modal';
           [lazy]="true"
           [first]="(pageNumber() - 1) * pageSize()"
           [showFirstLastIcon]="false"
-          (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          (onPage)="onPageChange($event)"
         >
           <ng-template #header>
             <tr>
@@ -140,8 +147,6 @@ import { EditInstructorModal } from './edit-instructor-modal';
           </ng-template>
         </p-table>
       </div>
-
-
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -157,9 +162,13 @@ export class CollegeInstructors {
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly tableData = computed<Instructor[]>(() => {
     if (this.instructorsResource.isLoading()) {
-      return Array.from<unknown, Instructor>({ length: this.pageSize() }, (_, i) => ({
-        id: `skeleton-${i}`,
-      } as unknown as Instructor));
+      return Array.from<unknown, Instructor>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            id: `skeleton-${i}`,
+          }) as unknown as Instructor,
+      );
     }
     if (this.instructorsResource.error()) {
       return [];
@@ -167,10 +176,14 @@ export class CollegeInstructors {
     return this.instructorsResource.value()?.items ?? [];
   });
   protected readonly coursesCount = signal<number | null>(
-    this.route.snapshot.queryParams['courses'] ? Number(this.route.snapshot.queryParams['courses']) : null
+    this.route.snapshot.queryParams['courses']
+      ? Number(this.route.snapshot.queryParams['courses'])
+      : null,
   );
   protected readonly quizzesCount = signal<number | null>(
-    this.route.snapshot.queryParams['quizzes'] ? Number(this.route.snapshot.queryParams['quizzes']) : null
+    this.route.snapshot.queryParams['quizzes']
+      ? Number(this.route.snapshot.queryParams['quizzes'])
+      : null,
   );
 
   constructor() {

@@ -22,9 +22,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
 
-import {
-  SubmitQuestionAnswerType,
-} from './models/SubmitQuizAttempt.model';
+import { SubmitQuestionAnswerType } from './models/SubmitQuizAttempt.model';
 
 export interface QuestionWithStatus extends Question {
   isSolved: boolean;
@@ -111,7 +109,7 @@ export const QuizAttemptStore = signalStore(
             }),
           );
 
-              if (attemptId) {
+          if (attemptId) {
             return quizAttemptService.getQuizAttemptForResume(attemptId).pipe(
               switchMap((attempt) => {
                 patchState(store, {
@@ -119,9 +117,7 @@ export const QuizAttemptStore = signalStore(
                   startedAt: new Date(attempt.startedAt),
                 });
 
-                const solvedMap = new Map(
-                  attempt.answers.map((a) => [a.questionId, true]),
-                );
+                const solvedMap = new Map(attempt.answers.map((a) => [a.questionId, true]));
 
                 return loadQuiz$.pipe(
                   tap(() => {
@@ -182,25 +178,23 @@ export const QuizAttemptStore = signalStore(
 
           patchState(store, setPending('start'));
 
-          return quizAttemptService
-            .startQuizAttempt({ quizId })
-            .pipe(
-              tap((attempt) => {
-                patchState(store, {
-                  attemptId: attempt.quizAttemptId,
-                  startedAt: new Date(attempt.startedAt),
-                });
-                patchState(store, setFulfilled('start'));
-              }),
-              catchError((err) => {
-                const errorMessage = getApiErrorMessage(
-                  err,
-                  'Error occurred when starting the attempt',
-                );
-                patchState(store, setError('start', errorMessage));
-                return EMPTY;
-              }),
-            );
+          return quizAttemptService.startQuizAttempt({ quizId }).pipe(
+            tap((attempt) => {
+              patchState(store, {
+                attemptId: attempt.quizAttemptId,
+                startedAt: new Date(attempt.startedAt),
+              });
+              patchState(store, setFulfilled('start'));
+            }),
+            catchError((err) => {
+              const errorMessage = getApiErrorMessage(
+                err,
+                'Error occurred when starting the attempt',
+              );
+              patchState(store, setError('start', errorMessage));
+              return EMPTY;
+            }),
+          );
         }),
       ),
       setCurrentQuestionIndex(index: number): void {
@@ -252,20 +246,20 @@ export const QuizAttemptStore = signalStore(
           };
         });
 
-        quizAttemptService.submitQuestionAnswer(attemptId, draft).pipe(
-          tap(() => {
-            patchState(store, setFulfilled('submit-answer'));
-            patchState(store, { lastSavedAt: Date.now() });
-          }),
-          catchError((err) => {
-            const errorMessage = getApiErrorMessage(
-              err,
-              'Error occurred when saving the answer',
-            );
-            patchState(store, setError('submit-answer', errorMessage));
-            return EMPTY;
-          }),
-        ).subscribe();
+        quizAttemptService
+          .submitQuestionAnswer(attemptId, draft)
+          .pipe(
+            tap(() => {
+              patchState(store, setFulfilled('submit-answer'));
+              patchState(store, { lastSavedAt: Date.now() });
+            }),
+            catchError((err) => {
+              const errorMessage = getApiErrorMessage(err, 'Error occurred when saving the answer');
+              patchState(store, setError('submit-answer', errorMessage));
+              return EMPTY;
+            }),
+          )
+          .subscribe();
       },
       completeAttempt(): void {
         const attemptId = store.attemptId();

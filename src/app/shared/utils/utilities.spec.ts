@@ -2,7 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { describe, it, expect } from 'vitest';
 
-import { initials, getApiErrorMessage, normalizeBaseUrl, shortId, durationInMinutes } from './utilities';
+import {
+  initials,
+  getApiErrorMessage,
+  normalizeBaseUrl,
+  shortId,
+  durationInMinutes,
+} from './utilities';
 
 const fallback = 'Something went wrong';
 
@@ -101,7 +107,7 @@ describe('getApiErrorMessage', () => {
       error: { title: 'One or more validation errors occurred.' },
     });
 
-    expect(getApiErrorMessage(err, fallback)).toBe("One or more validation errors occurred.");
+    expect(getApiErrorMessage(err, fallback)).toBe('One or more validation errors occurred.');
   });
 
   it('prefers errors map over title when both are present', () => {
@@ -181,4 +187,3 @@ describe('durationInMinutes', () => {
     expect(durationInMinutes('2026-07-08T03:00:00Z', 'invalid')).toBe(0);
   });
 });
-

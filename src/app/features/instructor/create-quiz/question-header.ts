@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormControl,
@@ -11,7 +20,6 @@ import {
 import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Question } from '@shared/models/quiz/question.model';
-
 
 type QuestionHeaderFormGroup = FormGroup<{
   marks: FormControl<number>;
@@ -34,23 +42,28 @@ type QuestionHeaderFormGroup = FormGroup<{
             <input
               class="question-header__marks focus-green-ring"
               id="marks"
-              type="number"
               [formControl]="marksControl"
-              min="1"
               [max]="maxMarks()"
-              step="1"
-              (blur)="onBlur()"
               [attr.aria-invalid]="marksControl.invalid && marksControl.touched ? 'true' : null"
+              (blur)="onBlur()"
+              type="number"
+              min="1"
+              step="1"
               aria-describedby="marks-is-required-error marks-must-be-between-1-and-max-error"
             />
           </div>
         </form>
-        <app-delete-button (deleteButtonClicked)="deleteQuestion.emit(question().id)" ariaLabel="Delete question" />
+        <app-delete-button
+          (deleteButtonClicked)="deleteQuestion.emit(question().id)"
+          ariaLabel="Delete question"
+        />
         @if (marksControl.invalid && marksControl.touched) {
           @if (marksControl.hasError('required')) {
             <app-field-error id="marks-is-required-error">Marks is required.</app-field-error>
           } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
-            <app-field-error id="marks-must-be-between-1-and-max-error">Marks must be between 1 and {{ maxMarks() }}.</app-field-error>
+            <app-field-error id="marks-must-be-between-1-and-max-error"
+              >Marks must be between 1 and {{ maxMarks() }}.</app-field-error
+            >
           }
         }
       </div>
@@ -68,7 +81,7 @@ type QuestionHeaderFormGroup = FormGroup<{
         gap: 1rem;
         height: 3rem;
       }
-      question-header__actions {
+      .question-header__actions {
         display: flex;
         align-items: center;
         gap: 0.25rem;
@@ -76,11 +89,9 @@ type QuestionHeaderFormGroup = FormGroup<{
       .question-header__details {
         display: flex;
         align-items: center;
-        gap: 0.9rem;
         gap: 1rem;
       }
       h3 {
-        font-size: var(--fs-700);
         font-size: var(--fs-600);
         display: flex;
         align-items: center;
@@ -93,22 +104,16 @@ type QuestionHeaderFormGroup = FormGroup<{
       }
 
       .question-header__marks-field {
-        gap: 0.5rem;
         flex-direction: column;
         gap: 0.25rem;
         border: none;
       }
 
       input[type='number'] {
-        width: 4.5rem;
-        padding: 0.45rem 0.55rem;
         width: 4rem;
         padding: 0.25rem;
         border-radius: var(--radius-sm);
         font-size: var(--fs-400);
-      }
-
-      label {
       }
     `,
   ],
@@ -118,10 +123,10 @@ export class QuestionHeader implements OnInit {
   readonly index = input.required<number>();
   readonly question = input.required<Question>();
   readonly maxMarks = input<number>(5);
-  
+
   readonly deleteQuestion = output<string>();
-  readonly marksChange = output<{questionId: string, marks: number}>();
-  readonly blurEvent = output<{questionId: string, marks: number}>();
+  readonly marksChange = output<{ questionId: string; marks: number }>();
+  readonly blurEvent = output<{ questionId: string; marks: number }>();
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -133,7 +138,11 @@ export class QuestionHeader implements OnInit {
   constructor() {
     effect(() => {
       const max = this.maxMarks();
-      this.marksControl.setValidators([Validators.required, Validators.min(1), Validators.max(max)]);
+      this.marksControl.setValidators([
+        Validators.required,
+        Validators.min(1),
+        Validators.max(max),
+      ]);
       this.marksControl.updateValueAndValidity();
     });
   }

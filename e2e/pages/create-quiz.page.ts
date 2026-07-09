@@ -11,7 +11,6 @@ export class CreateQuizPage {
   readonly courseSelect: Locator;
   readonly questionTypeSelect: Locator;
 
-
   readonly mcqForm: Locator;
   readonly mcqTitleArea: Locator;
   readonly mcqChoiceInputs: Locator;
@@ -20,11 +19,9 @@ export class CreateQuizPage {
   readonly mcqAddChoiceBtn: Locator;
   readonly mcqMarksInput: Locator;
 
-
   readonly essayTitleArea: Locator;
   readonly essayReferenceArea: Locator;
   readonly essayMarksInput: Locator;
-
 
   readonly tfTitleArea: Locator;
   readonly tfRadios: Locator;
@@ -79,7 +76,9 @@ export class CreateQuizPage {
       el.scrollTo(0, el.scrollHeight);
     });
     // Wait until the sticky container is detached to guarantee DOM stability
-    await expect(this.page.locator('.add-question-sticky-container')).not.toBeAttached({ timeout: 3000 });
+    await expect(this.page.locator('.add-question-sticky-container')).not.toBeAttached({
+      timeout: 3000,
+    });
     await this.page.waitForTimeout(250);
 
     await this.questionTypeSelect.click();
@@ -193,7 +192,9 @@ export class CreateQuizPage {
         await questionTitleInput.blur();
 
         const selectTrue = q.correctTf !== false;
-        const radioInput = questionDiv.locator('app-tf-form input[type="radio"]').nth(selectTrue ? 0 : 1);
+        const radioInput = questionDiv
+          .locator('app-tf-form input[type="radio"]')
+          .nth(selectTrue ? 0 : 1);
         await radioInput.click({ force: true });
 
         const marksInput = questionDiv.locator('app-question-header input[type="number"]');

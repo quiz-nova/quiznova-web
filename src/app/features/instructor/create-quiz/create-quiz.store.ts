@@ -112,248 +112,245 @@ export const CreateQuizStore = signalStore(
     }),
   })),
   withMethods(
-    (
-      store,
-      coursesService = inject(CoursesService),
-      quizService = inject(QuizService),
-    ) => ({
-    setHeaderMetadata(payload: {
-      title: string;
-      courseId: string;
-      startsAtUtc: Date;
-      endsAtUtc: Date;
-    }): void {
-      patchState(store, (state) => ({
-        quiz: {
-          ...state.quiz,
-          title: payload.title,
-          courseId: payload.courseId,
-          startsAtUtc: payload.startsAtUtc,
-          endsAtUtc: payload.endsAtUtc,
-        },
-      }));
-    },
+    (store, coursesService = inject(CoursesService), quizService = inject(QuizService)) => ({
+      setHeaderMetadata(payload: {
+        title: string;
+        courseId: string;
+        startsAtUtc: Date;
+        endsAtUtc: Date;
+      }): void {
+        patchState(store, (state) => ({
+          quiz: {
+            ...state.quiz,
+            title: payload.title,
+            courseId: payload.courseId,
+            startsAtUtc: payload.startsAtUtc,
+            endsAtUtc: payload.endsAtUtc,
+          },
+        }));
+      },
 
-    updateCourseId(courseId: string): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          courseId,
-          questions: [],
-        },
-        activeQuestionId: null,
-        remainingMarks: null,
-      });
+      updateCourseId(courseId: string): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            courseId,
+            questions: [],
+          },
+          activeQuestionId: null,
+          remainingMarks: null,
+        });
 
-      coursesService.getCourseById(courseId).subscribe({
-        next: (course) => {
-          patchState(store, {
-            remainingMarks: course.remainingMarks,
-          });
-        },
-        error: (err) => {
-          console.error(getApiErrorMessage(err, 'Failed to fetch course details'));
-        },
-      });
-    },
+        coursesService.getCourseById(courseId).subscribe({
+          next: (course) => {
+            patchState(store, {
+              remainingMarks: course.remainingMarks,
+            });
+          },
+          error: (err) => {
+            console.error(getApiErrorMessage(err, 'Failed to fetch course details'));
+          },
+        });
+      },
 
-    setInstructorId(instructorId: string): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          instructorId,
-        },
-      });
-    },
+      setInstructorId(instructorId: string): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            instructorId,
+          },
+        });
+      },
 
-    registerForm(form: FormGroup): void {
-      if (store.registeredForms().includes(form)) return;
-      patchState(store, (state) => ({
-        registeredForms: [...state.registeredForms, form],
-      }));
-    },
+      registerForm(form: FormGroup): void {
+        if (store.registeredForms().includes(form)) return;
+        patchState(store, (state) => ({
+          registeredForms: [...state.registeredForms, form],
+        }));
+      },
 
-    unregisterForm(form: FormGroup): void {
-      patchState(store, {
-        registeredForms: store.registeredForms().filter((existingForm) => existingForm !== form),
-      });
-    },
+      unregisterForm(form: FormGroup): void {
+        patchState(store, {
+          registeredForms: store.registeredForms().filter((existingForm) => existingForm !== form),
+        });
+      },
 
-    addQuestion(question: Question): void {
-      const updatedQuestions = [...store.quiz().questions, question];
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: updatedQuestions,
-        },
-        activeQuestionId: question.id,
-      });
-    },
+      addQuestion(question: Question): void {
+        const updatedQuestions = [...store.quiz().questions, question];
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: updatedQuestions,
+          },
+          activeQuestionId: question.id,
+        });
+      },
 
-    removeQuestion(questionId: string): void {
-      const updatedQuestions = store
-        .quiz()
-        .questions.filter((question) => question.id !== questionId);
-      const nextActiveQuestionId =
-        store.activeQuestionId() === questionId
-          ? (updatedQuestions[0]?.id ?? null)
-          : store.activeQuestionId();
+      removeQuestion(questionId: string): void {
+        const updatedQuestions = store
+          .quiz()
+          .questions.filter((question) => question.id !== questionId);
+        const nextActiveQuestionId =
+          store.activeQuestionId() === questionId
+            ? (updatedQuestions[0]?.id ?? null)
+            : store.activeQuestionId();
 
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: updatedQuestions,
-        },
-        activeQuestionId: nextActiveQuestionId,
-      });
-    },
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: updatedQuestions,
+          },
+          activeQuestionId: nextActiveQuestionId,
+        });
+      },
 
-    updateQuestion(updatedQuestion: Question): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store
-            .quiz()
-            .questions.map((question) =>
-              question.id === updatedQuestion.id ? updatedQuestion : question,
-            ),
-        },
-      });
-    },
+      updateQuestion(updatedQuestion: Question): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: store
+              .quiz()
+              .questions.map((question) =>
+                question.id === updatedQuestion.id ? updatedQuestion : question,
+              ),
+          },
+        });
+      },
 
-    updateQuestionMarks(questionId: string, marks: number): void {
-      const currentQuestion = store.quiz().questions.find((q) => q.id === questionId);
-      if (!currentQuestion) {
-        return;
-      }
-      if (marks < 0) {
-        return;
-      }
-      const effectiveRemaining = store.effectiveRemainingMarks();
-      if (effectiveRemaining !== null) {
-        const marksDifference = marks - currentQuestion.marks;
-        if (marksDifference > effectiveRemaining) {
+      updateQuestionMarks(questionId: string, marks: number): void {
+        const currentQuestion = store.quiz().questions.find((q) => q.id === questionId);
+        if (!currentQuestion) {
           return;
         }
-      }
+        if (marks < 0) {
+          return;
+        }
+        const effectiveRemaining = store.effectiveRemainingMarks();
+        if (effectiveRemaining !== null) {
+          const marksDifference = marks - currentQuestion.marks;
+          if (marksDifference > effectiveRemaining) {
+            return;
+          }
+        }
 
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store
-            .quiz()
-            .questions.map((question) =>
-              question.id === questionId ? { ...question, marks } : question,
-            ),
-        },
-      });
-    },
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: store
+              .quiz()
+              .questions.map((question) =>
+                question.id === questionId ? { ...question, marks } : question,
+              ),
+          },
+        });
+      },
 
-    updateQuestionText(questionId: string, questionText: string): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store
-            .quiz()
-            .questions.map((question) =>
-              question.id === questionId ? { ...question, questionText } : question,
-            ),
-        },
-      });
-    },
+      updateQuestionText(questionId: string, questionText: string): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: store
+              .quiz()
+              .questions.map((question) =>
+                question.id === questionId ? { ...question, questionText } : question,
+              ),
+          },
+        });
+      },
 
-    addChoiceToMcq(questionId: string): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
-              return question;
-            }
+      addChoiceToMcq(questionId: string): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: store.quiz().questions.map((question) => {
+              if (question.id !== questionId || question.type !== QuestionType.Mcq) {
+                return question;
+              }
 
-            const mcq = question as Mcq;
-            const newChoice = {
-              id: crypto.randomUUID(),
-              questionId,
-              text: '',
-              displayOrder: mcq.choices.length + 1,
-            };
+              const mcq = question as Mcq;
+              const newChoice = {
+                id: crypto.randomUUID(),
+                questionId,
+                text: '',
+                displayOrder: mcq.choices.length + 1,
+              };
 
-            return {
-              ...question,
-              choices: [...mcq.choices, newChoice],
-              numberOfChoices: mcq.numberOfChoices + 1,
-            } as Mcq;
-          }),
-        },
-      });
-    },
+              return {
+                ...question,
+                choices: [...mcq.choices, newChoice],
+                numberOfChoices: mcq.numberOfChoices + 1,
+              } as Mcq;
+            }),
+          },
+        });
+      },
 
-    deleteChoiceFromMcq(questionId: string, choiceId: string): void {
-      patchState(store, {
-        quiz: {
-          ...store.quiz(),
-          questions: store.quiz().questions.map((question) => {
-            if (question.id !== questionId || question.type !== QuestionType.Mcq) {
-              return question;
-            }
+      deleteChoiceFromMcq(questionId: string, choiceId: string): void {
+        patchState(store, {
+          quiz: {
+            ...store.quiz(),
+            questions: store.quiz().questions.map((question) => {
+              if (question.id !== questionId || question.type !== QuestionType.Mcq) {
+                return question;
+              }
 
-            const mcq = question as Mcq;
-            if (mcq.choices.length <= 2) {
-              return question;
-            }
+              const mcq = question as Mcq;
+              if (mcq.choices.length <= 2) {
+                return question;
+              }
 
-            const updatedChoices = mcq.choices.filter((choice: Choice) => choice.id !== choiceId);
-            const isCorrectChoiceDeleted = mcq.correctChoiceId === choiceId;
+              const updatedChoices = mcq.choices.filter((choice: Choice) => choice.id !== choiceId);
+              const isCorrectChoiceDeleted = mcq.correctChoiceId === choiceId;
 
-            return {
-              ...question,
-              choices: updatedChoices,
-              numberOfChoices: updatedChoices.length,
-              correctChoiceId: isCorrectChoiceDeleted ? '' : mcq.correctChoiceId,
-            } as Mcq;
-          }),
-        },
-      });
-    },
+              return {
+                ...question,
+                choices: updatedChoices,
+                numberOfChoices: updatedChoices.length,
+                correctChoiceId: isCorrectChoiceDeleted ? '' : mcq.correctChoiceId,
+              } as Mcq;
+            }),
+          },
+        });
+      },
 
-    validateAll(): boolean {
-      store.registeredForms().forEach((form) => {
-        form.markAllAsTouched();
-        form.updateValueAndValidity();
-      });
+      validateAll(): boolean {
+        store.registeredForms().forEach((form) => {
+          form.markAllAsTouched();
+          form.updateValueAndValidity();
+        });
 
-      return store.isEntireQuizValid();
-    },
+        return store.isEntireQuizValid();
+      },
 
-    setCurrentQuestionId(questionId: string): void {
-      patchState(store, {
-        activeQuestionId: questionId,
-      });
-    },
+      setCurrentQuestionId(questionId: string): void {
+        patchState(store, {
+          activeQuestionId: questionId,
+        });
+      },
 
-    getQuestionByIndex(index: number): Question {
-      return store.quiz().questions[index];
-    },
+      getQuestionByIndex(index: number): Question {
+        return store.quiz().questions[index];
+      },
 
-    publishQuiz: rxMethod<{ onSuccess?: () => void; onError?: (message: string) => void }>(
-      exhaustMap(({ onSuccess, onError }) => {
-        patchState(store, setPending('publishQuiz'));
-        return quizService.createQuiz(store.quiz()).pipe(
-          tap(() => {
-            patchState(store, setFulfilled('publishQuiz'));
-            onSuccess?.();
-          }),
-          catchError((err) => {
-            const message = getApiErrorMessage(err, 'Failed to publish quiz. Please try again.');
-            patchState(store, setError('publishQuiz', message));
-            onError?.(message);
-            return EMPTY;
-          }),
-        );
-      }),
-    ),
-  })),
+      publishQuiz: rxMethod<{ onSuccess?: () => void; onError?: (message: string) => void }>(
+        exhaustMap(({ onSuccess, onError }) => {
+          patchState(store, setPending('publishQuiz'));
+          return quizService.createQuiz(store.quiz()).pipe(
+            tap(() => {
+              patchState(store, setFulfilled('publishQuiz'));
+              onSuccess?.();
+            }),
+            catchError((err) => {
+              const message = getApiErrorMessage(err, 'Failed to publish quiz. Please try again.');
+              patchState(store, setError('publishQuiz', message));
+              onError?.(message);
+              return EMPTY;
+            }),
+          );
+        }),
+      ),
+    }),
+  ),
   withHooks({
     onInit(store) {
       const authService = inject(AuthService);

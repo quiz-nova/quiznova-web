@@ -10,11 +10,9 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
     <section class="about" id="about">
       <div class="container">
         <article class="section-heading">
-          <h2 appFadeInOnScroll>Built by educators, for educators</h2>
+          <h2 appFadeInOnScroll>Built for educators and students</h2>
           <p appFadeInOnScroll>
-            QuizNova was born from the frustration of managing assessments across large institutions.
-            We built a platform that scales from a single campus team to an entire university system —
-            without compromising on experience or security.
+            QuizNova simplifies the entire assessment lifecycle — from quiz creation and real-time exams to grade review and course communication. Whether you're an admin managing courses, an instructor creating quizzes, or a student taking them, QuizNova gives every role a tailored experience designed around their needs.
           </p>
         </article>
         <div class="about-cta" appFadeInOnScroll>

@@ -44,13 +44,11 @@ export const instructorRoutes: Routes = [
       },
       {
         path: 'course-chat',
-        loadComponent: () =>
-          import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
+        loadComponent: () => import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
       },
       {
         path: 'course-chat/:courseId',
-        loadComponent: () =>
-          import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
+        loadComponent: () => import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
       },
     ],
   },

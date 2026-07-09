@@ -10,41 +10,45 @@ export interface FeatureCardData {
 export const featureCards: FeatureCardData[] = [
   {
     id: 1,
-    icon: 'fa-solid fa-building-shield',
-    title: 'Multi-Tenant Architecture',
+    icon: 'fa-solid fa-gauge-high',
+    title: 'Role-Based Dashboards',
     content:
-      'Each institution gets its own isolated workspace with custom branding and configuration.',
+      'Dedicated dashboards for Admins, Instructors, and Students with real-time charts — doughnut, bar, and line visualizations — plus key metric cards for at-a-glance insights.',
   },
   {
     id: 2,
-    icon: 'fa-solid fa-user-shield',
-    title: 'Role-Based Access',
-    content: 'Admin, Instructor, and Student — each with tailored dashboards.',
+    icon: 'fa-solid fa-pen-to-square',
+    title: 'Smart Quiz Builder',
+    content:
+      'Create quizzes with Multiple Choice, True/False, and Essay questions. Set time limits, configure marks, and preview before publishing — all in an intuitive step-by-step wizard.',
   },
   {
     id: 3,
-    icon: 'fa-solid fa-database',
-    title: 'Smart Question Bank',
-    content: 'Build reusable question pools with tagging, difficulty labels, and auto-shuffle.',
+    icon: 'fa-solid fa-clock',
+    title: 'Real-Time Quiz Engine',
+    content:
+      'Students take quizzes with a live countdown timer, randomized questions, and progress navigation. Auto-graded questions return instant results with detailed answer review.',
   },
   {
     id: 4,
-    icon: 'fa-solid fa-chart-line',
-    title: 'Real-Time Analytics',
+    icon: 'fa-solid fa-building-columns',
+    title: 'Institution Management',
     content:
-      'Track performance with detailed reports, charts, and exportable data across every view.',
+      'Full CRUD for colleges, courses, instructors, students, and admins. Paginated tables with search, filters, and role assignment — everything needed to manage your institution.',
   },
   {
     id: 5,
-    icon: 'fa-solid fa-lock',
-    title: 'Secure Assessments',
-    content: 'Anti-cheating measures, time limits, randomized questions, and secure browser mode.',
+    icon: 'fa-solid fa-clipboard-check',
+    title: 'Grade Review Workflow',
+    content:
+      'Pending grade queues for instructors with rubric-based essay scoring. Students see detailed result breakdowns, score trends over time, and per-question feedback.',
   },
   {
     id: 6,
-    icon: 'fa-solid fa-check-double',
-    title: 'Instant Grading',
-    content: 'Automatic scoring with customizable rubrics and instant result publishing.',
+    icon: 'fa-solid fa-comments',
+    title: 'Course Chat',
+    content:
+      'Real-time messaging between instructors and students within each course. Emoji reactions, threaded replies, connection status indicators, and seamless SignalR integration.',
   },
 ];
 
@@ -72,7 +76,7 @@ export const featureCards: FeatureCardData[] = [
       justify-content: flex-start;
       flex-direction: column;
       gap: 0.75rem;
-      min-height: 190px;
+      min-height: 250px;
       padding: 1.75rem;
       border: 1px solid var(--clr-gray-200);
       border-radius: var(--radius-lg);

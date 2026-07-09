@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, ElementRef, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  ViewChild,
+  ChangeDetectionStrategy,
+  inject,
+} from '@angular/core';
 
 import { Message } from '@shared/models/chat/chat.model';
 import { UserRole } from '@shared/models/users/user-role.model';

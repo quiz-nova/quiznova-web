@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
@@ -33,14 +41,18 @@ export type EssayAttemptForm = FormGroup<{
         <textarea
           class="response-input"
           [class.invalid]="studentResponseControl.invalid && studentResponseControl.touched"
-          [attr.aria-invalid]="studentResponseControl.invalid && studentResponseControl.touched ? 'true' : null"
+          [attr.aria-invalid]="
+            studentResponseControl.invalid && studentResponseControl.touched ? 'true' : null
+          "
           [formControl]="studentResponseControl"
           placeholder="Type your answer here..."
           rows="6"
           aria-describedby="essay-response-error"
         ></textarea>
         @if (studentResponseControl.invalid && studentResponseControl.touched) {
-          <app-field-error id="essay-response-error">Response must be between 3 and 1000 characters.</app-field-error>
+          <app-field-error id="essay-response-error"
+            >Response must be between 3 and 1000 characters.</app-field-error
+          >
         }
       </form>
     </article>
@@ -88,7 +100,6 @@ export type EssayAttemptForm = FormGroup<{
         border-color: var(--clr-red-500);
       }
     }
-
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

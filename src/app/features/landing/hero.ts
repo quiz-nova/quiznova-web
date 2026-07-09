@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { Button } from '@shared/components/button/button';
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
   selector: 'app-hero',
-  imports: [FadeInOnScrollDirective, Button],
+  imports: [RouterLink, FadeInOnScrollDirective, Button],
   template: `
     <div class="container">
       <main>
@@ -13,18 +14,17 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           <div class="icon" [delay]="50" appFadeInOnScroll>
             <i class="fa-solid fa-star"></i>
           </div>
-          <p [delay]="100" appFadeInOnScroll>The future of educational assessment</p>
+          <p [delay]="100" appFadeInOnScroll>Complete assessment platform for institutions</p>
         </div>
         <h1 [delay]="150" appFadeInOnScroll>
-          Smarter quizzes for <span class="accent-word">modern education</span>
+          Create, manage, and analyze quizzes <span class="accent-word">at scale</span>
         </h1>
         <p class="system-description" [delay]="200" appFadeInOnScroll>
-          QuizNova empowers colleges and institutions to create, assign, and analyze quizzes with a
-          powerful multi-tenant platform built for scale.
+          QuizNova is a comprehensive assessment platform for colleges and institutions. From role-based dashboards and a smart quiz builder to real-time quiz taking, auto-grading, and course chat — everything you need to run assessments in one place.
         </p>
         <div class="buttons" [delay]="250" appFadeInOnScroll>
-          <button appButton variant="green" appFadeInOnScroll>Start free trial</button>
-          <button appButton variant="gray" appFadeInOnScroll>See how it works</button>
+          <button appButton variant="green" routerLink="/auth/login">Sign in</button>
+          <a href="#features" appButton variant="gray">Explore features</a>
         </div>
       </main>
     </div>

@@ -1,5 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -51,9 +58,9 @@ import { QuizService } from '@shared/services/quiz.service';
           <label for="marks">Marks</label>
           <p-inputnumber
             [(ngModel)]="marks"
-            (ngModelChange)="onMarksChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onMarksChange($event)"
             inputId="marks"
             placeholder="Any"
           ></p-inputnumber>
@@ -70,8 +77,8 @@ import { QuizService } from '@shared/services/quiz.service';
           [lazy]="true"
           [first]="(pageNumber() - 1) * pageSize()"
           [showFirstLastIcon]="false"
-          (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          (onPage)="onPageChange($event)"
         >
           <ng-template #header>
             <tr>
@@ -122,8 +129,6 @@ import { QuizService } from '@shared/services/quiz.service';
           </ng-template>
         </p-table>
       </div>
-
-
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -163,9 +168,13 @@ export class CollegeQuizzes {
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly tableData = computed<Quiz[]>(() => {
     if (this.quizzesResource.isLoading()) {
-      return Array.from<unknown, Quiz>({ length: this.pageSize() }, (_, i) => ({
-        quizId: `skeleton-${i}`,
-      } as unknown as Quiz));
+      return Array.from<unknown, Quiz>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            quizId: `skeleton-${i}`,
+          }) as unknown as Quiz,
+      );
     }
     if (this.quizzesResource.error()) {
       return [];

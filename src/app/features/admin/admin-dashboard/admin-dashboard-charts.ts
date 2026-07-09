@@ -17,9 +17,9 @@ import { chartColor } from '@shared/utils/chart-colors';
         <div class="chart-container">
           @defer (on viewport({rootMargin: '100px'}); prefetch on viewport({rootMargin: '200px'})) {
             <p-chart
-              type="doughnut"
               [data]="compositionChartData()"
               [options]="compositionChartOptions()"
+              type="doughnut"
               height="300"
             />
           } @placeholder {
@@ -32,9 +32,9 @@ import { chartColor } from '@shared/utils/chart-colors';
         <div class="chart-container">
           @defer (on viewport({rootMargin: '100px'}); prefetch on viewport({rootMargin: '200px'})) {
             <p-chart
-              type="bar"
               [data]="enrollmentsChartData()"
               [options]="enrollmentsChartOptions()"
+              type="bar"
               height="300"
             />
           } @placeholder {
@@ -70,7 +70,9 @@ import { chartColor } from '@shared/utils/chart-colors';
       border: 1px solid var(--clr-gray-200);
       border-radius: var(--radius-lg);
       background-color: var(--clr-white);
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.05),
+        0 2px 4px -2px rgb(0 0 0 / 0.05);
     }
 
     .chart-title {
@@ -137,14 +139,14 @@ export class AdminDashboardCharts {
   protected readonly enrollmentsChartData = computed(() => {
     const counts = this.enrollmentCounts();
     return {
-      labels: counts.map(c => c.courseName),
+      labels: counts.map((c) => c.courseName),
       datasets: [
         {
           label: 'Enrolled Students',
           backgroundColor: chartColor('--clr-green-400'),
           hoverBackgroundColor: chartColor('--clr-green-600'),
           borderRadius: 6,
-          data: counts.map(c => c.enrollmentsCount),
+          data: counts.map((c) => c.enrollmentsCount),
         },
       ],
     };

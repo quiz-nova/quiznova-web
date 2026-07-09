@@ -39,7 +39,7 @@ type TfFormGroup = FormGroup<{
   template: `
     <div class="tf-container">
       <form [formGroup]="tfForm">
-        <app-question-title 
+        <app-question-title
           [control]="questionTextControl"
           (titleBlur)="onTitleBlur($event)"
         ></app-question-title>
@@ -50,10 +50,10 @@ type TfFormGroup = FormGroup<{
             <p-radiobutton
               [formControl]="answerControl"
               [value]="true"
+              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
+              (onClick)="onBlur()"
               inputId="answerTrue"
               name="answer"
-              (onClick)="onBlur()"
-              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
               aria-describedby="please-select-the-correct-answer-error"
             ></p-radiobutton>
             <span>True</span>
@@ -62,10 +62,10 @@ type TfFormGroup = FormGroup<{
             <p-radiobutton
               [formControl]="answerControl"
               [value]="false"
+              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
+              (onClick)="onBlur()"
               inputId="answerFalse"
               name="answer"
-              (onClick)="onBlur()"
-              [attr.aria-invalid]="answerControl.invalid && answerControl.touched ? 'true' : null"
               aria-describedby="please-select-the-correct-answer-error"
             ></p-radiobutton>
             <span>False</span>
@@ -74,7 +74,9 @@ type TfFormGroup = FormGroup<{
 
         @if (answerControl.invalid && answerControl.touched) {
           @if (answerControl.hasError('required')) {
-            <app-field-error id="please-select-the-correct-answer-error">Please select the correct answer.</app-field-error>
+            <app-field-error id="please-select-the-correct-answer-error"
+              >Please select the correct answer.</app-field-error
+            >
           }
         }
       </form>
@@ -100,7 +102,6 @@ type TfFormGroup = FormGroup<{
         gap: 0.5rem;
         cursor: pointer;
       }
-
     `,
   ],
 })
@@ -121,7 +122,11 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly tfForm: TfFormGroup = this.fb.group({
     text: [
       '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
+      [
+        Validators.required,
+        CustomValidators.trimMinLength(3),
+        CustomValidators.trimMaxLength(1000),
+      ],
     ],
     answer: [null as boolean | null, [Validators.required]],
   });
@@ -135,11 +140,9 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.tfForm.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.valueChange.emit(this.getLatestTfData());
-      });
+    this.tfForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.valueChange.emit(this.getLatestTfData());
+    });
 
     this.formReady.emit(this.tfForm);
   }
@@ -166,7 +169,7 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
     return {
       ...originalTf,
       questionText: formValue.text,
-      correctChoice: formValue.answer ?? true
+      correctChoice: formValue.answer ?? true,
     };
   }
 }

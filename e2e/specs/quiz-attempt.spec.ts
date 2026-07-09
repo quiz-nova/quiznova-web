@@ -6,7 +6,6 @@ import { CreateQuizPage } from '../pages/create-quiz.page';
 import { LoginPage } from '../pages/login.page';
 import { QuizAttemptPage } from '../pages/quiz-attempt.page';
 
-
 async function createQuizViaUI(
   page: Page,
   title: string,

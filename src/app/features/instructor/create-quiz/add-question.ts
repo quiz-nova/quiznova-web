@@ -36,7 +36,13 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button appButton variant="green" [disabled]="!store.canAddMoreQuestions()" (click)="onAddQuestion()" type="button">
+      <button
+        [disabled]="!store.canAddMoreQuestions()"
+        (click)="onAddQuestion()"
+        appButton
+        variant="green"
+        type="button"
+      >
         +Add Question
       </button>
     </div>
@@ -118,6 +124,6 @@ export class AddQuestion {
     });
     if (question) {
       this.questionAdded.emit(question);
-  }
+    }
   }
 }

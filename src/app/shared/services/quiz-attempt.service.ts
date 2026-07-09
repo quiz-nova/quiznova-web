@@ -53,9 +53,7 @@ export class QuizAttemptService {
   }
 
   getStudentQuizAttempts(studentId: string): Observable<QuizAttempt[]> {
-    return this.http.get<QuizAttempt[]>(
-      `${this.apiBase}/students/${studentId}/quiz-attempts`,
-    );
+    return this.http.get<QuizAttempt[]>(`${this.apiBase}/students/${studentId}/quiz-attempts`);
   }
 
   getStudentQuizAttemptsCount(studentId: string): Observable<QuizAttemptCount> {
@@ -69,12 +67,9 @@ export class QuizAttemptService {
   ): Observable<PaginatedList<QuizAttempt>> {
     const params = buildParameters(query);
 
-    return this.http.get<PaginatedList<QuizAttempt>>(
-      `${this.apiBase}/quiz-attempts`,
-      {
-        params,
-      },
-    );
+    return this.http.get<PaginatedList<QuizAttempt>>(`${this.apiBase}/quiz-attempts`, {
+      params,
+    });
   }
 
   getPendingManualAnswers(

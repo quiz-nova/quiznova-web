@@ -47,20 +47,20 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                 <td>
                   @if (quiz.attemptId) {
                     <a
-                      appButton
-                      variant="green"
                       class="start-btn"
                       [routerLink]="['/student/quiz-attempt', quiz.quizId]"
                       [queryParams]="{ attemptId: quiz.attemptId }"
+                      appButton
+                      variant="green"
                       >Continue</a
                     >
                   } @else {
                     <button
-                      appButton
-                      variant="green"
                       class="start-btn"
                       [disabled]="isQuizExpired(quiz.quizId)"
                       (click)="startQuiz(quiz)"
+                      appButton
+                      variant="green"
                       type="button"
                     >
                       Start Quiz
@@ -76,13 +76,13 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
 
     @if (pendingQuiz(); as quiz) {
       <app-confirm-action-modal
-        title="Start Quiz"
         [warningMessage]="'You are about to start the quiz: ' + quiz.title"
+        (confirmed)="onConfirmStart()"
+        (cancelled)="onCancelStart()"
+        title="Start Quiz"
         confirmationPhrase="start"
         confirmButtonText="Yes, Start Quiz"
         variant="info"
-        (confirmed)="onConfirmStart()"
-        (cancelled)="onCancelStart()"
       />
     }
   `,

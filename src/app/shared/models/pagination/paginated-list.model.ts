@@ -10,5 +10,3 @@ export interface PaginationMetadata {
 export interface PaginatedList<T> extends PaginationMetadata {
   items: T[];
 }
-
-

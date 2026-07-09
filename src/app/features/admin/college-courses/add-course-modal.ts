@@ -40,7 +40,7 @@ type AddCourseFormGroup = FormGroup<{
     Button,
   ],
   template: `
-    <button appButton variant="green" (click)="openDialog()" type="button">Add Course</button>
+    <button (click)="openDialog()" appButton variant="green" type="button">Add Course</button>
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -53,13 +53,13 @@ type AddCourseFormGroup = FormGroup<{
       <form class="add-form" [formGroup]="addCourseForm" (ngSubmit)="onSubmit()">
         <div class="form-field">
           <p-floatlabel variant="on">
-            <input 
-              id="course-name" 
-              [fluid]="true" 
-              pInputText 
-              type="text" 
+            <input
+              id="course-name"
+              [fluid]="true"
               [formControl]="nameControl"
               [attr.aria-invalid]="nameControl.invalid && nameControl.touched ? 'true' : null"
+              pInputText
+              type="text"
               aria-describedby="course-name-is-required-error course-name-minlength-error course-name-maxlength-error"
             />
             <label for="course-name">Course Name</label>
@@ -89,9 +89,9 @@ type AddCourseFormGroup = FormGroup<{
             [options]="instructorOptions()"
             [filter]="true"
             [showClear]="true"
+            [formControl]="instructorIdControl"
             (onShow)="loadInstructors()"
             inputId="course-instructor"
-            [formControl]="instructorIdControl"
             optionLabel="name"
             optionValue="id"
             filterBy="name"
@@ -104,9 +104,13 @@ type AddCourseFormGroup = FormGroup<{
           <p-floatlabel variant="on">
             <p-inputnumber
               [min]="1"
-              inputId="minimum-passing-marks"
               [formControl]="minimumPassingMarksControl"
-              [attr.aria-invalid]="minimumPassingMarksControl.invalid && minimumPassingMarksControl.touched ? 'true' : null"
+              [attr.aria-invalid]="
+                minimumPassingMarksControl.invalid && minimumPassingMarksControl.touched
+                  ? 'true'
+                  : null
+              "
+              inputId="minimum-passing-marks"
               aria-describedby="minimum-passing-marks-must-be-greater-than-zero-error"
             />
             <label for="minimum-passing-marks">Minimum Passing Marks</label>
@@ -120,11 +124,13 @@ type AddCourseFormGroup = FormGroup<{
 
         <div class="form-field">
           <p-floatlabel variant="on">
-            <p-inputnumber 
-              [min]="1" 
-              inputId="maximum-marks" 
+            <p-inputnumber
+              [min]="1"
               [formControl]="maximumMarksControl"
-              [attr.aria-invalid]="maximumMarksControl.invalid && maximumMarksControl.touched ? 'true' : null"
+              [attr.aria-invalid]="
+                maximumMarksControl.invalid && maximumMarksControl.touched ? 'true' : null
+              "
+              inputId="maximum-marks"
               aria-describedby="maximum-marks-must-be-greater-than-zero-error"
             />
             <label for="maximum-marks">Maximum Marks</label>
@@ -141,8 +147,8 @@ type AddCourseFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
-          <button appButton variant="green" [loading]="isSubmitting()" type="submit">
+          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
+          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
             {{ isSubmitting() ? 'Saving...' : 'Save Course' }}
           </button>
         </div>
@@ -195,7 +201,10 @@ export class AddCourseModal {
   protected readonly instructors = signal<Instructor[]>([]);
 
   protected readonly addCourseForm: AddCourseFormGroup = this.fb.group({
-    name: ['', [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(30)]],
+    name: [
+      '',
+      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(30)],
+    ],
     instructorId: this.fb.control<string | null>(null),
     minimumPassingMarks: [1, [Validators.required, Validators.min(1)]],
     maximumMarks: [1, [Validators.required, Validators.min(1)]],
@@ -273,18 +282,16 @@ export class AddCourseModal {
     this.isSubmitting.set(true);
     this.submitError.set(false);
 
-    this.coursesService
-      .createCourse(this.addCourseForm.getRawValue())
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.created.emit();
-          this.closeDialog();
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-          this.submitError.set(true);
-        },
-      });
+    this.coursesService.createCourse(this.addCourseForm.getRawValue()).subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.created.emit();
+        this.closeDialog();
+      },
+      error: () => {
+        this.isSubmitting.set(false);
+        this.submitError.set(true);
+      },
+    });
   }
 }

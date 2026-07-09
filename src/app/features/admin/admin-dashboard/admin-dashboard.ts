@@ -14,7 +14,13 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard, AdminDashboardCharts, OperationFailed],
+  imports: [
+    ProgressSpinner,
+    RoleDashboardHeader,
+    RoleDashboardCard,
+    AdminDashboardCharts,
+    OperationFailed,
+  ],
   template: `
     <section class="page">
       <header class="page-header">
@@ -79,7 +85,9 @@ export class AdminDashboard {
   private readonly collegeService = inject(CollegeService);
   private readonly enrollmentService = inject(EnrollmentService);
 
-  protected readonly welcomeName = computed(() => this.authService.currentUser()?.personalInformation?.name || 'Admin');
+  protected readonly welcomeName = computed(
+    () => this.authService.currentUser()?.personalInformation?.name || 'Admin',
+  );
 
   protected readonly summaryResource = rxResource({
     stream: () => this.collegeService.getCollegeSummary(),

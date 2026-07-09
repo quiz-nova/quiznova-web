@@ -33,9 +33,7 @@ export const studentRoutes: Routes = [
       {
         path: 'quizzes',
         loadComponent: () =>
-          import('@Features/student/student-quizzes/student-quizzes').then(
-            (m) => m.StudentQuizzes,
-          ),
+          import('@Features/student/student-quizzes/student-quizzes').then((m) => m.StudentQuizzes),
       },
       {
         path: 'review-quiz/:attemptId',
@@ -45,19 +43,15 @@ export const studentRoutes: Routes = [
       {
         path: 'results',
         loadComponent: () =>
-          import('@Features/student/student-results/student-results').then(
-            (m) => m.StudentResults,
-          ),
+          import('@Features/student/student-results/student-results').then((m) => m.StudentResults),
       },
       {
         path: 'course-chat',
-        loadComponent: () =>
-          import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
+        loadComponent: () => import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
       },
       {
         path: 'course-chat/:courseId',
-        loadComponent: () =>
-          import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
+        loadComponent: () => import('@Features/course-chat/course-chat').then((m) => m.CourseChat),
       },
     ],
   },

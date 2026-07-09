@@ -10,7 +10,6 @@ import { OperationFailed } from '@shared/components/operation-failed/operation-f
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { EnrollmentService } from '@shared/services/enrollment.service';
 
-
 @Component({
   selector: 'app-student-courses',
   imports: [ProgressSpinner, DatePipe, RoleDashboardHeader, OperationFailed],
@@ -119,7 +118,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       justify-content: space-between;
       gap: 1rem;
     }
-    
+
     h2 {
       margin: 0;
       color: var(--clr-black-700);

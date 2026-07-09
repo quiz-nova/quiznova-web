@@ -50,11 +50,7 @@ type McqFormGroup = FormGroup<{
         ></app-question-title>
         <fieldset class="radio-group" formArrayName="choices">
           <legend class="sr-only">Multiple Choice Options</legend>
-          @for (
-            choiceControl of choicesArray.controls;
-            track choiceControl;
-            let index = $index
-          ) {
+          @for (choiceControl of choicesArray.controls; track choiceControl; let index = $index) {
             <div class="radio-item" animate.enter="element-enter" animate.leave="element-leave">
               <div class="radio-item-input">
                 <p-radiobutton
@@ -85,8 +81,8 @@ type McqFormGroup = FormGroup<{
               </div>
 
               <app-delete-button
-                (deleteButtonClicked)="onDeleteChoice(index)"
                 [isDisabled]="choicesArray.length <= 2"
+                (deleteButtonClicked)="onDeleteChoice(index)"
                 ariaLabel="Delete choice"
               />
             </div>
@@ -120,10 +116,10 @@ type McqFormGroup = FormGroup<{
         }
       </form>
       <button
-        appButton
-        variant="gray"
         [disabled]="choicesArray.length >= 5"
         (click)="onAddChoice()"
+        appButton
+        variant="gray"
         type="button"
       >
         +Add Choice
@@ -201,7 +197,11 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   protected readonly mcqForm: McqFormGroup = this.fb.group({
     questionText: [
       '',
-      [Validators.required, CustomValidators.trimMinLength(3), CustomValidators.trimMaxLength(1000)],
+      [
+        Validators.required,
+        CustomValidators.trimMinLength(3),
+        CustomValidators.trimMaxLength(1000),
+      ],
     ],
     choices: this.fb.array<FormControl<string>>([]),
     correctChoiceId: [null as string | null, [Validators.required]],
@@ -290,7 +290,7 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
         Validators.required,
         CustomValidators.trimMinLength(3),
         CustomValidators.trimMaxLength(100),
-      ])
+      ]),
     );
     this.onBlur();
   }

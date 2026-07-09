@@ -6,9 +6,5 @@
     "module": "preserve",
     "types": ["node"]
   },
-  "include": [
-    "eslint.config.js",
-    "playwright.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["eslint.config.js", "playwright.config.ts", "vitest.config.ts"]
 }

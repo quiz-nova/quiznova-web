@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-
 import { UIChart } from 'primeng/chart';
 
 import { ChartPlaceholder } from '@shared/components/chart-placeholder/chart-placeholder';
@@ -17,9 +16,9 @@ import { chartColor } from '@shared/utils/chart-colors';
         <div class="chart-container">
           @defer (on viewport({rootMargin: '100px'}); prefetch on viewport({rootMargin: '200px'})) {
             <p-chart
-              type="line"
               [data]="scoreTrendData()"
               [options]="scoreTrendOptions()"
+              type="line"
               height="300"
             />
           } @placeholder {
@@ -27,7 +26,6 @@ import { chartColor } from '@shared/utils/chart-colors';
           }
         </div>
       </article>
-
     </section>
   `,
   styles: `
@@ -56,7 +54,9 @@ import { chartColor } from '@shared/utils/chart-colors';
       border: 1px solid var(--clr-gray-200);
       border-radius: var(--radius-lg);
       background-color: var(--clr-white);
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.05),
+        0 2px 4px -2px rgb(0 0 0 / 0.05);
     }
 
     .chart-title {
@@ -79,11 +79,11 @@ export class StudentDashboardCharts {
 
   protected readonly scoreTrendData = computed(() => {
     const attempts = this.quizAttempts()
-      .filter(a => a.submittedAt)
+      .filter((a) => a.submittedAt)
       .sort((a, b) => new Date(a.submittedAt!).getTime() - new Date(b.submittedAt!).getTime());
 
     return {
-      labels: attempts.map(a => a.quizTitle),
+      labels: attempts.map((a) => a.quizTitle),
       datasets: [
         {
           label: 'Score',
@@ -96,7 +96,7 @@ export class StudentDashboardCharts {
           pointRadius: 4,
           tension: 0.3,
           fill: false,
-          data: attempts.map(a => a.score),
+          data: attempts.map((a) => a.score),
         },
       ],
     };
@@ -140,6 +140,4 @@ export class StudentDashboardCharts {
       },
     },
   }));
-
-
 }

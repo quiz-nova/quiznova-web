@@ -3,7 +3,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Mcq } from '@shared/models/quiz/questions/mcq.model';
-import { QuestionAnswer, McqAnswer, AutoGradedAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import {
+  QuestionAnswer,
+  McqAnswer,
+  AutoGradedAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-mcq-answer-review',
@@ -104,7 +108,6 @@ export class McqAnswerReview implements AnswerReviewContract {
   protected readonly mcqAnswer = computed(() => this.answer() as McqAnswer);
   protected readonly autoAnswer = computed(() => this.answer() as AutoGradedAnswer);
   protected readonly isCorrect = computed(() => this.autoAnswer()?.isCorrect ?? false);
-
 
   protected readonly studentChoiceText = computed(() => {
     const ans = this.mcqAnswer();

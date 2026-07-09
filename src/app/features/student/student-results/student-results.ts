@@ -11,8 +11,13 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
         title="My Results"
         description="View and analyze your quiz attempts, scores, and feedback"
       />
-      <div class="card" style="margin-top: 1.5rem; padding: 1.5rem; background: var(--clr-white); border: 1px solid var(--clr-gray-200); border-radius: var(--radius-md);">
-        <p style="color: var(--clr-gray-600); margin: 0;">Your quiz results and performance analytics will appear here.</p>
+      <div
+        class="card"
+        style="margin-top: 1.5rem; padding: 1.5rem; background: var(--clr-white); border: 1px solid var(--clr-gray-200); border-radius: var(--radius-md);"
+      >
+        <p style="color: var(--clr-gray-600); margin: 0;">
+          Your quiz results and performance analytics will appear here.
+        </p>
       </div>
     </section>
   `,

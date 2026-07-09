@@ -3,7 +3,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
 import { Tf } from '@shared/models/quiz/questions/tf.model';
-import { QuestionAnswer, TfAnswer, AutoGradedAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import {
+  QuestionAnswer,
+  TfAnswer,
+  AutoGradedAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-tf-answer-review',
@@ -16,7 +20,9 @@ import { QuestionAnswer, TfAnswer, AutoGradedAnswer } from '@shared/models/quiz-
       </div>
       <div class="answer-row">
         <span class="answer-label">Correct answer:</span>
-        <span class="answer-value correct">{{ tfQuestion().correctChoice ? 'True' : 'False' }}</span>
+        <span class="answer-value correct">{{
+          tfQuestion().correctChoice ? 'True' : 'False'
+        }}</span>
       </div>
 
       <div class="result-badge" [class.is-correct]="isCorrect()" [class.is-wrong]="!isCorrect()">

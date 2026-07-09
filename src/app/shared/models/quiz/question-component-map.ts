@@ -62,4 +62,3 @@ export const STUDENT_ANSWER_REVIEW_COMPONENT_MAP: StudentAnswerReviewMap = {
   [QuestionType.Tf]: StudentTfAnswerReview,
   [QuestionType.Essay]: StudentEssayAnswerReview,
 };
-

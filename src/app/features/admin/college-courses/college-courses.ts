@@ -72,9 +72,9 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="quizzes-count">Quizzes count</label>
           <p-inputnumber
             [(ngModel)]="quizzesCount"
-            (ngModelChange)="onQuizzesCountChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onQuizzesCountChange($event)"
             inputId="quizzes-count"
             placeholder="Any"
           ></p-inputnumber>
@@ -84,9 +84,9 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="enrolled-count">Enrolled students</label>
           <p-inputnumber
             [(ngModel)]="enrolledStudentsCount"
-            (ngModelChange)="onEnrolledStudentsCountChange($event)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="onEnrolledStudentsCountChange($event)"
             inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>
@@ -96,10 +96,10 @@ import { ManageCourseModal } from './manage-course-modal';
           <label for="instructor-filter">Instructor</label>
           <p-select
             [(ngModel)]="instructorId"
-            (ngModelChange)="pageNumber.set(1)"
             [options]="instructorOptions()"
             [filter]="true"
             [showClear]="true"
+            (ngModelChange)="pageNumber.set(1)"
             (onShow)="onInstructorDropdownShow()"
             inputId="instructor-filter"
             optionLabel="name"
@@ -121,8 +121,8 @@ import { ManageCourseModal } from './manage-course-modal';
           [lazy]="true"
           [first]="(pageNumber() - 1) * pageSize()"
           [showFirstLastIcon]="false"
-          (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          (onPage)="onPageChange($event)"
         >
           <ng-template #header>
             <tr>
@@ -173,8 +173,6 @@ import { ManageCourseModal } from './manage-course-modal';
           </ng-template>
         </p-table>
       </div>
-
-
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -192,9 +190,13 @@ export class CollegeCourses {
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly tableData = computed<Course[]>(() => {
     if (this.coursesResource.isLoading()) {
-      return Array.from<unknown, Course>({ length: this.pageSize() }, (_, i) => ({
-        id: `skeleton-${i}`,
-      } as unknown as Course));
+      return Array.from<unknown, Course>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            id: `skeleton-${i}`,
+          }) as unknown as Course,
+      );
     }
     if (this.coursesResource.error()) {
       return [];

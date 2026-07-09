@@ -15,7 +15,6 @@ import { QuizService } from '@shared/services/quiz.service';
 
 import { InstructorDashboardCharts } from './instructor-dashboard-charts';
 
-
 @Component({
   selector: 'app-instructor-dashboard',
   imports: [
@@ -152,4 +151,3 @@ export class InstructorDashboard {
     ];
   });
 }
-

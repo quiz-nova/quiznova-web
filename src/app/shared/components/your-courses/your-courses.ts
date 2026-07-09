@@ -32,9 +32,9 @@ interface SidebarCourse {
           @for (course of courses(); track course.id) {
             <li class="course-item">
               <a
+                class="course-link"
                 [routerLink]="[baseRoute(), course.id]"
                 routerLinkActive="active"
-                class="course-link"
               >
                 <div class="course-avatar">
                   {{ course.name.charAt(0).toUpperCase() }}

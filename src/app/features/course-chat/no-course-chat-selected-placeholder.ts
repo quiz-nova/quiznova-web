@@ -11,8 +11,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         </div>
         <h3>Course Chat Rooms</h3>
         <p>
-          Select a course from the sidebar to join its active chat room and connect with
-          classmates and instructors.
+          Select a course from the sidebar to join its active chat room and connect with classmates
+          and instructors.
         </p>
       </div>
     </div>

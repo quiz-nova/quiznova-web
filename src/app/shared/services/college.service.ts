@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
-
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CollegeSummary } from '@Features/admin/models/college-summary.model';
 import { Observable } from 'rxjs';

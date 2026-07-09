@@ -5,8 +5,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   imports: [],
   template: `
     <nav class="tab-group" aria-label="Main Navigation">
-      <ng-content/>
-    </nav> `,
+      <ng-content />
+    </nav>
+  `,
   styles: [
     `
       .tab-group {
@@ -17,5 +18,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TabGroup {
-}
+export class TabGroup {}

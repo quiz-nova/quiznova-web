@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -57,9 +64,9 @@ import { EditStudentModal } from './edit-student-modal';
           <label for="enrolled-count">Enrolled courses</label>
           <p-inputnumber
             [(ngModel)]="enrolledCoursesCount"
-            (ngModelChange)="pageNumber.set(1)"
             [min]="0"
             [showButtons]="true"
+            (ngModelChange)="pageNumber.set(1)"
             inputId="enrolled-count"
             placeholder="Any"
           ></p-inputnumber>
@@ -76,8 +83,8 @@ import { EditStudentModal } from './edit-student-modal';
           [lazy]="true"
           [first]="(pageNumber() - 1) * pageSize()"
           [showFirstLastIcon]="false"
-          (onPage)="onPageChange($event)"
           [rowsPerPageOptions]="[10, 20, 50]"
+          (onPage)="onPageChange($event)"
         >
           <ng-template #header>
             <tr>
@@ -125,8 +132,6 @@ import { EditStudentModal } from './edit-student-modal';
           </ng-template>
         </p-table>
       </div>
-
-
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -142,9 +147,13 @@ export class CollegeStudents {
   protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
   protected readonly tableData = computed<Student[]>(() => {
     if (this.studentsResource.isLoading()) {
-      return Array.from<unknown, Student>({ length: this.pageSize() }, (_, i) => ({
-        id: `skeleton-${i}`,
-      } as unknown as Student));
+      return Array.from<unknown, Student>(
+        { length: this.pageSize() },
+        (_, i) =>
+          ({
+            id: `skeleton-${i}`,
+          }) as unknown as Student,
+      );
     }
     if (this.studentsResource.error()) {
       return [];
@@ -152,7 +161,9 @@ export class CollegeStudents {
     return this.studentsResource.value()?.items ?? [];
   });
   protected readonly enrolledCoursesCount = signal<number | null>(
-    this.route.snapshot.queryParams['enrolled'] ? Number(this.route.snapshot.queryParams['enrolled']) : null
+    this.route.snapshot.queryParams['enrolled']
+      ? Number(this.route.snapshot.queryParams['enrolled'])
+      : null,
   );
 
   constructor() {

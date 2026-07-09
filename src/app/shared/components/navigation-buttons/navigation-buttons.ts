@@ -8,20 +8,20 @@ import { Button } from '@shared/components/button/button';
   template: `
     <nav class="nav-actions" [attr.aria-label]="ariaLabel()">
       <button
+        [disabled]="!canGoPrevious()"
+        (click)="previousButtonClicked.emit()"
         appButton
         variant="gray"
-        [disabled]="!canGoPrevious()"
         type="button"
-        (click)="previousButtonClicked.emit()"
       >
         {{ previousLabel() }}
       </button>
       <button
+        [disabled]="!canGoNext()"
+        (click)="nextButtonClicked.emit()"
         appButton
         variant="green"
-        [disabled]="!canGoNext()"
         type="button"
-        (click)="nextButtonClicked.emit()"
       >
         {{ nextLabel() }}
       </button>

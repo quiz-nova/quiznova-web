@@ -25,7 +25,8 @@ import { InstructorService } from '@shared/services/instructor.service';
       header="Delete Instructor"
     >
       <p class="message">
-        Are you sure you want to delete <strong>{{ instructor().personalInformation.name }}</strong>?
+        Are you sure you want to delete <strong>{{ instructor().personalInformation.name }}</strong
+        >?
       </p>
 
       @if (submitError()) {
@@ -33,8 +34,14 @@ import { InstructorService } from '@shared/services/instructor.service';
       }
 
       <div class="actions">
-        <button appButton variant="gray" (click)="closeDialog()" type="button">Cancel</button>
-        <button appButton variant="red" [loading]="isSubmitting()" (click)="onDelete()" type="button">
+        <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
+        <button
+          [loading]="isSubmitting()"
+          (click)="onDelete()"
+          appButton
+          variant="red"
+          type="button"
+        >
           {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
         </button>
       </div>

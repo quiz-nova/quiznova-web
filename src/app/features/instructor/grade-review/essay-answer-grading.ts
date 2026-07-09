@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  OnInit,
+  output,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { FieldError } from '@shared/components/field-error/field-error';
@@ -28,23 +36,23 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       <form
         class="grade-form"
         [formGroup]="form"
-        (ngSubmit)="submitGrade()"
         [id]="'grade-form-' + essayAnswer().answerId"
+        (ngSubmit)="submitGrade()"
       >
         <!-- Score -->
         <div class="field-group">
-          <label [for]="'score-' + essayAnswer().answerId" class="field-label">
+          <label class="field-label" [for]="'score-' + essayAnswer().answerId">
             Score
             <span class="max-marks">/ {{ question().marks }}</span>
           </label>
           <input
-            type="number"
             class="score-input"
             [id]="'score-' + essayAnswer().answerId"
             [formControl]="scoreControl"
             [min]="0"
             [max]="question().marks"
             [attr.aria-describedby]="'score-error-' + essayAnswer().answerId"
+            type="number"
             placeholder="0"
           />
           <app-field-error [id]="'score-error-' + essayAnswer().answerId">
@@ -60,7 +68,7 @@ import { CustomValidators } from '@shared/validators/custom-validators';
 
         <!-- Feedback -->
         <div class="field-group">
-          <label [for]="'feedback-' + essayAnswer().answerId" class="field-label">
+          <label class="field-label" [for]="'feedback-' + essayAnswer().answerId">
             Feedback
             <span class="optional-tag">optional</span>
           </label>
@@ -68,9 +76,9 @@ import { CustomValidators } from '@shared/validators/custom-validators';
             class="feedback-textarea"
             [id]="'feedback-' + essayAnswer().answerId"
             [formControl]="feedbackControl"
+            [attr.aria-describedby]="'feedback-error-' + essayAnswer().answerId"
             rows="3"
             placeholder="Leave a note for the student (3–200 characters)..."
-            [attr.aria-describedby]="'feedback-error-' + essayAnswer().answerId"
           ></textarea>
           <div class="feedback-footer">
             <app-field-error [id]="'feedback-error-' + essayAnswer().answerId">
@@ -98,11 +106,11 @@ import { CustomValidators } from '@shared/validators/custom-validators';
             <span class="save-error">{{ error }}</span>
           }
           <button
-            type="submit"
             class="save-btn"
             [disabled]="saving || form.invalid"
             [attr.aria-busy]="saving"
             [id]="'save-btn-' + essayAnswer().answerId"
+            type="submit"
           >
             @if (saving) {
               <i class="fa-solid fa-spinner fa-spin"></i>
@@ -251,7 +259,9 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       font-size: var(--fs-400);
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      transition:
+        background 0.15s,
+        transform 0.1s;
       border: none;
       margin-left: auto;
     }

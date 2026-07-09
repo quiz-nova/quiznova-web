@@ -13,10 +13,15 @@ import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { EnrollmentService } from '@shared/services/enrollment.service';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 
-
 @Component({
   selector: 'app-student-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader, OperationFailed, RoleDashboardCard, StudentDashboardCharts],
+  imports: [
+    ProgressSpinner,
+    RoleDashboardHeader,
+    OperationFailed,
+    RoleDashboardCard,
+    StudentDashboardCharts,
+  ],
   template: `
     <section class="dashboard">
       <header class="dashboard-header">
@@ -46,9 +51,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           }
         </section>
 
-        <app-student-dashboard-charts
-          [quizAttempts]="summaryResource.value().attempts"
-        />
+        <app-student-dashboard-charts [quizAttempts]="summaryResource.value().attempts" />
       }
     </section>
   `,

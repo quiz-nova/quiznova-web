@@ -1,4 +1,11 @@
-import { Component, ElementRef, ViewChild, CUSTOM_ELEMENTS_SCHEMA, input, output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  CUSTOM_ELEMENTS_SCHEMA,
+  input,
+  output,
+} from '@angular/core';
 
 import { InputTextModule } from 'primeng/inputtext';
 import { OverlayModule, Overlay } from 'primeng/overlay';
@@ -16,13 +23,13 @@ import { Button } from '@shared/components/button/button';
       <input
         #myInput
         [value]="value()"
+        [placeholder]="placeholder()"
         (input)="valueChange.emit($any($event.target).value)"
         (keydown.enter)="send.emit()"
         type="text"
         pInputText
-        [placeholder]="placeholder()"
       />
-      <button appButton variant="gray" (click)="showEmojiPicker($event)" type="button">
+      <button (click)="showEmojiPicker($event)" appButton variant="gray" type="button">
         <i class="fa-regular fa-face-smile"></i>
       </button>
       <p-overlay #emojiOverlay>

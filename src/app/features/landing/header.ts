@@ -111,7 +111,9 @@ export const headerLinks: HeaderLink[] = [
       color: var(--clr-gray-600);
       font-weight: 500;
       border-radius: var(--radius-sm);
-      transition: color 0.25s var(--ease-standard), transform 0.25s var(--ease-standard);
+      transition:
+        color 0.25s var(--ease-standard),
+        transform 0.25s var(--ease-standard);
 
       @media (width < 768px) {
         padding-left: 1rem;

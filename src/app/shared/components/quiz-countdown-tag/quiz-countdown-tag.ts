@@ -6,7 +6,8 @@ import {
   effect,
   input,
   output,
-  signal, inject,
+  signal,
+  inject,
 } from '@angular/core';
 
 @Component({
@@ -15,9 +16,9 @@ import {
   template: `
     <span
       class="countdown"
-      role="timer"
       [class.countdown--expired]="isExpired()"
       [attr.aria-label]="ariaLabel()"
+      role="timer"
     >
       <i class="fa-regular fa-clock" aria-hidden="true"></i>
       {{ timeLabel() }}

@@ -146,17 +146,17 @@ type LoginFormGroup = FormGroup<{
         display: none;
       }
 
-        .side-content {
-          display: flex;
-          justify-content: center;
-          flex-direction: column;
-          gap: 1rem;
-          padding-inline: 4rem;
-          color: var(--clr-white);
+      .side-content {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 1rem;
+        padding-inline: 4rem;
+        color: var(--clr-white);
 
-          app-logo {
-            --logo-color: white;
-          }
+        app-logo {
+          --logo-color: white;
+        }
 
         h2 {
           font-family: var(--ff-heading), sans-serif;

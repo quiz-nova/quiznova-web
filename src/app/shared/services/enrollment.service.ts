@@ -17,7 +17,7 @@ export class EnrollmentService {
 
   getEnrollments(studentId: string): Observable<Enrollment[]> {
     return this.http.get<Enrollment[]>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments`
+      `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments`,
     );
   }
 
@@ -27,20 +27,20 @@ export class EnrollmentService {
     }
 
     return this.http.get<EnrollmentCount>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments/count`
+      `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments/count`,
     );
   }
 
   getAllCoursesEnrollmentCounts(): Observable<CourseEnrollmentCount[]> {
     return this.http.get<CourseEnrollmentCount[]>(
-      `${this.appSettings.apiBaseUrl}/courses/enrollments/count`
+      `${this.appSettings.apiBaseUrl}/courses/enrollments/count`,
     );
   }
 
   enrollStudent(courseId: string, studentId: string): Observable<void> {
     return this.http.post<void>(
       `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments`,
-      { courseId }
+      { courseId },
     );
   }
 
@@ -49,15 +49,17 @@ export class EnrollmentService {
       this.getEnrollments(studentId).subscribe({
         next: (enrollments) => {
           const enrollment = enrollments.find((e) => e.courseId === courseId);
-          this.http.delete<void>(
-            `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments/${enrollment?.id}`
-          ).subscribe({
-            next: () => {
-              subscriber.next();
-              subscriber.complete();
-            },
-            error: (err) => subscriber.error(err),
-          });
+          this.http
+            .delete<void>(
+              `${this.appSettings.apiBaseUrl}/students/${studentId}/enrollments/${enrollment?.id}`,
+            )
+            .subscribe({
+              next: () => {
+                subscriber.next();
+                subscriber.complete();
+              },
+              error: (err) => subscriber.error(err),
+            });
         },
         error: (err) => subscriber.error(err),
       });

@@ -53,6 +53,14 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       display: grid;
       grid-template-columns: repeat(5, minmax(2rem, 1fr));
       gap: 0.5rem;
+
+      @media (width < 480px) {
+        grid-template-columns: repeat(4, minmax(2rem, 1fr));
+      }
+
+      @media (width < 380px) {
+        grid-template-columns: repeat(3, minmax(2rem, 1fr));
+      }
     }
 
     button {

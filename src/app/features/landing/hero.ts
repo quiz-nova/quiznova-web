@@ -62,7 +62,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
 
     h1 {
       font-family: var(--ff-heading), sans-serif;
-      font-size: var(--fs-900);
+      font-size: clamp(2rem, 6vw, var(--fs-900));
       font-weight: 700;
       line-height: 1.1;
       text-align: center;
@@ -77,7 +77,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
     .system-description {
       margin-block: 1rem 2rem;
       color: var(--clr-gray-600);
-      font-size: var(--fs-600);
+      font-size: clamp(0.95rem, 2.5vw, var(--fs-600));
       line-height: 1.6;
       text-align: center;
       max-width: 44rem;

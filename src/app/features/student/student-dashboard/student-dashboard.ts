@@ -51,7 +51,9 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
           }
         </section>
 
-        <app-student-dashboard-charts [quizAttempts]="summaryResource.value().attempts" />
+        <div class="charts-section">
+          <app-student-dashboard-charts [quizAttempts]="summaryResource.value().attempts" />
+        </div>
       }
     </section>
   `,
@@ -85,6 +87,12 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
+    }
+
+    @media (width < 768px) {
+      .charts-section {
+        display: none;
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

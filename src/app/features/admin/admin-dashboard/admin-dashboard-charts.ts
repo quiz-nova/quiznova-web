@@ -51,7 +51,7 @@ import { chartColor } from '@shared/utils/chart-colors';
 
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
       gap: 1.5rem;
       margin-top: 0.5rem;
     }
@@ -59,6 +59,16 @@ import { chartColor } from '@shared/utils/chart-colors';
     @media (width <= 576px) {
       .charts-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (width < 480px) {
+      .chart-card {
+        padding: 1rem;
+      }
+
+      .chart-container {
+        height: 220px;
       }
     }
 

@@ -152,8 +152,13 @@ import { PendingGradesStats } from './pending-grades-stats';
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-200);
       border-radius: var(--radius-lg);
-      overflow: hidden;
+      overflow-x: auto;
       box-shadow: 0 4px 16px rgb(15 23 42 / 5%);
+
+      @media (width < 768px) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
     }
 
     .list-header {
@@ -168,6 +173,7 @@ import { PendingGradesStats } from './pending-grades-stats';
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      min-width: 40rem;
     }
 
     .submission-row {
@@ -179,6 +185,7 @@ import { PendingGradesStats } from './pending-grades-stats';
       border-bottom: 1px solid var(--clr-gray-100);
       cursor: pointer;
       transition: background-color 0.15s ease;
+      min-width: 40rem;
     }
 
     .submission-row:last-child {

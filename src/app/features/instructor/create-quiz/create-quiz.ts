@@ -192,10 +192,8 @@ import { QuestionComponentMapperService } from '@shared/services/question-compon
       min-width: 0;
 
       @media (width < 640px) {
-        .header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 

@@ -51,10 +51,12 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
           }
         </section>
 
-        <app-admin-dashboard-charts
-          [summary]="summaryResource.value() ?? null"
-          [enrollmentCounts]="enrollmentResource.value()"
-        />
+        <div class="charts-section">
+          <app-admin-dashboard-charts
+            [summary]="summaryResource.value() ?? null"
+            [enrollmentCounts]="enrollmentResource.value()"
+          />
+        </div>
       }
     </section>
   `,
@@ -76,6 +78,12 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
+    }
+
+    @media (width < 768px) {
+      .charts-section {
+        display: none;
+      }
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

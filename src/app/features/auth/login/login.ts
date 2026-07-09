@@ -151,7 +151,7 @@ type LoginFormGroup = FormGroup<{
         justify-content: center;
         flex-direction: column;
         gap: 1rem;
-        padding-inline: 4rem;
+        padding-inline: clamp(2rem, 5vw, 4rem);
         color: var(--clr-white);
 
         app-logo {
@@ -189,6 +189,10 @@ type LoginFormGroup = FormGroup<{
       @media (width < 767px) {
         width: 100%;
         padding-inline: 2rem;
+      }
+
+      @media (width < 480px) {
+        padding-inline: 1.25rem;
       }
     }
 

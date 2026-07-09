@@ -53,6 +53,10 @@ import {
       color: var(--clr-gray-600);
       font-weight: 600;
       min-width: 8rem;
+
+      @media (width < 480px) {
+        min-width: 5rem;
+      }
     }
 
     .answer-value {

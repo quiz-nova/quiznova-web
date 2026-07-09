@@ -47,12 +47,22 @@ import { NoCourseChatSelectedPlaceholder } from './no-course-chat-selected-place
       flex-shrink: 0;
       height: 100%;
       border-right: 1px solid var(--clr-gray-200);
+
+      @media (width < 768px) {
+        width: 100%;
+        max-width: 320px;
+      }
     }
 
     .chat-viewport {
       flex: 1;
       height: 100%;
       position: relative;
+      min-width: 0;
+
+      @media (width < 768px) {
+        width: 100%;
+      }
     }
 
     .chat-room-container {

@@ -152,6 +152,11 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       margin: 0;
       padding-top: 1rem;
       border-top: 1px solid var(--clr-gray-100);
+
+      @media (width < 480px) {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
     }
 
     .course-stats div {

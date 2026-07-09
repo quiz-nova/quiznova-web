@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { canDeactivateCreateQuiz } from '@Features/instructor/create-quiz/create-quiz.guard';
+
 export const instructorRoutes: Routes = [
   {
     path: '',
@@ -28,6 +30,7 @@ export const instructorRoutes: Routes = [
         path: 'create-quiz',
         loadComponent: () =>
           import('@Features/instructor/create-quiz/create-quiz').then((m) => m.CreateQuiz),
+        canDeactivate: [canDeactivateCreateQuiz],
       },
       {
         path: 'grade',

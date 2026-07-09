@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 
-import { Question, QuestionType } from '@shared/models/quiz/question.model';
+import { Question } from '@shared/models/quiz/question.model';
 
 import { CreateQuizStore } from './create-quiz.store';
-
 
 @Component({
   selector: 'app-questions-outline',
@@ -40,8 +39,7 @@ import { CreateQuizStore } from './create-quiz.store';
               <span class="questions-outline__details">
                 <span class="questions-outline__title">{{ getQuestionTitle(question) }}</span>
                 <span class="questions-outline__meta">
-                  <i [class]="getQuestionTypeIcon(question.type)" aria-hidden="true"></i>
-                  <span>{{ getQuestionTypeLabel(question.type) }}</span>
+                  <span>{{ question.type }}</span>
                   <span class="questions-outline__item-marks">• {{ question.marks }} pts</span>
                 </span>
               </span>
@@ -256,13 +254,5 @@ export class QuestionsOutline {
   protected getQuestionTitle(question: Question): string {
     const text = question.questionText.trim();
     return text.length > 0 ? text : 'Untitled question';
-  }
-
-  protected getQuestionTypeLabel(questionType: QuestionType): string {
-    return questionType === QuestionType.Mcq ? 'Mcq' : 'True/False';
-  }
-
-  protected getQuestionTypeIcon(questionType: QuestionType): string {
-    return questionType === QuestionType.Mcq ? 'fa-solid fa-list-check' : 'fa-solid fa-circle-dot';
   }
 }

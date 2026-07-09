@@ -5,12 +5,11 @@ import {
   effect,
   inject,
   signal,
-  Signal,
   viewChildren,
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AddQuestion } from '@Features/instructor/create-quiz/add-question';
-import { CreateQuiz as CreateQuizModel } from '@Features/instructor/create-quiz/create-quiz.model';
 import { CreateQuizStore } from '@Features/instructor/create-quiz/create-quiz.store';
 import { NoQuestions } from '@Features/instructor/create-quiz/no-questions';
 import { QuestionHeader } from '@Features/instructor/create-quiz/question-header';
@@ -19,12 +18,13 @@ import { QuestionsOutlinePlaceholder } from '@Features/instructor/create-quiz/qu
 import { QuizHeader } from '@Features/instructor/create-quiz/quiz-header';
 import { QuizMetadataForm } from '@Features/instructor/create-quiz/quiz-metadata-form';
 import { QuizPublishPanel } from '@Features/instructor/create-quiz/quiz-publish-panel';
+import { MessageService } from 'primeng/api';
 
+import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { ObserveVisibilityDirective } from '@shared/directives/observe-visibility.directive';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
-import { QuizService } from '@shared/services/quiz.service';
 
 @Component({
   selector: 'app-create-quiz',
@@ -40,11 +40,12 @@ import { QuizService } from '@shared/services/quiz.service';
     QuizPublishPanel,
     NgComponentOutlet,
     RoleDashboardHeader,
+    ConfirmActionModal,
   ],
   template: `
     <section class="create-quiz">
       <div class="outline">
-        @if (numberOfQuestions() > 0) {
+        @if (createQuizStore.numberOfQuestions() > 0) {
           <app-questions-outline
             (questionSelect)="createQuizStore.setCurrentQuestionId($event)"
           ></app-questions-outline>
@@ -70,7 +71,11 @@ import { QuizService } from '@shared/services/quiz.service';
         <div class="questions-workspace">
           <div class="questions-content">
             <div class="questions-list">
-              @for (question of quiz().questions; track question.id; let index = $index) {
+              @for (
+                question of createQuizStore.quiz().questions;
+                track question.id;
+                let index = $index
+              ) {
                 <div
                   class="question"
                   [id]="question.id"
@@ -124,13 +129,36 @@ import { QuizService } from '@shared/services/quiz.service';
                 </app-add-question>
               </div>
             }
-            @if (numberOfQuestions() === 0) {
+            @if (createQuizStore.numberOfQuestions() === 0) {
               <app-no-questions></app-no-questions>
             }
           </div>
         </div>
       </main>
     </section>
+
+    @if (showConfirmModal()) {
+      <app-confirm-action-modal
+        (confirmed)="onLeave(true)"
+        (cancelled)="onLeave(false)"
+        title="Leave Quiz Builder"
+        warningMessage="You have unsaved quiz content. If you leave now, all your work will be lost."
+        confirmationPhrase="leave"
+        confirmButtonText="I understand, leave"
+      />
+    }
+
+    @if (showPublishConfirmModal()) {
+      <app-confirm-action-modal
+        (confirmed)="onConfirmPublish()"
+        (cancelled)="onCancelPublish()"
+        title="Publish Quiz"
+        warningMessage="You are about to publish this quiz. Once published, it will be visible to students enrolled in the course."
+        confirmationPhrase="publish"
+        confirmButtonText="Yes, Publish Quiz"
+        variant="success"
+      />
+    }
   `,
   styles: `
     :host {
@@ -279,14 +307,16 @@ import { QuizService } from '@shared/services/quiz.service';
   providers: [CreateQuizStore],
 })
 export class CreateQuiz {
-  protected readonly quizService = inject(QuizService);
   protected readonly mapperService = inject(QuestionComponentMapperService);
   protected readonly createQuizStore = inject(CreateQuizStore);
-  protected readonly quiz: Signal<CreateQuizModel> = this.createQuizStore
-    .quiz as Signal<CreateQuizModel>;
-  protected readonly numberOfQuestions: Signal<number> = this.createQuizStore
-    .numberOfQuestions as Signal<number>;
+  private readonly messageService = inject(MessageService);
   protected readonly isAddQuestionButtonVisible = signal(true);
+
+  protected readonly showConfirmModal = signal(false);
+  protected readonly showPublishConfirmModal = signal(false);
+  private readonly router = inject(Router);
+  private resolveLeave: ((allow: boolean) => void) | null = null;
+  private hasBeenPublished = false;
 
   private readonly formOutlets = viewChildren(NgComponentOutlet);
 
@@ -341,18 +371,54 @@ export class CreateQuiz {
     });
   }
 
+  canDeactivate(): Promise<boolean> {
+    if (this.hasBeenPublished) return Promise.resolve(true);
+
+    const quiz = this.createQuizStore.quiz();
+    if (!quiz.questions.length && !quiz.title && !quiz.courseId) return Promise.resolve(true);
+
+    this.showConfirmModal.set(true);
+    return new Promise<boolean>((resolve) => {
+      this.resolveLeave = resolve;
+    });
+  }
+
+  protected onLeave(allow: boolean): void {
+    this.showConfirmModal.set(false);
+    this.resolveLeave?.(allow);
+    this.resolveLeave = null;
+  }
+
   protected onPublishQuiz() {
     if (this.createQuizStore.validateAll()) {
-      this.quizService.createQuiz(this.createQuizStore.quiz()).subscribe({
-        next: (response) => {
-          console.log('Quiz published successfully', response);
-          globalThis.alert('Quiz published successfully.');
-        },
-        error: (error) => {
-          console.error('Error publishing quiz', error);
-        },
-      });
+      this.showPublishConfirmModal.set(true);
     }
+  }
+
+  protected onConfirmPublish() {
+    this.showPublishConfirmModal.set(false);
+    this.createQuizStore.publishQuiz({
+      onSuccess: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Quiz Published',
+          detail: 'Your quiz has been published successfully.',
+        });
+        this.hasBeenPublished = true;
+        this.router.navigate(['/instructor/my-courses']);
+      },
+      onError: (message) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Publish Failed',
+          detail: message,
+        });
+      },
+    });
+  }
+
+  protected onCancelPublish() {
+    this.showPublishConfirmModal.set(false);
   }
 
   protected onCourseIdChanged(courseId: string) {

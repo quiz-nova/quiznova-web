@@ -10,11 +10,19 @@ import {
   withMethods,
   withState,
 } from '@ngrx/signals';
-import { withRequestStatus } from '@StoreFeatures/with-request-status.feature';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  setError,
+  setFulfilled,
+  setPending,
+  withRequestStatus,
+} from '@StoreFeatures/with-request-status.feature';
+import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CoursesService } from '@shared/services/courses.service';
+import { QuizService } from '@shared/services/quiz.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
 
 import { CreateQuiz } from './create-quiz.model';
@@ -103,7 +111,12 @@ export const CreateQuizStore = signalStore(
       return '';
     }),
   })),
-  withMethods((store, coursesService = inject(CoursesService)) => ({
+  withMethods(
+    (
+      store,
+      coursesService = inject(CoursesService),
+      quizService = inject(QuizService),
+    ) => ({
     setHeaderMetadata(payload: {
       title: string;
       courseId: string;
@@ -312,6 +325,7 @@ export const CreateQuizStore = signalStore(
 
       return store.isEntireQuizValid();
     },
+
     setCurrentQuestionId(questionId: string): void {
       patchState(store, {
         activeQuestionId: questionId,
@@ -321,6 +335,24 @@ export const CreateQuizStore = signalStore(
     getQuestionByIndex(index: number): Question {
       return store.quiz().questions[index];
     },
+
+    publishQuiz: rxMethod<{ onSuccess?: () => void; onError?: (message: string) => void }>(
+      exhaustMap(({ onSuccess, onError }) => {
+        patchState(store, setPending('publishQuiz'));
+        return quizService.createQuiz(store.quiz()).pipe(
+          tap(() => {
+            patchState(store, setFulfilled('publishQuiz'));
+            onSuccess?.();
+          }),
+          catchError((err) => {
+            const message = getApiErrorMessage(err, 'Failed to publish quiz. Please try again.');
+            patchState(store, setError('publishQuiz', message));
+            onError?.(message);
+            return EMPTY;
+          }),
+        );
+      }),
+    ),
   })),
   withHooks({
     onInit(store) {

@@ -15,11 +15,10 @@ import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
-import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { Course } from '@shared/models/course/course.model';
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
@@ -44,7 +43,6 @@ import { ManageCourseModal } from './manage-course-modal';
     InputText,
     InputNumber,
     SelectModule,
-    NavigationButtons,
     RoleDashboardHeader,
   ],
   template: `
@@ -68,18 +66,6 @@ import { ManageCourseModal } from './manage-course-modal';
             pInputText
             placeholder="Search by course ID or course name"
           />
-        </div>
-
-        <div class="filter-item">
-          <label for="page-size">Page size</label>
-          <p-inputnumber
-            [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
-            [min]="1"
-            [max]="100"
-            [showButtons]="true"
-            inputId="page-size"
-          ></p-inputnumber>
         </div>
 
         <div class="filter-item">
@@ -129,6 +115,14 @@ import { ManageCourseModal } from './manage-course-modal';
         <p-table
           [value]="tableData()"
           [tableStyle]="{ 'min-width': '50rem' }"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="coursesResource.value()?.totalCount ?? 0"
+          [lazy]="true"
+          [first]="(pageNumber() - 1) * pageSize()"
+          [showFirstLastIcon]="false"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
         >
           <ng-template #header>
             <tr>
@@ -180,21 +174,7 @@ import { ManageCourseModal } from './manage-course-modal';
         </p-table>
       </div>
 
-      <div class="pagination-row">
-        <p class="page-info">
-          Page {{ coursesResource.value()?.pageNumber ?? 1 }} of
-          {{ coursesResource.value()?.totalPages ?? 1 }}
-        </p>
-        <app-navigation-buttons
-          [canGoPrevious]="coursesResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="coursesResource.value()?.hasNextPage ?? false"
-          (previousButtonClicked)="goToPreviousPage()"
-          (nextButtonClicked)="goToNextPage()"
-          ariaLabel="Courses pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
-        />
-      </div>
+
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -315,13 +295,6 @@ export class CollegeCourses {
     this.pageNumber.set(1);
   }
 
-  protected onPageSizeChange(value: number | null | undefined): void {
-    if (!value || value <= 0) {
-      this.pageSize.set(10);
-    }
-    this.pageNumber.set(1);
-  }
-
   protected onQuizzesCountChange(value: number | null | undefined): void {
     this.quizzesCount.set(value ?? null);
     this.pageNumber.set(1);
@@ -337,16 +310,9 @@ export class CollegeCourses {
     this.pageNumber.set(1);
   }
 
-  protected goToPreviousPage(): void {
-    if (this.coursesResource.value()?.hasPreviousPage) {
-      this.pageNumber.update((value) => Math.max(1, value - 1));
-    }
-  }
-
-  protected goToNextPage(): void {
-    if (this.coursesResource.value()?.hasNextPage) {
-      this.pageNumber.update((value) => value + 1);
-    }
+  protected onPageChange(event: TablePageEvent): void {
+    this.pageNumber.set(event.first / event.rows + 1);
+    this.pageSize.set(event.rows);
   }
 
   protected onInstructorDropdownShow(): void {

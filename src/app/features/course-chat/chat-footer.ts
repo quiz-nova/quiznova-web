@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { FieldError } from '@shared/components/field-error/field-error';
-import { EmojiPicker } from '@shared/emoji-picker/emoji-picker';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { CourseChatStore } from './course-chat.store';
@@ -10,7 +9,7 @@ import { CourseChatStore } from './course-chat.store';
 @Component({
   selector: 'app-chat-footer',
   standalone: true,
-  imports: [ReactiveFormsModule, EmojiPicker, FieldError],
+  imports: [ReactiveFormsModule, FieldError],
   template: `
     <footer class="chat-footer">
       @if (store.replyingTo(); as reply) {
@@ -28,28 +27,25 @@ import { CourseChatStore } from './course-chat.store';
       }
 
       <div class="input-form">
-        <app-emoji-picker
-          class="flex-1"
-          [value]="messageControl.value"
-          (valueChange)="messageControl.setValue($event)"
-          (send)="sendMessage()"
+        <input
+          class="flex-1 chat-input"
+          id="chat-message-input"
+          [formControl]="messageControl"
+          (keydown.enter)="sendMessage()"
+          aria-label="Chat message"
+          placeholder="Type a message..."
+          type="text"
         />
-        <button
-          class="send-btn"
-          [disabled]="messageControl.invalid"
-          (click)="sendMessage()"
-        >
+        <button class="send-btn" [disabled]="messageControl.invalid" (click)="sendMessage()">
           <i class="fa-regular fa-paper-plane"></i>
         </button>
       </div>
 
       @if (messageControl.invalid && messageControl.touched) {
-        @if (messageControl.hasError('required')) {
-          <app-field-error id="message-required-error">Message is required.</app-field-error>
-        } @else if (messageControl.hasError('minlength')) {
-          <app-field-error id="message-minlength-error">Message must be at least 1 character.</app-field-error>
-        } @else if (messageControl.hasError('maxlength')) {
-          <app-field-error id="message-maxlength-error">Message cannot exceed 500 characters.</app-field-error>
+        @if (messageControl.hasError('maxlength')) {
+          <app-field-error id="message-maxlength-error"
+            >Message cannot exceed 500 characters.</app-field-error
+          >
         }
       }
     </footer>
@@ -70,7 +66,7 @@ import { CourseChatStore } from './course-chat.store';
       align-items: center;
       background: var(--clr-green-50);
       border: 1px solid var(--clr-green-300);
-      border-left: 4px solid var(--clr-green-400); /* impeccable-disable-line side-tab */
+      border-left: 4px solid var(--clr-green-400);
       border-radius: var(--radius-sm);
       padding: 0.5rem 1rem;
     }
@@ -118,6 +114,22 @@ import { CourseChatStore } from './course-chat.store';
 
     .flex-1 {
       flex: 1;
+    }
+
+    .chat-input {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--clr-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--fs-300);
+      color: var(--clr-blue-900);
+      background-color: var(--clr-gray-50);
+      transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+    }
+
+    .chat-input::placeholder {
+      color: var(--clr-gray-500);
     }
 
     .send-btn {

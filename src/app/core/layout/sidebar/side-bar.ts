@@ -8,7 +8,6 @@ import { AuthService } from '@Features/auth/auth.service';
 import { Logo } from '@shared/components/logo/logo';
 import { User } from '@shared/models/users/user.model';
 
-
 @Component({
   selector: 'app-side-bar',
   imports: [Logo, TabGroup, Tab],

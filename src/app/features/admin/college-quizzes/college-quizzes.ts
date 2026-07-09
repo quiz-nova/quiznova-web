@@ -7,10 +7,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
-import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { Quiz } from '@shared/models/quiz/quiz.model';
 import { QuizService } from '@shared/services/quiz.service';
@@ -23,7 +22,6 @@ import { QuizService } from '@shared/services/quiz.service';
     FormsModule,
     InputText,
     InputNumber,
-    NavigationButtons,
     RoleDashboardHeader,
     DatePipe,
   ],
@@ -50,18 +48,6 @@ import { QuizService } from '@shared/services/quiz.service';
         </div>
 
         <div class="filter-item">
-          <label for="page-size">Page size</label>
-          <p-inputnumber
-            [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
-            [min]="1"
-            [max]="100"
-            [showButtons]="true"
-            inputId="page-size"
-          ></p-inputnumber>
-        </div>
-
-        <div class="filter-item">
           <label for="marks">Marks</label>
           <p-inputnumber
             [(ngModel)]="marks"
@@ -78,6 +64,14 @@ import { QuizService } from '@shared/services/quiz.service';
         <p-table
           [value]="tableData()"
           [tableStyle]="{ 'min-width': '50rem' }"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="quizzesResource.value()?.totalCount ?? 0"
+          [lazy]="true"
+          [first]="(pageNumber() - 1) * pageSize()"
+          [showFirstLastIcon]="false"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
         >
           <ng-template #header>
             <tr>
@@ -129,21 +123,7 @@ import { QuizService } from '@shared/services/quiz.service';
         </p-table>
       </div>
 
-      <div class="pagination-row">
-        <p class="page-info">
-          Page {{ quizzesResource.value()?.pageNumber ?? 1 }} of
-          {{ quizzesResource.value()?.totalPages ?? 1 }}
-        </p>
-        <app-navigation-buttons
-          [canGoPrevious]="quizzesResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="quizzesResource.value()?.hasNextPage ?? false"
-          (previousButtonClicked)="goToPreviousPage()"
-          (nextButtonClicked)="goToNextPage()"
-          ariaLabel="Quizzes pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
-        />
-      </div>
+
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -244,27 +224,13 @@ export class CollegeQuizzes {
     this.pageNumber.set(1);
   }
 
-  protected onPageSizeChange(value: number | null | undefined): void {
-    if (!value || value <= 0) {
-      this.pageSize.set(10);
-    }
-    this.pageNumber.set(1);
-  }
-
   protected onMarksChange(value: number | null | undefined): void {
     this.marks.set(value ?? null);
     this.pageNumber.set(1);
   }
 
-  protected goToPreviousPage(): void {
-    if (this.quizzesResource.value()?.hasPreviousPage) {
-      this.pageNumber.update((value) => Math.max(1, value - 1));
-    }
-  }
-
-  protected goToNextPage(): void {
-    if (this.quizzesResource.value()?.hasNextPage) {
-      this.pageNumber.update((value) => value + 1);
-    }
+  protected onPageChange(event: TablePageEvent): void {
+    this.pageNumber.set(event.first / event.rows + 1);
+    this.pageSize.set(event.rows);
   }
 }

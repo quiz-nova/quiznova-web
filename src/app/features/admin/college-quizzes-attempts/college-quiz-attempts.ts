@@ -14,10 +14,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
-import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
@@ -31,7 +30,6 @@ import { shortId } from '@shared/utils/utilities';
     FormsModule,
     InputText,
     InputNumber,
-    NavigationButtons,
     RoleDashboardHeader,
     DatePipe,
   ],
@@ -58,18 +56,6 @@ import { shortId } from '@shared/utils/utilities';
         </div>
 
         <div class="filter-item">
-          <label for="page-size">Page size</label>
-          <p-inputnumber
-            [(ngModel)]="pageSize"
-            [min]="1"
-            [max]="100"
-            [showButtons]="true"
-            (ngModelChange)="onPageSizeChange($event)"
-            inputId="page-size"
-          ></p-inputnumber>
-        </div>
-
-        <div class="filter-item">
           <label for="correct-answers">Correct answers</label>
           <p-inputnumber
             [(ngModel)]="correctAnswers"
@@ -83,7 +69,18 @@ import { shortId } from '@shared/utils/utilities';
       </div>
 
       <div class="table-shell">
-        <p-table [value]="tableData()" [tableStyle]="{ 'min-width': '50rem' }">
+        <p-table
+          [value]="tableData()"
+          [tableStyle]="{ 'min-width': '50rem' }"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="quizAttemptsResource.value()?.totalCount ?? 0"
+          [lazy]="true"
+          [first]="(pageNumber() - 1) * pageSize()"
+          [showFirstLastIcon]="false"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
+        >
           <ng-template #header>
             <tr>
               <th>Attempt ID</th>
@@ -129,21 +126,7 @@ import { shortId } from '@shared/utils/utilities';
         </p-table>
       </div>
 
-      <div class="pagination-row">
-        <p class="page-info">
-          Page {{ quizAttemptsResource.value()?.pageNumber ?? 1 }} of
-          {{ quizAttemptsResource.value()?.totalPages ?? 1 }}
-        </p>
-        <app-navigation-buttons
-          [canGoPrevious]="quizAttemptsResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="quizAttemptsResource.value()?.hasNextPage ?? false"
-          (previousButtonClicked)="goToPreviousPage()"
-          (nextButtonClicked)="goToNextPage()"
-          ariaLabel="Quiz attempts pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
-        />
-      </div>
+
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -225,27 +208,13 @@ export class CollegeQuizzesAttempts {
     this.pageNumber.set(1);
   }
 
-  protected onPageSizeChange(value: number | null | undefined): void {
-    if (!value || value <= 0) {
-      this.pageSize.set(10);
-    }
-    this.pageNumber.set(1);
-  }
-
   protected onCorrectAnswersChange(value: number | null | undefined): void {
     this.correctAnswers.set(value ?? null);
     this.pageNumber.set(1);
   }
 
-  protected goToPreviousPage(): void {
-    if (this.quizAttemptsResource.value()?.hasPreviousPage) {
-      this.pageNumber.update((value) => Math.max(1, value - 1));
-    }
-  }
-
-  protected goToNextPage(): void {
-    if (this.quizAttemptsResource.value()?.hasNextPage) {
-      this.pageNumber.update((value) => value + 1);
-    }
+  protected onPageChange(event: TablePageEvent): void {
+    this.pageNumber.set(event.first / event.rows + 1);
+    this.pageSize.set(event.rows);
   }
 }

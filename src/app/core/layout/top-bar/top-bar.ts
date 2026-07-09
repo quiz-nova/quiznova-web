@@ -22,10 +22,10 @@ import { Button } from '@shared/components/button/button';
       </button>
 
       <button
-        appButton
-        variant="gray"
         class="dashboard-top-bar__logout focus-green-ring"
         (click)="onLogout()"
+        appButton
+        variant="gray"
         type="button"
         aria-label="Logout"
       >

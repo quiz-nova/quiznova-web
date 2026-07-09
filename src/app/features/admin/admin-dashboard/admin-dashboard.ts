@@ -5,6 +5,7 @@ import { AdminDashboardCharts } from '@Features/admin/admin-dashboard/admin-dash
 import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardCard } from '@shared/components/role-dashboard-card/role-dashboard-card';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { CourseEnrollmentCount } from '@shared/models/enrollment/course-enrollment-count.model';
@@ -13,7 +14,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard, AdminDashboardCharts],
+  imports: [ProgressSpinner, RoleDashboardHeader, RoleDashboardCard, AdminDashboardCharts, OperationFailed],
   template: `
     <section class="page">
       <header class="page-header">
@@ -28,9 +29,9 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
           <p-progress-spinner ariaLabel="loading" />
         </div>
       } @else if (summaryResource.error()) {
-        <div class="error">
+        <app-operation-failed>
           <p>Failed to load dashboard data.</p>
-        </div>
+        </app-operation-failed>
       } @else {
         <section class="card-grid">
           @for (card of cards(); track card.title) {

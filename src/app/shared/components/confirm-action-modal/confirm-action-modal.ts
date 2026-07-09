@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { Button } from '@shared/components/button/button';
@@ -24,12 +24,12 @@ import { Button } from '@shared/components/button/button';
         aria-labelledby="confirm-modal-title"
       >
         <div class="modal-header">
-          <i class="fa-solid fa-triangle-exclamation modal-warning-icon" aria-hidden="true"></i>
+          <i [class]="headerIconClass()" aria-hidden="true"></i>
           <h3 id="confirm-modal-title">{{ title() }}</h3>
         </div>
         <div class="modal-body">
-          <p class="modal-warning-text">
-            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+          <p [class]="'modal-warning-text ' + variant()">
+            <i [class]="bodyIconClass()" aria-hidden="true"></i>
             {{ warningMessage() }}
           </p>
           <p class="modal-instruction">
@@ -48,7 +48,7 @@ import { Button } from '@shared/components/button/button';
           <button appButton variant="gray" (click)="onCancel()" type="button">Cancel</button>
           <button
             appButton
-            variant="red"
+            [variant]="confirmButtonVariant()"
             [disabled]="confirmationInput !== confirmationPhrase()"
             (click)="onConfirm()"
             type="button"
@@ -103,7 +103,18 @@ import { Button } from '@shared/components/button/button';
 
     .modal-warning-icon {
       font-size: 1.5rem;
+    }
+
+    .modal-warning-icon.danger {
       color: var(--clr-red-500);
+    }
+
+    .modal-warning-icon.info {
+      color: var(--clr-blue-500);
+    }
+
+    .modal-warning-icon.success {
+      color: var(--clr-green-500);
     }
 
     .modal-header h3 {
@@ -123,12 +134,28 @@ import { Button } from '@shared/components/button/button';
       align-items: flex-start;
       gap: 0.5rem;
       padding: 0.75rem 1rem;
-      border: 1px solid var(--clr-red-200);
+      border: 1px solid transparent;
       border-radius: var(--radius-sm);
-      background-color: var(--clr-red-50);
-      color: var(--clr-red-800);
       font-size: var(--fs-400);
       line-height: 1.5;
+    }
+
+    .modal-warning-text.danger {
+      border-color: var(--clr-red-200);
+      background-color: var(--clr-red-50);
+      color: var(--clr-red-800);
+    }
+
+    .modal-warning-text.info {
+      border-color: var(--clr-blue-200);
+      background-color: var(--clr-blue-100);
+      color: var(--clr-blue-700);
+    }
+
+    .modal-warning-text.success {
+      border-color: var(--clr-green-200);
+      background-color: var(--clr-green-50);
+      color: var(--clr-green-800);
     }
 
     .modal-warning-text i {
@@ -163,11 +190,47 @@ export class ConfirmActionModal {
   readonly warningMessage = input.required<string>();
   readonly confirmationPhrase = input.required<string>();
   readonly confirmButtonText = input('I understand, confirm');
+  readonly variant = input<'danger' | 'info' | 'success'>('danger');
 
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
 
   protected confirmationInput = '';
+
+  protected readonly headerIconClass = computed(() => {
+    switch (this.variant()) {
+      case 'info':
+        return 'fa-solid fa-circle-info modal-warning-icon info';
+      case 'success':
+        return 'fa-solid fa-circle-check modal-warning-icon success';
+      case 'danger':
+      default:
+        return 'fa-solid fa-triangle-exclamation modal-warning-icon danger';
+    }
+  });
+
+  protected readonly bodyIconClass = computed(() => {
+    switch (this.variant()) {
+      case 'info':
+        return 'fa-solid fa-circle-info';
+      case 'success':
+        return 'fa-solid fa-circle-check';
+      case 'danger':
+      default:
+        return 'fa-solid fa-circle-exclamation';
+    }
+  });
+
+  protected readonly confirmButtonVariant = computed(() => {
+    switch (this.variant()) {
+      case 'danger':
+        return 'red';
+      case 'info':
+      case 'success':
+      default:
+        return 'green';
+    }
+  });
 
   protected onConfirm(): void {
     this.confirmationInput = '';

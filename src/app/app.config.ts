@@ -5,6 +5,7 @@ import { provideRouter, withComponentInputBinding, withViewTransitions } from '@
 import { APP_SETTINGS, appSettings } from '@Core/config/app.settings';
 import { authInterceptor } from '@Core/interceptors/auth.interceptor';
 import Aura from '@primeuix/themes/aura';
+import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    MessageService,
     {
       provide: APP_SETTINGS,
       useValue: appSettings,

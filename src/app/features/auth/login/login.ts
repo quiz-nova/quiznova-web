@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 
 import { DEFAULT_USER_ROUTE, ROLES } from '@Core/config/role.config';
 import { AuthService } from '@Features/auth/auth.service';
+import { MessageService } from 'primeng/api';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
@@ -47,13 +48,6 @@ type LoginFormGroup = FormGroup<{
           <h2>Sign in</h2>
           <p>Don't have an account? Contact Your Admin</p>
         </div>
-
-        @if (loginFailed()) {
-          <div class="login-failed" role="alert" aria-live="polite">
-            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
-            <p>The login information you entered is incorrect.</p>
-          </div>
-        }
 
         <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="auth-field">
@@ -152,13 +146,17 @@ type LoginFormGroup = FormGroup<{
         display: none;
       }
 
-      .side-content {
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        gap: 1rem;
-        padding-inline: 4rem;
-        color: var(--clr-white);
+        .side-content {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          gap: 1rem;
+          padding-inline: 4rem;
+          color: var(--clr-white);
+
+          app-logo {
+            --logo-color: white;
+          }
 
         h2 {
           font-family: var(--ff-heading), sans-serif;
@@ -228,28 +226,6 @@ type LoginFormGroup = FormGroup<{
       gap: 1.25rem;
     }
 
-    .login-failed {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.9rem 1rem;
-      border: 1px solid var(--clr-red-200);
-      border-radius: var(--radius-md);
-      background-color: var(--clr-red-50);
-
-      i {
-        flex-shrink: 0;
-        color: var(--clr-red-800);
-        font-size: 1.125rem;
-      }
-
-      p {
-        margin: 0;
-        color: var(--clr-red-800);
-        font-weight: 600;
-      }
-    }
-
     .auth-field {
       display: flex;
       flex-direction: column;
@@ -317,7 +293,7 @@ export class Login {
   private readonly authService = inject(AuthService);
   protected readonly userRoles = ROLES;
   protected readonly isLogging = signal(false);
-  protected readonly loginFailed = signal(false);
+  private readonly messageService = inject(MessageService);
 
   protected readonly loginForm: LoginFormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -342,7 +318,11 @@ export class Login {
         this.router.navigate([route]);
       },
       error: () => {
-        this.loginFailed.set(true);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Login Failed',
+          detail: 'The login information you entered is incorrect.',
+        });
         this.isLogging.set(false);
       },
     });

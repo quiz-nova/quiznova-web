@@ -6,10 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
-import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { InstructorService } from '@shared/services/instructor.service';
@@ -29,7 +28,6 @@ import { EditInstructorModal } from './edit-instructor-modal';
     FormsModule,
     InputText,
     InputNumber,
-    NavigationButtons,
     RoleDashboardHeader,
   ],
   template: `
@@ -53,18 +51,6 @@ import { EditInstructorModal } from './edit-instructor-modal';
             (ngModelChange)="pageNumber.set(1)"
             placeholder="Search by name or email"
           />
-        </div>
-
-        <div class="filter-item">
-          <label for="page-size">Page size</label>
-          <p-inputnumber
-            inputId="page-size"
-            [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)"
-            [min]="1"
-            [max]="100"
-            [showButtons]="true"
-          ></p-inputnumber>
         </div>
 
         <div class="filter-item">
@@ -96,6 +82,14 @@ import { EditInstructorModal } from './edit-instructor-modal';
         <p-table
           [value]="tableData()"
           [tableStyle]="{ 'min-width': '50rem' }"
+          [paginator]="true"
+          [rows]="pageSize()"
+          [totalRecords]="instructorsResource.value()?.totalCount ?? 0"
+          [lazy]="true"
+          [first]="(pageNumber() - 1) * pageSize()"
+          [showFirstLastIcon]="false"
+          (onPage)="onPageChange($event)"
+          [rowsPerPageOptions]="[10, 20, 50]"
         >
           <ng-template #header>
             <tr>
@@ -147,21 +141,7 @@ import { EditInstructorModal } from './edit-instructor-modal';
         </p-table>
       </div>
 
-      <div class="pagination-row">
-        <p class="page-info">
-          Page {{ instructorsResource.value()?.pageNumber ?? 1 }} of
-          {{ instructorsResource.value()?.totalPages ?? 1 }}
-        </p>
-        <app-navigation-buttons
-          ariaLabel="Instructors pagination"
-          previousLabel="Previous page"
-          nextLabel="Next page"
-          [canGoPrevious]="instructorsResource.value()?.hasPreviousPage ?? false"
-          [canGoNext]="instructorsResource.value()?.hasNextPage ?? false"
-          (previousButtonClicked)="goToPreviousPage()"
-          (nextButtonClicked)="goToNextPage()"
-        />
-      </div>
+
     </section>
   `,
   styleUrl: '../shared/college-tables-shared.css',
@@ -242,13 +222,6 @@ export class CollegeInstructors {
     this.pageNumber.set(1);
   }
 
-  protected onPageSizeChange(value: number | null | undefined): void {
-    if (!value || value <= 0) {
-      this.pageSize.set(10);
-    }
-    this.pageNumber.set(1);
-  }
-
   protected onCoursesCountChange(value: number | null | undefined): void {
     this.coursesCount.set(value ?? null);
     this.pageNumber.set(1);
@@ -259,16 +232,9 @@ export class CollegeInstructors {
     this.pageNumber.set(1);
   }
 
-  protected goToPreviousPage(): void {
-    if (this.instructorsResource.value()?.hasPreviousPage) {
-      this.pageNumber.update((value) => Math.max(1, value - 1));
-    }
-  }
-
-  protected goToNextPage(): void {
-    if (this.instructorsResource.value()?.hasNextPage) {
-      this.pageNumber.update((value) => value + 1);
-    }
+  protected onPageChange(event: TablePageEvent): void {
+    this.pageNumber.set(event.first / event.rows + 1);
+    this.pageSize.set(event.rows);
   }
 
   protected reloadInstructors(): void {

@@ -13,7 +13,7 @@ import { map } from 'rxjs/operators';
   imports: [RouterOutlet, TopBar, SideBar],
   template: `
     <section class="base-layout" [class.sidebar-open]="isSidebarOpen()">
-      <app-top-bar (toggleMenu)="toggleSidebar()" [isSidebarOpen]="isSidebarOpen()"></app-top-bar>
+      <app-top-bar [isSidebarOpen]="isSidebarOpen()" (toggleMenu)="toggleSidebar()"></app-top-bar>
 
       <div class="base-layout__body">
         @if (isMobile() && isSidebarOpen()) {
@@ -27,7 +27,11 @@ import { map } from 'rxjs/operators';
           ></button>
         }
 
-        <app-side-bar id="main-sidebar" class="base-layout__sidebar" [class.opened]="isSidebarOpen()"></app-side-bar>
+        <app-side-bar
+          class="base-layout__sidebar"
+          id="main-sidebar"
+          [class.opened]="isSidebarOpen()"
+        ></app-side-bar>
 
         <main class="base-layout__content">
           <router-outlet></router-outlet>
@@ -44,7 +48,7 @@ import { map } from 'rxjs/operators';
     .base-layout {
       display: grid;
       grid-template-rows: auto 1fr;
-      min-height: 100vh;
+      height: 100vh;
     }
 
     .base-layout__body {
@@ -52,6 +56,7 @@ import { map } from 'rxjs/operators';
       grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
       position: relative;
       transition: grid-template-columns 0.3s ease-in-out;
+      overflow: hidden;
     }
 
     .base-layout:not(.sidebar-open) .base-layout__body {
@@ -60,11 +65,16 @@ import { map } from 'rxjs/operators';
 
     .base-layout__sidebar {
       overflow: hidden;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      max-height: 100%;
     }
 
     .base-layout__content {
       width: 100%;
       min-width: 0;
+      overflow-y: auto;
       overflow-x: clip;
     }
 

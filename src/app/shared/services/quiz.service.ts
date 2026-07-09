@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 import { APP_SETTINGS } from '@Core/config/app.settings';
 import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
 import { type QuizMetadataValue } from '@Features/instructor/create-quiz/quiz-metadata-form';
-import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
+import { StudentQuizzesApiResponse } from '@Features/student/student-quizzes/models/student-quizzes.model';
 import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
@@ -39,9 +39,9 @@ export class QuizService {
     return this.http.get<Quiz>(`${this.appSettings.apiBaseUrl}/quizzes/${quizId}`);
   }
 
-  getStudentQuizzesLifecycle(studentId: string): Observable<StudentQuizzesLifecycle> {
-    return this.http.get<StudentQuizzesLifecycle>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/quizzes`,
+  getStudentQuizzesLifecycle(studentId: string): Observable<StudentQuizzesApiResponse> {
+    return this.http.get<StudentQuizzesApiResponse>(
+      `${this.appSettings.apiBaseUrl}/students/${studentId}/quizzes?t=${Date.now()}`,
     );
   }
 

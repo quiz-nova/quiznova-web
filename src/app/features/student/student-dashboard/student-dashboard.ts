@@ -3,7 +3,6 @@ import { rxResource } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '@Features/auth/auth.service';
 import { StudentDashboardCharts } from '@Features/student/student-dashboard/student-dashboard-charts';
-import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { forkJoin, of } from 'rxjs';
 
@@ -13,7 +12,6 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { EnrollmentService } from '@shared/services/enrollment.service';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
-import { QuizService } from '@shared/services/quiz.service';
 
 
 @Component({
@@ -50,7 +48,6 @@ import { QuizService } from '@shared/services/quiz.service';
 
         <app-student-dashboard-charts
           [quizAttempts]="summaryResource.value().attempts"
-          [lifecycle]="summaryResource.value().lifecycle"
         />
       }
     </section>
@@ -93,7 +90,6 @@ export class StudentDashboard {
   private readonly authService = inject(AuthService);
   private readonly enrollmentService = inject(EnrollmentService);
   private readonly quizAttemptsService = inject(QuizAttemptService);
-  private readonly quizService = inject(QuizService);
 
   protected readonly welcomeName = computed(
     () => this.authService.currentUser()?.personalInformation?.name || 'Student',
@@ -109,7 +105,6 @@ export class StudentDashboard {
           courses: { enrollmentsCount: 0 },
           quizAttempts: { quizAttemptCount: 0 },
           attempts: [] as QuizAttempt[],
-          lifecycle: null as StudentQuizzesLifecycle | null,
         });
       }
 
@@ -117,14 +112,12 @@ export class StudentDashboard {
         courses: this.enrollmentService.getEnrollmentsCount(studentId),
         quizAttempts: this.quizAttemptsService.getStudentQuizAttemptsCount(studentId),
         attempts: this.quizAttemptsService.getStudentQuizAttempts(studentId),
-        lifecycle: this.quizService.getStudentQuizzesLifecycle(studentId),
       });
     },
     defaultValue: {
       courses: { enrollmentsCount: 0 },
       quizAttempts: { quizAttemptCount: 0 },
       attempts: [] as QuizAttempt[],
-      lifecycle: null as StudentQuizzesLifecycle | null,
     },
   });
 

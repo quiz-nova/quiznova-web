@@ -22,10 +22,10 @@ export interface SubmitEssayAnswer extends SubmitQuestionAnswer {
 
 export type SubmitQuestionAnswerType = SubmitMcqAnswer | SubmitTfAnswer | SubmitEssayAnswer;
 
-export interface SubmitQuizAttempt {
+export interface StartQuizAttemptRequest {
   quizId: string;
-  startedAt: string;
-  submittedAt: string;
-  questionAnswers: SubmitQuestionAnswerType[];
 }
 
+export interface CompleteQuizAttemptRequest {
+  submittedAt: string;
+}

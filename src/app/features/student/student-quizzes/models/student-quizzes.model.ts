@@ -11,6 +11,7 @@ export interface StudentQuizApiDto {
   startsAtUtc: string;
   endsAtUtc: string;
   quizStatus: StudentQuizStatus;
+  attemptId: string | null;
 }
 
 export enum StudentQuizStatus {

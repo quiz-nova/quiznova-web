@@ -6,13 +6,14 @@ import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { of } from 'rxjs';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { EnrollmentService } from '@shared/services/enrollment.service';
 
 
 @Component({
   selector: 'app-student-courses',
-  imports: [ProgressSpinner, DatePipe, RoleDashboardHeader],
+  imports: [ProgressSpinner, DatePipe, RoleDashboardHeader, OperationFailed],
   template: `
     <section class="page">
       <header class="page-header">
@@ -27,9 +28,9 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
           <p-progress-spinner ariaLabel="Loading courses" />
         </div>
       } @else if (coursesResource.error()) {
-        <div class="error" role="alert">
+        <app-operation-failed>
           <p>Failed to load your courses. Please try again later.</p>
-        </div>
+        </app-operation-failed>
       } @else if (!(coursesResource.value()?.length ?? 0)) {
         <p class="feedback">You are not enrolled in any courses yet.</p>
       } @else {

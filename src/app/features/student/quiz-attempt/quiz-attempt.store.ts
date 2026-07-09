@@ -1,6 +1,5 @@
-import { computed, inject, effect } from '@angular/core';
+import { computed, effect, inject } from '@angular/core';
 
-import { AuthService } from '@Features/auth/auth.service';
 import {
   patchState,
   signalStore,
@@ -16,14 +15,16 @@ import {
   setPending,
   withRequestStatus,
 } from '@StoreFeatures/with-request-status.feature';
-import { EMPTY, catchError, exhaustMap, tap } from 'rxjs';
+import { EMPTY, catchError, exhaustMap, of, switchMap, tap } from 'rxjs';
 
 import { Question } from '@shared/models/quiz/question.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { QuizService } from '@shared/services/quiz.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
 
-import { SubmitQuizAttempt, SubmitQuestionAnswerType } from './models/SubmitQuizAttempt.model';
+import {
+  SubmitQuestionAnswerType,
+} from './models/SubmitQuizAttempt.model';
 
 export interface QuestionWithStatus extends Question {
   isSolved: boolean;
@@ -31,26 +32,30 @@ export interface QuestionWithStatus extends Question {
 }
 
 export interface QuizAttemptState {
+  attemptId: string | null;
   quizId: string;
-  studentId: string;
   quizTitle: string;
   quizQuestions: QuestionWithStatus[];
   questionAttempts: SubmitQuestionAnswerType[];
+  currentAnswerDraft: SubmitQuestionAnswerType | null;
   currentQuestionIndex: number;
   endsUtc: Date | null;
   serverUtc: Date | null;
   startedAt: Date | null;
+  lastSavedAt: number | null;
 }
 const initialState: QuizAttemptState = {
+  attemptId: null,
   quizId: '',
-  studentId: '',
   quizTitle: '',
   quizQuestions: [],
   questionAttempts: [],
+  currentAnswerDraft: null,
   currentQuestionIndex: 0,
   endsUtc: null,
   serverUtc: null,
   startedAt: null,
+  lastSavedAt: null,
 };
 
 export const QuizAttemptStore = signalStore(
@@ -89,39 +94,115 @@ export const QuizAttemptStore = signalStore(
 
     return {
       toQuestionWithStatus,
-      load: rxMethod<{ quizId: string }>(
-        exhaustMap(({ quizId }) => {
+      load: rxMethod<{ quizId: string; attemptId?: string | null }>(
+        switchMap(({ quizId, attemptId }) => {
           patchState(store, setPending('load'));
 
-          return quizService.getQuizById(quizId).pipe(
+          const loadQuiz$ = quizService.getQuizById(quizId).pipe(
             tap((quiz) => {
-              const questions = quiz.questions.map(toQuestionWithStatus);
               patchState(store, {
                 quizTitle: quiz.title,
-                quizQuestions: questions,
-                questionAttempts: [],
+                quizQuestions: quiz.questions.map(toQuestionWithStatus),
                 quizId: quiz.quizId,
                 currentQuestionIndex: 0,
-                startedAt: new Date(),
                 endsUtc: new Date(quiz.endsAtUtc),
                 serverUtc: new Date(quiz.serverUtc),
               });
-              patchState(store, setFulfilled('load'));
             }),
-            catchError((err) => {
-              const errorMessage = getApiErrorMessage(
-                err,
-                'Error occurred when we tried to load your quiz',
-              );
-              patchState(store, setError('load', errorMessage));
-              return EMPTY;
-            }),
+          );
+
+              if (attemptId) {
+            return quizAttemptService.getQuizAttemptForResume(attemptId).pipe(
+              switchMap((attempt) => {
+                patchState(store, {
+                  attemptId: attempt.quizAttemptId,
+                  startedAt: new Date(attempt.startedAt),
+                });
+
+                const solvedMap = new Map(
+                  attempt.answers.map((a) => [a.questionId, true]),
+                );
+
+                return loadQuiz$.pipe(
+                  tap(() => {
+                    patchState(store, (state) => ({
+                      quizQuestions: state.quizQuestions.map((q) => ({
+                        ...q,
+                        isSolved: solvedMap.has(q.id) || q.isSolved,
+                      })),
+                    }));
+                    patchState(store, setFulfilled('load'));
+                  }),
+                );
+              }),
+              catchError((err) => {
+                const errorMessage = getApiErrorMessage(
+                  err,
+                  'Error occurred when we tried to resume your quiz',
+                );
+                patchState(store, setError('load', errorMessage));
+                return EMPTY;
+              }),
+            );
+          }
+
+          return loadQuiz$.pipe(
+            switchMap(() =>
+              quizAttemptService.startQuizAttempt({ quizId: store.quizId() }).pipe(
+                tap((attempt) => {
+                  patchState(store, {
+                    attemptId: attempt.quizAttemptId,
+                    startedAt: new Date(attempt.startedAt),
+                  });
+                  patchState(store, setFulfilled('load'));
+                }),
+                catchError((err) => {
+                  const errorMessage = getApiErrorMessage(
+                    err,
+                    'Error occurred when we tried to start your quiz attempt',
+                  );
+                  patchState(store, setError('load', errorMessage));
+                  return EMPTY;
+                }),
+              ),
+            ),
           );
         }),
       ),
-      _setStudentId(studentId: string): void {
-        patchState(store, { studentId });
-      },
+      startAttempt: rxMethod<void>(
+        exhaustMap(() => {
+          if (store.attemptId()) {
+            return of(null);
+          }
+
+          const quizId = store.quizId();
+          if (!quizId) {
+            return of(null);
+          }
+
+          patchState(store, setPending('start'));
+
+          return quizAttemptService
+            .startQuizAttempt({ quizId })
+            .pipe(
+              tap((attempt) => {
+                patchState(store, {
+                  attemptId: attempt.quizAttemptId,
+                  startedAt: new Date(attempt.startedAt),
+                });
+                patchState(store, setFulfilled('start'));
+              }),
+              catchError((err) => {
+                const errorMessage = getApiErrorMessage(
+                  err,
+                  'Error occurred when starting the attempt',
+                );
+                patchState(store, setError('start', errorMessage));
+                return EMPTY;
+              }),
+            );
+        }),
+      ),
       setCurrentQuestionIndex(index: number): void {
         patchState(store, { currentQuestionIndex: index });
       },
@@ -139,22 +220,30 @@ export const QuizAttemptStore = signalStore(
         const currentQuestion = store.quizQuestions()[store.currentQuestionIndex()];
         return currentQuestion ? currentQuestion.isFlagged : false;
       },
-      submitAnswer(answer: SubmitQuestionAnswerType): void {
-        if (store.quizTimeOut()) {
+      setCurrentAnswerDraft(answer: SubmitQuestionAnswerType): void {
+        patchState(store, { currentAnswerDraft: answer });
+      },
+
+      saveCurrentAnswer(): void {
+        const draft = store.currentAnswerDraft();
+        if (!draft || store.quizTimeOut()) {
           return;
         }
 
-        patchState(store, (state) => {
-          const solved = true;
+        const attemptId = store.attemptId();
+        if (!attemptId) {
+          return;
+        }
 
-          const exists = state.questionAttempts.some((q) => q.questionId === answer.questionId);
-          // if he submits the answer before we update it else, we add it to the list of attempts
+        patchState(store, setPending('submit-answer'));
+
+        patchState(store, (state) => {
+          const exists = state.questionAttempts.some((q) => q.questionId === draft.questionId);
           const updatedAttempts = exists
-            ? state.questionAttempts.map((q) => (q.questionId === answer.questionId ? answer : q))
-            : [...state.questionAttempts, answer];
-          // Update the isSolved to reactivity in the ui specially in the question navigator
+            ? state.questionAttempts.map((q) => (q.questionId === draft.questionId ? draft : q))
+            : [...state.questionAttempts, draft];
           const updatedQuestions = state.quizQuestions.map((question) =>
-            question.id === answer.questionId ? { ...question, isSolved: solved } : question,
+            question.id === draft.questionId ? { ...question, isSolved: true } : question,
           );
 
           return {
@@ -162,23 +251,36 @@ export const QuizAttemptStore = signalStore(
             quizQuestions: updatedQuestions,
           };
         });
+
+        quizAttemptService.submitQuestionAnswer(attemptId, draft).pipe(
+          tap(() => {
+            patchState(store, setFulfilled('submit-answer'));
+            patchState(store, { lastSavedAt: Date.now() });
+          }),
+          catchError((err) => {
+            const errorMessage = getApiErrorMessage(
+              err,
+              'Error occurred when saving the answer',
+            );
+            patchState(store, setError('submit-answer', errorMessage));
+            return EMPTY;
+          }),
+        ).subscribe();
       },
-      _submitQuiz(): void {
+      completeAttempt(): void {
+        const attemptId = store.attemptId();
+        if (!attemptId) {
+          return;
+        }
+
         if (store.isPending()('submit') || store.isFulfilled()('submit')) {
           return;
         }
 
-        const studentId = store.studentId();
-        const request: SubmitQuizAttempt = {
-          quizId: store.quizId(),
-          startedAt: store.startedAt()!.toISOString(),
-          submittedAt: new Date().toISOString(),
-          questionAnswers: store.questionAttempts(),
-        };
-
         patchState(store, setPending('submit'));
+
         quizAttemptService
-          .createQuizAttempt(studentId, request)
+          .completeQuizAttempt(attemptId, { submittedAt: new Date().toISOString() })
           .pipe(
             tap(() => {
               patchState(store, setFulfilled('submit'));
@@ -190,12 +292,6 @@ export const QuizAttemptStore = signalStore(
             }),
           )
           .subscribe();
-      },
-      SubmitQuiz(): void {
-        if (store.quizTimeOut()) {
-          return;
-        }
-        this._submitQuiz();
       },
       GoToPreviousQuestion(): void {
         if (store.currentQuestionIndex() > 0) {
@@ -212,28 +308,25 @@ export const QuizAttemptStore = signalStore(
   withHooks((store) => {
     let intervalId: ReturnType<typeof setInterval> | undefined;
 
-    effect(
-      () => {
-        const isTimeout = store.quizTimeOut();
-        const serverUtc = store.serverUtc();
-        if (serverUtc && isTimeout) {
-          store._submitQuiz();
-          if (intervalId) {
-            clearInterval(intervalId);
-          }
+    effect(() => {
+      if (store.isFulfilled()('load') && !store.attemptId() && store.quizId()) {
+        store.startAttempt();
+      }
+    });
+
+    effect(() => {
+      const isTimeout = store.quizTimeOut();
+      const serverUtc = store.serverUtc();
+      if (serverUtc && isTimeout && store.attemptId()) {
+        store.completeAttempt();
+        if (intervalId) {
+          clearInterval(intervalId);
         }
-      },
-      { allowSignalWrites: true },
-    );
+      }
+    });
 
     return {
       onInit(): void {
-        const authService = inject(AuthService);
-        const currentUser = authService.currentUser();
-        if (currentUser) {
-          store._setStudentId(currentUser.id);
-        }
-
         intervalId = setInterval(() => {
           const serverUtc = store.serverUtc();
           if (serverUtc) {

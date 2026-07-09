@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { StudentQuizzesLifecycle } from '@Features/student/student-quizzes/models/student-quizzes-lifecycle.model';
+
 import { UIChart } from 'primeng/chart';
 
 import { ChartPlaceholder } from '@shared/components/chart-placeholder/chart-placeholder';
@@ -27,21 +27,7 @@ import { chartColor } from '@shared/utils/chart-colors';
           }
         </div>
       </article>
-      <article class="chart-card">
-        <h3 class="chart-title">My Quizzes Lifecycle</h3>
-        <div class="chart-container">
-          @defer (on viewport({rootMargin: '100px'}); prefetch on viewport({rootMargin: '200px'})) {
-            <p-chart
-              type="doughnut"
-              [data]="lifecycleChartData()"
-              [options]="lifecycleChartOptions()"
-              height="300"
-            />
-          } @placeholder {
-            <app-chart-placeholder />
-          }
-        </div>
-      </article>
+
     </section>
   `,
   styles: `
@@ -90,7 +76,6 @@ import { chartColor } from '@shared/utils/chart-colors';
 })
 export class StudentDashboardCharts {
   readonly quizAttempts = input<QuizAttempt[]>([]);
-  readonly lifecycle = input<StudentQuizzesLifecycle | null>(null);
 
   protected readonly scoreTrendData = computed(() => {
     const attempts = this.quizAttempts()
@@ -156,41 +141,5 @@ export class StudentDashboardCharts {
     },
   }));
 
-  protected readonly lifecycleChartData = computed(() => {
-    const l = this.lifecycle();
-    return {
-      labels: ['Available', 'Scheduled', 'Completed'],
-      datasets: [
-        {
-          data: [(l?.availableNow ?? []).length, (l?.scheduled ?? []).length, (l?.completed ?? []).length],
-          backgroundColor: [chartColor('--clr-green-400'), chartColor('--clr-green-300'), chartColor('--clr-gray-500')],
-          hoverBackgroundColor: [chartColor('--clr-green-600'), chartColor('--clr-green-400'), chartColor('--clr-gray-600')],
-          borderWidth: 0,
-        },
-      ],
-    };
-  });
 
-  protected readonly lifecycleChartOptions = computed(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '60%',
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
-        labels: {
-          font: { family: 'Inter', size: 13 },
-          padding: 16,
-          usePointStyle: true,
-        },
-      },
-      tooltip: {
-        backgroundColor: chartColor('--clr-black-500'),
-        titleFont: { family: 'Space Grotesk', size: 13 },
-        bodyFont: { family: 'Inter', size: 12 },
-        padding: 10,
-        cornerRadius: 6,
-      },
-    },
-  }));
 }

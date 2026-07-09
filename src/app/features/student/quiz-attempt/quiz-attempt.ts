@@ -1,10 +1,13 @@
 import { NgComponentOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { map } from 'rxjs';
 
 import { Button } from '@shared/components/button/button';
+import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
@@ -32,6 +35,7 @@ import { QuizFinishedMessage } from './quiz-finished-message';
     OperationFailed,
     Button,
     QuizFinishedMessage,
+    ConfirmActionModal,
   ],
   providers: [QuizAttemptStore],
   template: `
@@ -52,6 +56,12 @@ import { QuizFinishedMessage } from './quiz-finished-message';
         @if (quizAttemptStore.error()('submit'); as submitErrorMessage) {
           <app-operation-failed>
             <p>{{ submitErrorMessage }}</p>
+          </app-operation-failed>
+        }
+
+        @if (quizAttemptStore.error()('start'); as startErrorMessage) {
+          <app-operation-failed>
+            <p>{{ startErrorMessage }}</p>
           </app-operation-failed>
         }
 
@@ -80,6 +90,21 @@ import { QuizFinishedMessage } from './quiz-finished-message';
               (nextButtonClicked)="quizAttemptStore.GoToNextQuestion()"
               ariaLabel="Question navigation"
             />
+
+            <button
+              [loading]="quizAttemptStore.isPending()('submit-answer')"
+              [disabled]="!quizAttemptStore.currentAnswerDraft() || quizAttemptStore.quizTimeOut()"
+              (click)="quizAttemptStore.saveCurrentAnswer()"
+              appButton
+              variant="green"
+              type="button"
+            >
+              @if (savedLabel(); as label) {
+                {{ label }}
+              } @else {
+                Save Answer
+              }
+            </button>
           </div>
 
           <aside class="sidebar-column" aria-label="Quiz tools">
@@ -87,7 +112,7 @@ import { QuizFinishedMessage } from './quiz-finished-message';
             <app-questions-progress-bar />
             <button
               [loading]="quizAttemptStore.isPending()('submit')"
-              (click)="quizAttemptStore.SubmitQuiz()"
+              (click)="onSubmitQuiz()"
               appButton
               variant="red"
               style="width: 100%"
@@ -97,6 +122,30 @@ import { QuizFinishedMessage } from './quiz-finished-message';
             </button>
           </aside>
         </div>
+      }
+
+      @if (showLeaveConfirmModal()) {
+        <app-confirm-action-modal
+          (confirmed)="onLeave(true)"
+          (cancelled)="onLeave(false)"
+          title="Leave Quiz"
+          warningMessage="Are you sure you want to leave? Your progress will be saved."
+          confirmationPhrase="leave"
+          confirmButtonText="I understand, leave"
+          variant="danger"
+        />
+      }
+
+      @if (showSubmitConfirmModal()) {
+        <app-confirm-action-modal
+          (confirmed)="onConfirmSubmit()"
+          (cancelled)="showSubmitConfirmModal.set(false)"
+          title="Submit Quiz"
+          warningMessage="Are you sure you want to submit your quiz? You will not be able to edit your answers after this."
+          confirmationPhrase="submit"
+          confirmButtonText="Yes, Submit Quiz"
+          variant="success"
+        />
       }
     </section>
   `,
@@ -146,9 +195,31 @@ export class QuizAttempt implements OnInit {
   protected readonly quizId = input.required<string>();
   protected readonly quizAttemptStore = inject(QuizAttemptStore);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  protected readonly showLeaveConfirmModal = signal(false);
+  protected readonly showSubmitConfirmModal = signal(false);
+  private resolveLeave: ((allow: boolean) => void) | null = null;
+
+  protected readonly savedLabel = computed(() => {
+    const lastSaved = this.quizAttemptStore.lastSavedAt();
+    if (!lastSaved) return null;
+
+    const elapsed = Date.now() - lastSaved;
+    if (elapsed > 3000) return null;
+
+    return '\u2713 Saved';
+  });
+
+  private readonly attemptId = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('attemptId'))),
+  );
 
   ngOnInit() {
-    this.quizAttemptStore.load({ quizId: this.quizId() });
+    this.quizAttemptStore.load({
+      quizId: this.quizId(),
+      attemptId: this.attemptId(),
+    });
   }
 
   unloadNotification($event: BeforeUnloadEvent): void {
@@ -157,13 +228,29 @@ export class QuizAttempt implements OnInit {
     }
   }
 
-  canDeactivate(): boolean {
+  canDeactivate(): Promise<boolean> | boolean {
     if (this.isQuizInProgress()) {
-      return confirm(
-        'Are you sure you want to leave? Your progress will be lost and the quiz will not be submitted.',
-      );
+      this.showLeaveConfirmModal.set(true);
+      return new Promise<boolean>((resolve) => {
+        this.resolveLeave = resolve;
+      });
     }
     return true;
+  }
+
+  protected onLeave(allow: boolean): void {
+    this.showLeaveConfirmModal.set(false);
+    this.resolveLeave?.(allow);
+    this.resolveLeave = null;
+  }
+
+  protected onSubmitQuiz(): void {
+    this.showSubmitConfirmModal.set(true);
+  }
+
+  protected onConfirmSubmit(): void {
+    this.showSubmitConfirmModal.set(false);
+    this.quizAttemptStore.completeAttempt();
   }
 
   protected goToResults(): void {

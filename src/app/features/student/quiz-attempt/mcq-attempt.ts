@@ -138,7 +138,7 @@ export class McqAttempt implements QuestionAttemptContract, OnInit {
           type: QuestionType.Mcq,
         };
 
-        this.quizAttemptStore.submitAnswer(answer);
+        this.quizAttemptStore.setCurrentAnswerDraft(answer);
       });
   }
 }

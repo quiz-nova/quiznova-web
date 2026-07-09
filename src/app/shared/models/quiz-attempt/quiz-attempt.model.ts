@@ -13,6 +13,7 @@ export interface QuizAttempt {
   correctAnswers: number;
   score: number;
   status: string;
+  gradingState: string;
   questions: Question[];
   answers: QuestionAnswer[];
 }

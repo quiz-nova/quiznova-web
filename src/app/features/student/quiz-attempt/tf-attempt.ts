@@ -137,7 +137,7 @@ export class TfAttempt implements QuestionAttemptContract, OnInit {
           type: QuestionType.Tf,
         };
 
-        this.quizAttemptStore.submitAnswer(answer);
+        this.quizAttemptStore.setCurrentAnswerDraft(answer);
       });
   }
 }

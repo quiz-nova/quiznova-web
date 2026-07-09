@@ -1,14 +1,18 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+
+import { TableModule } from 'primeng/table';
 
 import { Button } from '@shared/components/button/button';
+import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { QuizCountdownTag } from '@shared/components/quiz-countdown-tag/quiz-countdown-tag';
+import { durationInMinutes } from '@shared/utils/utilities';
 
 import { StudentQuizApiDto } from './models/student-quizzes.model';
 
 @Component({
   selector: 'app-student-available-quizzes',
-  imports: [RouterLink, QuizCountdownTag, Button],
+  imports: [RouterLink, QuizCountdownTag, Button, ConfirmActionModal, TableModule],
   template: `
     <section class="quiz-section" aria-labelledby="available-heading">
       <h2 id="available-heading">Available Now</h2>
@@ -16,8 +20,8 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
         <p class="empty-state">No available quizzes at the moment.</p>
       } @else {
         <div class="table-shell">
-          <table>
-            <thead>
+          <p-table [value]="quizzes()" [tableStyle]="{ 'min-width': '46rem' }">
+            <ng-template #header>
               <tr>
                 <th>Quiz</th>
                 <th>Course</th>
@@ -26,39 +30,61 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                 <th>Time Remaining</th>
                 <th>Action</th>
               </tr>
-            </thead>
-            <tbody>
-              @for (quiz of quizzes(); track quiz.quizId) {
-                <tr>
-                  <td>{{ quiz.title }}</td>
-                  <td>{{ quiz.courseName }}</td>
-                  <td>{{ quiz.questionsCount }}</td>
-                  <td>{{ durationInMinutes(quiz) }} min</td>
-                  <td>
-                    <app-quiz-countdown-tag
-                      [endsAtUtc]="quiz.endsAtUtc"
-                      [serverUtc]="serverUtc()"
-                      (expired)="markQuizExpired(quiz.quizId)"
-                    />
-                  </td>
-                  <td>
+            </ng-template>
+            <ng-template #body let-quiz>
+              <tr>
+                <td>{{ quiz.title }}</td>
+                <td>{{ quiz.courseName }}</td>
+                <td>{{ quiz.questionsCount }}</td>
+                <td>{{ durationInMinutes(quiz.startsAtUtc, quiz.endsAtUtc) }} min</td>
+                <td>
+                  <app-quiz-countdown-tag
+                    [endsAtUtc]="quiz.endsAtUtc"
+                    [serverUtc]="serverUtc()"
+                    (expired)="markQuizExpired(quiz.quizId)"
+                  />
+                </td>
+                <td>
+                  @if (quiz.attemptId) {
                     <a
                       appButton
                       variant="green"
                       class="start-btn"
                       [routerLink]="['/student/quiz-attempt', quiz.quizId]"
-                      [disabled]="isQuizExpired(quiz.quizId)"
-                      [tabIndex]="isQuizExpired(quiz.quizId) ? -1 : 0"
-                      >Start Quiz</a
+                      [queryParams]="{ attemptId: quiz.attemptId }"
+                      >Continue</a
                     >
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+                  } @else {
+                    <button
+                      appButton
+                      variant="green"
+                      class="start-btn"
+                      [disabled]="isQuizExpired(quiz.quizId)"
+                      (click)="startQuiz(quiz)"
+                      type="button"
+                    >
+                      Start Quiz
+                    </button>
+                  }
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
         </div>
       }
     </section>
+
+    @if (pendingQuiz(); as quiz) {
+      <app-confirm-action-modal
+        title="Start Quiz"
+        [warningMessage]="'You are about to start the quiz: ' + quiz.title"
+        confirmationPhrase="start"
+        confirmButtonText="Yes, Start Quiz"
+        variant="info"
+        (confirmed)="onConfirmStart()"
+        (cancelled)="onCancelStart()"
+      />
+    }
   `,
   styles: `
     .quiz-section {
@@ -82,34 +108,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       border-radius: var(--radius-md);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 46rem;
-    }
-
-    th,
-    td {
-      padding: 0.85rem;
-      border-bottom: 1px solid var(--clr-gray-200);
-      text-align: left;
-      vertical-align: middle;
-      color: var(--clr-blue-900);
-      font-size: var(--fs-300);
-    }
-
-    th {
-      color: var(--clr-gray-600);
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: 0;
-    }
-
     .empty-state {
       padding: 0.85rem 1rem;
       border: 1px solid var(--clr-gray-200);
@@ -124,12 +122,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       font-size: var(--fs-300);
       font-weight: 700;
     }
-
-    @media (width <= 60rem) {
-      table {
-        min-width: 42rem;
-      }
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -137,7 +129,11 @@ export class StudentAvailableQuizzes {
   readonly quizzes = input.required<StudentQuizApiDto[]>();
   readonly serverUtc = input.required<string>();
 
+  private readonly router = inject(Router);
   private readonly expiredQuizIds = signal<Record<string, true>>({});
+  private readonly pendingQuizSignal = signal<StudentQuizApiDto | null>(null);
+
+  protected readonly pendingQuiz = computed(() => this.pendingQuizSignal());
 
   protected markQuizExpired(quizId: string): void {
     this.expiredQuizIds.update((state) => ({
@@ -150,14 +146,21 @@ export class StudentAvailableQuizzes {
     return this.expiredQuizIds()[quizId];
   }
 
-  protected durationInMinutes(quiz: StudentQuizApiDto): number {
-    const startsAtMs = new Date(quiz.startsAtUtc).getTime();
-    const endsAtMs = new Date(quiz.endsAtUtc).getTime();
-
-    if (!Number.isFinite(startsAtMs) || !Number.isFinite(endsAtMs)) {
-      return 0;
-    }
-
-    return Math.max(0, Math.round((endsAtMs - startsAtMs) / 60000));
+  protected startQuiz(quiz: StudentQuizApiDto): void {
+    this.pendingQuizSignal.set(quiz);
   }
+
+  protected onConfirmStart(): void {
+    const quiz = this.pendingQuizSignal();
+    if (!quiz) return;
+
+    this.pendingQuizSignal.set(null);
+    this.router.navigate(['/student/quiz-attempt', quiz.quizId]);
+  }
+
+  protected onCancelStart(): void {
+    this.pendingQuizSignal.set(null);
+  }
+
+  protected readonly durationInMinutes = durationInMinutes;
 }

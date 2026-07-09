@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
-import { SubmitQuizAttempt } from '@Features/student/quiz-attempt/models/SubmitQuizAttempt.model';
+import {
+  CompleteQuizAttemptRequest,
+  StartQuizAttemptRequest,
+  SubmitQuestionAnswerType,
+} from '@Features/student/quiz-attempt/models/SubmitQuizAttempt.model';
 import { Observable } from 'rxjs';
 
 import { PaginatedList } from '@shared/models/pagination/paginated-list.model';
@@ -19,28 +23,44 @@ export class QuizAttemptService {
   private readonly appSettings = inject(APP_SETTINGS);
   private readonly http = inject(HttpClient);
 
+  private get apiBase(): string {
+    return this.appSettings.apiBaseUrl;
+  }
+
+  startQuizAttempt(request: StartQuizAttemptRequest): Observable<QuizAttempt> {
+    return this.http.post<QuizAttempt>(`${this.apiBase}/quizattempts`, request);
+  }
+
+  submitQuestionAnswer(attemptId: string, answer: SubmitQuestionAnswerType): Observable<void> {
+    return this.http.post<void>(`${this.apiBase}/quizattempts/${attemptId}/answers`, answer);
+  }
+
+  completeQuizAttempt(
+    attemptId: string,
+    request: CompleteQuizAttemptRequest,
+  ): Observable<QuizAttempt> {
+    return this.http.put<QuizAttempt>(`${this.apiBase}/quizattempts/${attemptId}`, request);
+  }
+
   getQuizAttemptById(studentId: string, attemptId: string): Observable<QuizAttempt> {
     return this.http.get<QuizAttempt>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/quiz-attempts/${attemptId}`,
+      `${this.apiBase}/students/${studentId}/quiz-attempts/${attemptId}`,
     );
   }
 
-  createQuizAttempt(studentId: string, request: SubmitQuizAttempt): Observable<QuizAttempt> {
-    return this.http.post<QuizAttempt>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/quiz-attempts`,
-      request,
-    );
+  getQuizAttemptForResume(attemptId: string): Observable<QuizAttempt> {
+    return this.http.get<QuizAttempt>(`${this.apiBase}/quiz-attempts/${attemptId}`);
   }
 
   getStudentQuizAttempts(studentId: string): Observable<QuizAttempt[]> {
     return this.http.get<QuizAttempt[]>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/quiz-attempts`,
+      `${this.apiBase}/students/${studentId}/quiz-attempts`,
     );
   }
 
   getStudentQuizAttemptsCount(studentId: string): Observable<QuizAttemptCount> {
     return this.http.get<QuizAttemptCount>(
-      `${this.appSettings.apiBaseUrl}/students/${studentId}/quiz-attempts/count`,
+      `${this.apiBase}/students/${studentId}/quiz-attempts/count`,
     );
   }
 
@@ -50,7 +70,7 @@ export class QuizAttemptService {
     const params = buildParameters(query);
 
     return this.http.get<PaginatedList<QuizAttempt>>(
-      `${this.appSettings.apiBaseUrl}/quiz-attempts`,
+      `${this.apiBase}/quiz-attempts`,
       {
         params,
       },
@@ -64,18 +84,18 @@ export class QuizAttemptService {
     const params = buildParameters({ pageNumber, pageSize });
 
     return this.http.get<PaginatedList<PendingManualAnswers>>(
-      `${this.appSettings.apiBaseUrl}/quiz-attempts/manually-graded-answers`,
+      `${this.apiBase}/quiz-attempts/manually-graded-answers`,
       { params },
     );
   }
 
   getQuizAttemptForGrading(attemptId: string): Observable<QuizAttempt> {
-    return this.http.get<QuizAttempt>(`${this.appSettings.apiBaseUrl}/quiz-attempts/${attemptId}`);
+    return this.http.get<QuizAttempt>(`${this.apiBase}/quiz-attempts/${attemptId}`);
   }
 
   gradeAnswer(answerId: string, score: number, feedback?: string): Observable<void> {
     return this.http.put<void>(
-      `${this.appSettings.apiBaseUrl}/quiz-attempts/manually-graded-answers/${answerId}`,
+      `${this.apiBase}/quiz-attempts/manually-graded-answers/${answerId}`,
       { score, feedback: feedback ?? null },
     );
   }

@@ -5,6 +5,7 @@ import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { map, of } from 'rxjs';
 
+import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { QuizService } from '@shared/services/quiz.service';
 
@@ -14,7 +15,13 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
 
 @Component({
   selector: 'app-student-quizzes',
-  imports: [ProgressSpinner, RoleDashboardHeader, StudentAvailableQuizzes, StudentScheduledQuizzes],
+  imports: [
+    ProgressSpinner,
+    RoleDashboardHeader,
+    StudentAvailableQuizzes,
+    StudentScheduledQuizzes,
+    OperationFailed,
+  ],
   template: `
     <section class="quizzes-page">
       <app-role-dashboard-header
@@ -27,11 +34,19 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
           <p-progress-spinner ariaLabel="Loading quizzes" />
         </div>
       } @else if (quizzesResource.error()) {
-        <div class="error" role="alert">Failed to load quizzes.</div>
+        <app-operation-failed>
+          <p>Failed to load quizzes.</p>
+        </app-operation-failed>
       } @else {
-        <app-student-available-quizzes [quizzes]="availableQuizzes()" [serverUtc]="serverUtc()" />
+        @if (availableQuizzes().length === 0 && scheduledQuizzes().length === 0) {
+          <div class="empty-state" role="status">
+            <p>You don't have any quizzes at the moment.</p>
+          </div>
+        } @else {
+          <app-student-available-quizzes [quizzes]="availableQuizzes()" [serverUtc]="serverUtc()" />
 
-        <app-student-scheduled-quizzes [quizzes]="scheduledQuizzes()" [serverUtc]="serverUtc()" />
+          <app-student-scheduled-quizzes [quizzes]="scheduledQuizzes()" [serverUtc]="serverUtc()" />
+        }
       }
     </section>
   `,
@@ -46,6 +61,14 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
       gap: 1.5rem;
       width: 100%;
       padding: 1.5rem;
+    }
+
+    .empty-state {
+      padding: 2rem;
+      border: 1px dashed var(--clr-gray-300);
+      border-radius: var(--radius-lg);
+      color: var(--clr-gray-600);
+      text-align: center;
     }
 
     @media (width <= 60rem) {

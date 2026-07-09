@@ -1,18 +1,18 @@
 import { Routes } from '@angular/router';
 
-import { canDeactivateQuizAttempt } from '@Core/guards/quiz-attempt.guard';
+import { canDeactivateQuizAttempt } from '@Features/student/quiz-attempt/quiz-attempt.guard';
 
 export const studentRoutes: Routes = [
-  {
-    path: 'quiz-attempt/:quizId',
-    loadComponent: () =>
-      import('@Features/student/quiz-attempt/quiz-attempt').then((m) => m.QuizAttempt),
-    canDeactivate: [canDeactivateQuizAttempt],
-  },
   {
     path: '',
     loadComponent: () => import('@Features/student/student').then((m) => m.Student),
     children: [
+      {
+        path: 'quiz-attempt/:quizId',
+        loadComponent: () =>
+          import('@Features/student/quiz-attempt/quiz-attempt').then((m) => m.QuizAttempt),
+        canDeactivate: [canDeactivateQuizAttempt],
+      },
       {
         path: '',
         pathMatch: 'full',

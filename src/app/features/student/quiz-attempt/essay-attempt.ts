@@ -128,7 +128,7 @@ export class EssayAttempt implements QuestionAttemptContract, OnInit {
           type: 'essay',
         };
 
-        this.quizAttemptStore.submitAnswer(answer);
+        this.quizAttemptStore.setCurrentAnswerDraft(answer);
       });
   }
 }

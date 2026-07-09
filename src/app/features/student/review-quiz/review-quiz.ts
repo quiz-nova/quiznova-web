@@ -64,7 +64,9 @@ import {
           </div>
         </section>
       } @else {
-        <div class="error" role="alert">Attempt review is unavailable.</div>
+        <app-operation-failed>
+          <p>Attempt review is unavailable.</p>
+        </app-operation-failed>
       }
     </section>
   `,

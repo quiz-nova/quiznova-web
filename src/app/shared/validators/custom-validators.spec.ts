@@ -4,7 +4,6 @@ import { describe, it, expect } from 'vitest';
 
 import { CustomValidators } from './custom-validators';
 
-// Helper to create a FormControl with a given value
 const ctrl = (value: unknown) => new FormControl(value);
 
 describe('CustomValidators.trimMinLength', () => {

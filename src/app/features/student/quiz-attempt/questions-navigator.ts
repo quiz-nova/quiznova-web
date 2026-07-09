@@ -64,7 +64,6 @@ import { QuizAttemptStore } from './quiz-attempt.store';
       color: var(--clr-gray-500);
     }
 
-    /* Solved state */
     button.is-solved {
       background: var(--clr-green-400);
       color: var(--clr-white);

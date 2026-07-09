@@ -128,7 +128,6 @@ import { NoAnswer } from './no-answer';
       margin-inline: auto;
     }
 
-    /* ── Header card ── */
     .attempt-header {
       display: flex;
       align-items: flex-start;
@@ -199,7 +198,6 @@ import { NoAnswer } from './no-answer';
       opacity: 0.85;
     }
 
-    /* ── Question list ── */
     .question-list {
       display: grid;
       gap: 1.25rem;
@@ -257,7 +255,6 @@ import { NoAnswer } from './no-answer';
       margin-bottom: 1rem;
     }
 
-    /* Status helpers */
     .status-container {
       display: grid;
       place-items: center;

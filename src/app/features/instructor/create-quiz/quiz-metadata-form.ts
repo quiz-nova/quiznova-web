@@ -327,7 +327,6 @@ export class QuizMetadataForm implements OnInit, OnDestroy {
       return;
     }
 
-    // Show confirmation modal
     this.pendingCourseId = newCourseId;
     this.showConfirmModal.set(true);
 

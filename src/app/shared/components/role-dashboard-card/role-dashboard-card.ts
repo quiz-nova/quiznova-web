@@ -107,50 +107,42 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         transform: scale(1.1) rotate(4deg);
       }
 
-      /* Theme: Green */
       .theme-green {
         --theme-bg: var(--clr-green-50);
         --theme-text: var(--clr-green-600);
         --theme-border: var(--clr-green-300);
       }
-      /* Theme: Amber */
       .theme-amber {
         --theme-bg: var(--clr-amber-50);
         --theme-text: var(--clr-amber-700);
         --theme-border: var(--clr-amber-200);
       }
-      /* Theme: Violet */
       .theme-violet {
         --theme-bg: var(--clr-violet-50);
         --theme-text: var(--clr-violet-700);
         --theme-border: var(--clr-violet-200);
       }
-      /* Theme: Cyan */
       .theme-cyan {
         --theme-bg: var(--clr-cyan-50);
         --theme-text: var(--clr-cyan-700);
         --theme-border: var(--clr-cyan-200);
       }
-      /* Theme: Primary */
       .theme-primary {
         --theme-bg: var(--clr-green-50);
         --theme-text: var(--clr-green-400);
         --theme-border: var(--clr-green-400);
       }
-      /* Theme: Red */
       .theme-red {
         --theme-bg: var(--clr-red-50);
         --theme-text: var(--clr-red-600);
         --theme-border: var(--clr-red-200);
       }
-      /* Theme: Gray */
       .theme-gray {
         --theme-bg: var(--clr-gray-100);
         --theme-text: var(--clr-gray-600);
         --theme-border: var(--clr-gray-300);
       }
 
-      /* Applying Theme Colors */
       .dashboard-card {
         border-color: var(--clr-gray-200);
       }

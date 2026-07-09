@@ -32,7 +32,6 @@ export function timeValidator(): ValidatorFn {
     }
     startsAtControl.setErrors(Object.keys(startsAtErrors).length > 0 ? startsAtErrors : null);
 
-    // 2. EndsAt check
     const timeDiff = endsAtDate.getTime() - startsAtDate.getTime();
     const endsAtErrors = { ...endsAtControl.errors };
     delete endsAtErrors['beforeStart'];

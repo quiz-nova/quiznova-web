@@ -155,7 +155,6 @@ import { PendingGradesStats } from './pending-grades-stats';
     }
 
 
-    /* ── List ───────────────────────────────── */
     .list-container {
       background: var(--clr-white);
       border: 1px solid var(--clr-gray-200);
@@ -197,7 +196,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       outline: none;
     }
 
-    /* Student cell */
     .student-cell {
       display: flex;
       align-items: center;
@@ -223,7 +221,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       color: var(--clr-gray-800);
     }
 
-    /* Quiz cell */
     .quiz-title {
       font-weight: 600;
       color: var(--clr-gray-800);
@@ -240,7 +237,6 @@ import { PendingGradesStats } from './pending-grades-stats';
 
     .course-name i { font-size: 0.7rem; }
 
-    /* Date cell */
     .date-cell p { color: var(--clr-gray-800); font-weight: 500; }
 
     .time {
@@ -249,7 +245,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       margin-top: 0.15rem;
     }
 
-    /* Badge */
     .pending-badge {
       display: inline-flex;
       align-items: center;
@@ -262,7 +257,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       font-weight: 600;
     }
 
-    /* Arrow */
     .arrow-cell {
       display: flex;
       justify-content: flex-end;
@@ -276,7 +270,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       color: var(--clr-green-400);
     }
 
-    /* Pagination Row */
     .pagination-row {
       display: flex;
       align-items: center;
@@ -293,7 +286,6 @@ import { PendingGradesStats } from './pending-grades-stats';
       margin: 0;
     }
 
-    /* Status helpers */
     .status-container {
       display: grid;
       place-items: center;

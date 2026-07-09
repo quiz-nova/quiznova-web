@@ -121,7 +121,6 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       display: block;
     }
 
-    /* Essay section */
     .essay-section {
       display: grid;
       gap: 1.25rem;
@@ -156,7 +155,6 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       margin: 0;
     }
 
-    /* Grading form */
     .grade-form {
       display: grid;
       gap: 1rem;
@@ -235,7 +233,6 @@ import { CustomValidators } from '@shared/validators/custom-validators';
       color: var(--clr-red-500);
     }
 
-    /* Actions */
     .form-actions {
       display: flex;
       align-items: center;

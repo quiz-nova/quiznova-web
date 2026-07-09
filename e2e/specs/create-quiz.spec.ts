@@ -1,182 +1,143 @@
-import { test, expect, type Locator } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 import { SeededCredentials } from '../helpers/SeededCredentials';
+import { ConfirmActionModalPage } from '../pages/confirm-action-modal.page';
+import { CreateQuizPage } from '../pages/create-quiz.page';
+import { LoginPage } from '../pages/login.page';
+
+async function addQuizContent(createQuizPage: CreateQuizPage) {
+  await createQuizPage.selectCourse('Backend Fundamentals');
+  await createQuizPage.titleInput.fill('E2E Guard Test Quiz');
+  await createQuizPage.titleInput.blur();
+}
+
+async function clickSidebarTab(page: Page, name: string) {
+  await page.locator('app-tab').filter({ hasText: name }).locator('a').click();
+}
 
 test.describe('Quiz Creation E2E & Validations', () => {
-  let titleInput: Locator;
-  let startsAtInput: Locator;
-  let endsAtInput: Locator;
-  let publishBtn: Locator;
-  let addQuestionBtn: Locator;
-  let courseSelect: Locator;
-  let questionTypeSelect: Locator;
-
-  let mcqForm: Locator;
-  let mcqTitleArea: Locator;
-  let mcqChoiceInputs: Locator;
-  let mcqRadios: Locator;
-  let mcqDeleteButtons: Locator;
-  let mcqAddChoiceBtn: Locator;
-  let mcqMarksInput: Locator;
-
-  let essayTitleArea: Locator;
-  let essayReferenceArea: Locator;
-  let essayMarksInput: Locator;
-
-  let tfTitleArea: Locator;
-  let tfRadios: Locator;
-  let tfMarksInput: Locator;
+  let createQuizPage: CreateQuizPage;
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth/login');
-    await page.locator('#login-email').fill(SeededCredentials.instructor.email);
-    await page.locator('#login-password').fill(SeededCredentials.instructor.password);
-    await page.locator('label.role-box').filter({ hasText: 'Instructor' }).click();
-    await page.locator('button.auth-submit').click();
+    const loginPage = new LoginPage(page);
+    await loginPage.login(
+      SeededCredentials.instructor.email,
+      SeededCredentials.instructor.password,
+      'Instructor',
+    );
 
     await expect(page).toHaveURL('/instructor/dashboard');
 
-    await page.goto('/instructor/create-quiz');
-
-    titleInput = page.locator('#quiz-title');
-    startsAtInput = page.locator('#quiz-starts-at input');
-    endsAtInput = page.locator('#quiz-ends-at input');
-    publishBtn = page.locator('button:has-text("Publish Quiz")');
-    addQuestionBtn = page.locator('app-add-question:not(.pill-style) button');
-    courseSelect = page.locator('p-select[inputid="quiz-course"]');
-    questionTypeSelect = page.locator('app-add-question:not(.pill-style) p-select[inputid="questionType"]');
-
-    mcqForm = page.locator('app-mcq-form');
-    mcqTitleArea = page.locator('app-mcq-form app-question-title textarea');
-    mcqChoiceInputs = page.locator('app-mcq-form input.choice-input');
-    mcqRadios = page.locator('app-mcq-form p-radiobutton input[type="radio"]');
-    mcqDeleteButtons = page.locator('app-mcq-form app-delete-button button');
-    mcqAddChoiceBtn = page.locator('app-mcq-form button:has-text("+Add Choice")');
-    mcqMarksInput = page.locator('app-question-header input[type="number"]').nth(0);
-
-    essayTitleArea = page.locator('app-essay-form app-question-title textarea');
-    essayReferenceArea = page.locator('app-essay-form textarea#answerReference');
-    essayMarksInput = page.locator('app-question-header input[type="number"]').nth(1);
-
-    tfTitleArea = page.locator('app-tf-form app-question-title textarea');
-    tfRadios = page.locator('app-tf-form p-radiobutton input[type="radio"]');
-    tfMarksInput = page.locator('app-question-header input[type="number"]').nth(2);
+    createQuizPage = new CreateQuizPage(page);
+    await createQuizPage.goto();
   });
 
-  test('should disable Add Question when no course is selected and enable when selected', async ({
-    page,
-  }) => {
-    await expect(addQuestionBtn).toBeDisabled();
-    await expect(publishBtn).toBeDisabled();
+  test('should disable Add Question when no course is selected and enable when selected', async () => {
+    await expect(createQuizPage.addQuestionBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await courseSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'Backend Fundamentals' }).click();
+    await createQuizPage.selectCourse('Backend Fundamentals');
 
-    await expect(addQuestionBtn).toBeEnabled();
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.addQuestionBtn).toBeEnabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
   });
 
   test('should validate Quiz Title and time interval constraints', async ({ page }) => {
-    await courseSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'Backend Fundamentals' }).click();
+    await createQuizPage.selectCourse('Backend Fundamentals');
 
-    await titleInput.fill('ab');
-    await titleInput.blur();
+    await createQuizPage.titleInput.fill('ab');
+    await createQuizPage.titleInput.blur();
     await expect(page.locator('app-field-error#quiz-title-minlength-error')).toContainText(
       'Quiz title must be at least 3 characters.',
     );
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await titleInput.fill('a'.repeat(31));
-    await titleInput.blur();
+    await createQuizPage.titleInput.fill('a'.repeat(31));
+    await createQuizPage.titleInput.blur();
     await expect(page.locator('app-field-error#quiz-title-maxlength-error')).toContainText(
       'Quiz title cannot exceed 30 characters.',
     );
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await titleInput.fill('Valid Quiz Title');
-    await titleInput.blur();
+    await createQuizPage.titleInput.fill('Valid Quiz Title');
+    await createQuizPage.titleInput.blur();
 
-    await startsAtInput.click();
-    await startsAtInput.press('Control+A');
-    await startsAtInput.pressSequentially('12/12/2026 12:00 PM');
-    await startsAtInput.press('Enter');
+    await createQuizPage.startsAtInput.click();
+    await createQuizPage.startsAtInput.press('Control+A');
+    await createQuizPage.startsAtInput.pressSequentially('12/12/2026 12:00 PM');
+    await createQuizPage.startsAtInput.press('Enter');
 
-    await endsAtInput.click();
-    await endsAtInput.press('Control+A');
-    await endsAtInput.pressSequentially('12/12/2026 11:50 AM');
-    await endsAtInput.press('Enter');
+    await createQuizPage.endsAtInput.click();
+    await createQuizPage.endsAtInput.press('Control+A');
+    await createQuizPage.endsAtInput.pressSequentially('12/12/2026 11:50 AM');
+    await createQuizPage.endsAtInput.press('Enter');
 
     await expect(page.locator('app-field-error#ends-at-before-start-error')).toContainText(
       'End time must be after start time.',
     );
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await endsAtInput.click();
-    await endsAtInput.press('Control+A');
-    await endsAtInput.pressSequentially('12/12/2026 12:05 PM');
-    await endsAtInput.press('Enter');
+    await createQuizPage.endsAtInput.click();
+    await createQuizPage.endsAtInput.press('Control+A');
+    await createQuizPage.endsAtInput.pressSequentially('12/12/2026 12:05 PM');
+    await createQuizPage.endsAtInput.press('Enter');
 
     await expect(page.locator('app-field-error#ends-at-less-than-ten-error')).toContainText(
       'The difference between start and end time must be at least 10 minutes.',
     );
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await startsAtInput.click();
-    await startsAtInput.press('Control+A');
-    await startsAtInput.pressSequentially('01/01/2020 10:00 AM');
-    await startsAtInput.press('Enter');
+    await createQuizPage.startsAtInput.click();
+    await createQuizPage.startsAtInput.press('Control+A');
+    await createQuizPage.startsAtInput.pressSequentially('01/01/2020 10:00 AM');
+    await createQuizPage.startsAtInput.press('Enter');
 
     await expect(page.locator('app-field-error#starts-at-past-error')).toContainText(
       'Start time cannot be in the past.',
     );
-    await expect(publishBtn).toBeDisabled();
+    await expect(createQuizPage.publishBtn).toBeDisabled();
   });
 
-  test('should handle MCQ choice controls, selection of empty choice, and limits', async ({
-    page,
-  }) => {
-    await courseSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'Backend Fundamentals' }).click();
+  test('should handle MCQ choice controls, selection of empty choice, and limits', async () => {
+    await createQuizPage.selectCourse('Backend Fundamentals');
 
-    await addQuestionBtn.click();
+    await createQuizPage.addQuestionBtn.click();
 
-    await expect(mcqForm).toBeVisible();
+    await expect(createQuizPage.mcqForm).toBeVisible();
 
-    await expect(mcqDeleteButtons).toHaveCount(2);
-    await expect(mcqDeleteButtons.nth(0)).toBeDisabled();
-    await expect(mcqDeleteButtons.nth(1)).toBeDisabled();
+    await expect(createQuizPage.mcqDeleteButtons).toHaveCount(2);
+    await expect(createQuizPage.mcqDeleteButtons.nth(0)).toBeDisabled();
+    await expect(createQuizPage.mcqDeleteButtons.nth(1)).toBeDisabled();
 
-    await mcqAddChoiceBtn.click();
-    await mcqAddChoiceBtn.click();
-    await mcqAddChoiceBtn.click();
+    await createQuizPage.mcqAddChoiceBtn.click();
+    await createQuizPage.mcqAddChoiceBtn.click();
+    await createQuizPage.mcqAddChoiceBtn.click();
 
-    await expect(mcqAddChoiceBtn).toBeDisabled();
+    await expect(createQuizPage.mcqAddChoiceBtn).toBeDisabled();
 
-    await expect(mcqDeleteButtons.nth(0)).toBeEnabled();
+    await expect(createQuizPage.mcqDeleteButtons.nth(0)).toBeEnabled();
 
-    await mcqRadios.nth(4).click({ force: true });
-    await expect(mcqRadios.nth(4)).toBeChecked();
+    await createQuizPage.mcqRadios.nth(4).click({ force: true });
+    await expect(createQuizPage.mcqRadios.nth(4)).toBeChecked();
 
-    await mcqChoiceInputs.nth(4).fill('Special Fifth Option');
+    await createQuizPage.mcqChoiceInputs.nth(4).fill('Special Fifth Option');
 
-    await mcqForm.locator('app-delete-button').nth(4).click();
+    await createQuizPage.mcqForm.locator('app-delete-button').nth(4).click();
 
-    await expect(mcqChoiceInputs).toHaveCount(4);
+    await expect(createQuizPage.mcqChoiceInputs).toHaveCount(4);
 
     for (let i = 0; i < 4; i++) {
-      await expect(mcqRadios.nth(i)).not.toBeChecked();
+      await expect(createQuizPage.mcqRadios.nth(i)).not.toBeChecked();
     }
   });
 
   test('should successfully publish a quiz with MCQ, TF, and Essay questions (Happy Path)', async ({
     page,
   }) => {
-    await courseSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'Backend Fundamentals' }).click();
+    await createQuizPage.selectCourse('Backend Fundamentals');
 
-    await titleInput.fill('E2E Integration Quiz');
-    await titleInput.blur();
+    await createQuizPage.titleInput.fill('E2E Integration Quiz');
+    await createQuizPage.titleInput.blur();
 
     const futureStart = new Date();
     futureStart.setMinutes(futureStart.getMinutes() + 5);
@@ -184,82 +145,110 @@ test.describe('Quiz Creation E2E & Validations', () => {
     futureEnd.setHours(futureEnd.getHours() + 2);
 
     const formatTime = (d: Date) => {
-      return d.toLocaleString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      }).replace(',', '');
+      return d
+        .toLocaleString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+        .replace(',', '');
     };
 
-    await startsAtInput.click();
-    await startsAtInput.press('Control+A');
-    await startsAtInput.pressSequentially(formatTime(futureStart));
-    await startsAtInput.press('Enter');
+    await createQuizPage.startsAtInput.click();
+    await createQuizPage.startsAtInput.press('Control+A');
+    await createQuizPage.startsAtInput.pressSequentially(formatTime(futureStart));
+    await createQuizPage.startsAtInput.press('Enter');
 
-    await endsAtInput.click();
-    await endsAtInput.press('Control+A');
-    await endsAtInput.pressSequentially(formatTime(futureEnd));
-    await endsAtInput.press('Enter');
+    await createQuizPage.endsAtInput.click();
+    await createQuizPage.endsAtInput.press('Control+A');
+    await createQuizPage.endsAtInput.pressSequentially(formatTime(futureEnd));
+    await createQuizPage.endsAtInput.press('Enter');
 
-    await addQuestionBtn.click();
+    await createQuizPage.addQuestionBtn.click();
 
-    await mcqTitleArea.fill('What is the capital of France?');
-    await mcqTitleArea.blur();
+    await createQuizPage.mcqTitleArea.fill('What is the capital of France?');
+    await createQuizPage.mcqTitleArea.blur();
 
-    await mcqChoiceInputs.nth(0).fill('Paris');
-    await mcqChoiceInputs.nth(1).fill('London');
-    await mcqChoiceInputs.nth(0).blur();
-    await mcqChoiceInputs.nth(1).blur();
+    await createQuizPage.mcqChoiceInputs.nth(0).fill('Paris');
+    await createQuizPage.mcqChoiceInputs.nth(1).fill('London');
+    await createQuizPage.mcqChoiceInputs.nth(0).blur();
+    await createQuizPage.mcqChoiceInputs.nth(1).blur();
 
-    await mcqRadios.nth(0).click({ force: true });
+    await createQuizPage.mcqRadios.nth(0).click({ force: true });
 
-    await mcqMarksInput.fill('3');
-    await mcqMarksInput.blur();
+    await createQuizPage.mcqMarksInput.fill('3');
+    await createQuizPage.mcqMarksInput.blur();
 
-    await questionTypeSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'Essay' }).click();
-    await addQuestionBtn.click();
+    await createQuizPage.selectQuestionType('Essay');
+    await createQuizPage.addQuestionBtn.click();
 
-    await essayTitleArea.fill('Explain polymorphism in Object-Oriented Programming.');
-    await essayTitleArea.blur();
+    await createQuizPage.essayTitleArea.fill('Explain polymorphism in Object-Oriented Programming.');
+    await createQuizPage.essayTitleArea.blur();
 
-    await essayReferenceArea.fill(
+    await createQuizPage.essayReferenceArea.fill(
       'Polymorphism is the ability of an object to take on many forms.',
     );
-    await essayReferenceArea.blur();
+    await createQuizPage.essayReferenceArea.blur();
 
-    await essayMarksInput.fill('2');
-    await essayMarksInput.blur();
+    await createQuizPage.essayMarksInput.fill('2');
+    await createQuizPage.essayMarksInput.blur();
 
-    await questionTypeSelect.click();
-    await page.locator('.p-select-option').filter({ hasText: 'True/False' }).click();
-    await addQuestionBtn.click();
+    await createQuizPage.selectQuestionType('True/False');
+    await createQuizPage.addQuestionBtn.click();
 
-    await tfTitleArea.fill('C# is an object-oriented programming language.');
-    await tfTitleArea.blur();
+    await createQuizPage.tfTitleArea.fill('C# is an object-oriented programming language.');
+    await createQuizPage.tfTitleArea.blur();
 
-    await tfRadios.nth(0).click({ force: true });
+    await createQuizPage.tfRadios.nth(0).click({ force: true });
 
-    await tfMarksInput.fill('1');
-    await tfMarksInput.blur();
+    await createQuizPage.tfMarksInput.fill('1');
+    await createQuizPage.tfMarksInput.blur();
 
-    await expect(publishBtn).toBeEnabled();
+    await expect(createQuizPage.publishBtn).toBeEnabled();
 
     const createQuizResponsePromise = page.waitForResponse(
       (response) => response.url().includes('/quizzes') && response.request().method() === 'POST',
     );
 
-    page.on('dialog', async (dialog) => {
-      expect(dialog.message()).toContain('Quiz published successfully.');
-      await dialog.accept();
-    });
+    await createQuizPage.publishBtn.click();
 
-    await publishBtn.click();
+    const confirmModal = new ConfirmActionModalPage(page);
+    await confirmModal.confirm('publish', 'Yes, Publish Quiz');
 
     const createQuizResponse = await createQuizResponsePromise;
     expect([200, 201]).toContain(createQuizResponse.status());
+  });
+
+  test.describe('Unsaved work confirmation', () => {
+    test('should navigate away without prompt when quiz is empty', async ({ page }) => {
+      await clickSidebarTab(page, 'Dashboard');
+      await expect(page).toHaveURL('/instructor/dashboard');
+    });
+
+    test('should show confirmation modal when navigating away with unsaved content and cancel keeps you', async ({
+      page,
+    }) => {
+      await addQuizContent(createQuizPage);
+
+      await clickSidebarTab(page, 'Dashboard');
+      const confirmModal = new ConfirmActionModalPage(page);
+      await expect(confirmModal.modal).toBeVisible();
+      await expect(page.locator('.modal-dialog h3')).toHaveText('Leave Quiz Builder');
+
+      await confirmModal.cancel();
+      await expect(page).toHaveURL('/instructor/create-quiz');
+    });
+
+    test('should navigate away after confirming the modal with typed phrase', async ({ page }) => {
+      await addQuizContent(createQuizPage);
+
+      await clickSidebarTab(page, 'Dashboard');
+      const confirmModal = new ConfirmActionModalPage(page);
+      await confirmModal.confirm('leave', 'I understand, leave');
+      await expect(page).toHaveURL('/instructor/dashboard');
+    });
   });
 });

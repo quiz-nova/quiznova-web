@@ -1,381 +1,252 @@
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 import { SeededCredentials } from '../helpers/SeededCredentials';
+import { ConfirmActionModalPage } from '../pages/confirm-action-modal.page';
+import { CreateQuizPage } from '../pages/create-quiz.page';
+import { LoginPage } from '../pages/login.page';
+import { QuizAttemptPage } from '../pages/quiz-attempt.page';
 
-class QuizAttemptPage {
-  readonly headerTitle: Locator;
-  readonly headerQuestionCount: Locator;
-  readonly submitButton: Locator;
-  readonly essayTextareas: Locator;
-  readonly questionHeader: Locator;
-  readonly questionHeaderTag: Locator;
-  readonly mcqTag: Locator;
-  readonly tfTag: Locator;
-  readonly essayTag: Locator;
-  readonly mcqOptions: Locator;
-  readonly tfOptions: Locator;
-  readonly nextButton: Locator;
-  readonly navigatorButtons: Locator;
 
-  constructor(private page: Page) {
-    this.headerTitle = page.locator('app-quiz-attempt-header h1');
-    this.headerQuestionCount = page.locator('app-quiz-attempt-header p');
-    this.submitButton = page.locator('button:has-text("Submit Quiz")');
-    this.essayTextareas = page.locator('app-essay-attempt textarea');
-    this.questionHeader = page.locator('app-question-attempt-header');
-    this.questionHeaderTag = page.locator('app-question-attempt-header p').first();
-    this.mcqTag = page.locator('app-question-attempt-header .mcq-tag');
-    this.tfTag = page.locator('app-question-attempt-header .question-tag');
-    this.essayTag = page.locator('app-question-attempt-header .essay-tag');
-    this.mcqOptions = page.locator('app-mcq-attempt button.option');
-    this.tfOptions = page.locator('app-tf-attempt button.option');
-    this.nextButton = page.locator('app-navigation-buttons button:has-text("Next")');
-    this.navigatorButtons = page.locator('app-questions-navigator button');
-  }
+async function createQuizViaUI(
+  page: Page,
+  title: string,
+  questionTypes: {
+    type: 'mcq' | 'tf' | 'essay';
+    text: string;
+    marks: string;
+    choices?: string[];
+    correctChoiceIndex?: number;
+    correctTf?: boolean;
+    expectedAnswer?: string;
+  }[],
+  startsInMinutes = 0,
+  endsInMinutes = 30,
+) {
+  const loginPage = new LoginPage(page);
+  await loginPage.login(
+    SeededCredentials.instructor.email,
+    SeededCredentials.instructor.password,
+    'Instructor',
+  );
+  await expect(page).toHaveURL('/instructor/dashboard');
 
-  optionButton(text: string): Locator {
-    return this.page.locator('button.option').filter({ hasText: text });
-  }
+  const createQuizPage = new CreateQuizPage(page);
+  const createResponsePromise = page.waitForResponse(
+    (response) => response.url().includes('/quizzes') && response.request().method() === 'POST',
+  );
 
-  async answerCurrentQuestion(index: number): Promise<void> {
-    await expect(this.headerQuestionCount).toContainText(`Question ${index} of`);
+  await createQuizPage.createQuizViaUI(title, questionTypes, startsInMinutes, endsInMinutes);
 
-    await this.questionHeaderTag.waitFor({ state: 'visible', timeout: 5000 });
+  await createResponsePromise;
 
-    if (await this.mcqTag.isVisible()) {
-      await this.mcqOptions.nth(1).click();
-    } else if (await this.tfTag.isVisible()) {
-      await this.tfOptions.filter({ hasText: 'True' }).click();
-    } else if (await this.essayTag.isVisible()) {
-      await this.essayTextareas.fill('Test essay response');
-    }
-  }
-
-  async answerAllQuestions(): Promise<void> {
-    const count = await this.navigatorButtons.count();
-
-    for (let i = 0; i < count; i++) {
-      await this.answerCurrentQuestion(i);
-      if (i < count - 1) {
-        await this.nextButton.click();
-      }
-    }
-  }
+  // Logout / Clear session
+  await page.evaluate(() => localStorage.clear());
+  await page.goto('/auth/login');
 }
 
-test.describe('Quiz Attempt E2E & Countdown', () => {
+async function loginStudent(page: Page) {
+  const loginPage = new LoginPage(page);
+  await loginPage.login(
+    SeededCredentials.student.email,
+    SeededCredentials.student.password,
+    'Student',
+  );
+  await expect(page).toHaveURL('/student/dashboard');
+}
+
+test.describe('Quiz Attempt E2E & Gradual Submissions (Real Backend)', () => {
   let quizAttemptPage: QuizAttemptPage;
 
   test.beforeEach(async ({ page }) => {
     quizAttemptPage = new QuizAttemptPage(page);
-
-    await page.goto('/auth/login');
-    await page.locator('#login-email').fill(SeededCredentials.student.email);
-    await page.locator('#login-password').fill(SeededCredentials.student.password);
-    await page.locator('label.role-box').filter({ hasText: 'Student' }).click();
-
-    await page.route(`**/students/*/quiz-attempts`, async (route) => {
-      await route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: '{}',
-      });
-    });
-
-    await page.locator('button.auth-submit').click();
-    await expect(page).toHaveURL('/student/dashboard');
   });
 
-  test('should load, attempt, and submit an auto-only graded quiz (3 auto questions)', async ({
-    page,
-  }) => {
-    const quizId = 'quiz-auto-123';
-    const endsAt = new Date();
-    endsAt.setMinutes(endsAt.getMinutes() + 10);
+  test('Scenario 1 - Solve All MCQ-only quiz with gradual submissions', async ({ page }) => {
+    const quizTitle = `E2E MCQ Quiz ${Date.now()}`;
+    await createQuizViaUI(page, quizTitle, [
+      {
+        type: 'mcq',
+        text: 'What is Playwright?',
+        marks: '3',
+        choices: ['Testing library', 'Game'],
+        correctChoiceIndex: 0,
+      },
+    ]);
 
-    await page.route(`**/quizzes/${quizId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          quizId: quizId,
-          title: 'Auto-Graded Only Quiz',
-          courseName: 'Backend Fundamentals',
-          instructorName: 'John Doe',
-          marks: 8,
-          startsAtUtc: new Date().toISOString(),
-          endsAtUtc: endsAt.toISOString(),
-          serverUtc: new Date().toISOString(),
-          state: 'Published',
-          courseId: 'course-111',
-          instructorId: 'instructor-222',
-          questions: [
-            {
-              id: 'q1',
-              quizId: quizId,
-              questionText: 'Is TypeScript type-safe?',
-              type: 'tf',
-              marks: 2,
-              displayOrder: 1,
-              correctChoice: true,
-            },
-            {
-              id: 'q2',
-              quizId: quizId,
-              questionText: 'What is 2 + 2?',
-              type: 'mcq',
-              marks: 3,
-              displayOrder: 2,
-              correctChoiceId: 'c2',
-              choices: [
-                { id: 'c1', questionId: 'q2', text: '3', displayOrder: 1 },
-                { id: 'c2', questionId: 'q2', text: '4', displayOrder: 2 },
-              ],
-            },
-            {
-              id: 'q3',
-              quizId: quizId,
-              questionText: 'Which language is used for browser scripting?',
-              type: 'mcq',
-              marks: 3,
-              displayOrder: 3,
-              correctChoiceId: 'c4',
-              choices: [
-                { id: 'c3', questionId: 'q3', text: 'Python', displayOrder: 1 },
-                { id: 'c4', questionId: 'q3', text: 'JavaScript', displayOrder: 2 },
-              ],
-            },
-          ],
-        }),
-      });
-    });
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await expect(page).toHaveURL('/student/quizzes');
 
-    await page.goto(`/student/quiz-attempt/${quizId}`);
+    await quizAttemptPage.startQuiz(quizTitle);
+    await expect(quizAttemptPage.headerTitle).toContainText(quizTitle);
 
-    await expect(quizAttemptPage.headerTitle).toContainText('Auto-Graded Only Quiz');
-    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
+    // Answer and click "Save Answer" (gradual submission)
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 1');
+    await quizAttemptPage.answerCurrentQuestion('mcq');
 
-    await quizAttemptPage.answerAllQuestions();
+    await quizAttemptPage.submitQuiz();
 
-    await expect(quizAttemptPage.submitButton).toBeEnabled();
-    await quizAttemptPage.submitButton.click();
+    await expect(quizAttemptPage.seeResultsButton).toBeVisible({ timeout: 20000 });
+    await quizAttemptPage.seeResultsButton.click();
+    await expect(page).toHaveURL('/student/results');
   });
 
-  test('should load, attempt, and submit a manual-only graded quiz (3 manual essay questions)', async ({
-    page,
-  }) => {
-    const quizId = 'quiz-manual-123';
-    const endsAt = new Date();
-    endsAt.setMinutes(endsAt.getMinutes() + 10);
+  test('Scenario 1 - Solve only one TF-only quiz with gradual submissions', async ({ page }) => {
+    const quizTitle = `E2E TF Quiz ${Date.now()}`;
+    await createQuizViaUI(page, quizTitle, [
+      { type: 'tf', text: 'Playwright is awesome?', marks: '2', correctTf: true },
+      { type: 'tf', text: 'C# is dynamically typed?', marks: '2', correctTf: false },
+    ]);
 
-    await page.route(`**/quizzes/${quizId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          quizId: quizId,
-          title: 'Manually-Graded Only Quiz',
-          courseName: 'System Design',
-          instructorName: 'Alice Smith',
-          marks: 15,
-          startsAtUtc: new Date().toISOString(),
-          endsAtUtc: endsAt.toISOString(),
-          serverUtc: new Date().toISOString(),
-          state: 'Published',
-          courseId: 'course-222',
-          instructorId: 'instructor-333',
-          questions: [
-            {
-              id: 'q1',
-              quizId: quizId,
-              questionText: 'Explain polymorphism in OOP.',
-              type: 'essay',
-              marks: 5,
-              displayOrder: 1,
-              answerReference:
-                'Polymorphism allows objects of different classes to be treated as objects of a common superclass.',
-            },
-            {
-              id: 'q2',
-              quizId: quizId,
-              questionText: 'Describe MVC architecture.',
-              type: 'essay',
-              marks: 5,
-              displayOrder: 2,
-              answerReference: 'MVC divides an application into Model, View, and Controller.',
-            },
-            {
-              id: 'q3',
-              quizId: quizId,
-              questionText: 'What is Dependency Injection?',
-              type: 'essay',
-              marks: 5,
-              displayOrder: 3,
-              answerReference:
-                'Dependency Injection is a technique for achieving Inversion of Control (IoC).',
-            },
-          ],
-        }),
-      });
-    });
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await quizAttemptPage.startQuiz(quizTitle);
 
-    await page.goto(`/student/quiz-attempt/${quizId}`);
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 2');
+    await quizAttemptPage.answerCurrentQuestion('tf');
 
-    await expect(quizAttemptPage.headerTitle).toContainText('Manually-Graded Only Quiz');
-    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
-
-    await quizAttemptPage.answerAllQuestions();
-
-    await expect(quizAttemptPage.submitButton).toBeEnabled();
-    await quizAttemptPage.submitButton.click();
+    // Skip second question, just submit the quiz directly
+    await quizAttemptPage.submitQuiz();
+    await expect(quizAttemptPage.seeResultsButton).toBeVisible({ timeout: 20000 });
   });
 
-  test('should load, attempt, and submit a hybrid quiz (1 MCQ, 1 TF, 1 Essay)', async ({
-    page,
-  }) => {
-    const quizId = 'quiz-hybrid-123';
-    const endsAt = new Date();
-    endsAt.setMinutes(endsAt.getMinutes() + 10);
+  test('Scenario 1 - Solve nothing on Essay-only quiz', async ({ page }) => {
+    const quizTitle = `E2E Essay Quiz ${Date.now()}`;
+    await createQuizViaUI(page, quizTitle, [
+      {
+        type: 'essay',
+        text: 'Explain E2E testing benefits.',
+        marks: '5',
+        expectedAnswer: 'Reliability and confidence',
+      },
+    ]);
 
-    await page.route(`**/quizzes/${quizId}`, async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          quizId: quizId,
-          title: 'Hybrid Graded Quiz',
-          courseName: 'Backend Fundamentals',
-          instructorName: 'John Doe',
-          marks: 10,
-          startsAtUtc: new Date().toISOString(),
-          endsAtUtc: endsAt.toISOString(),
-          serverUtc: new Date().toISOString(),
-          state: 'Published',
-          courseId: 'course-111',
-          instructorId: 'instructor-222',
-          questions: [
-            {
-              id: 'q1',
-              quizId: quizId,
-              questionText: 'What is 2 + 2?',
-              type: 'mcq',
-              marks: 3,
-              displayOrder: 1,
-              correctChoiceId: 'c2',
-              choices: [
-                { id: 'c1', questionId: 'q1', text: '3', displayOrder: 1 },
-                { id: 'c2', questionId: 'q1', text: '4', displayOrder: 2 },
-              ],
-            },
-            {
-              id: 'q2',
-              quizId: quizId,
-              questionText: 'Is TypeScript type-safe?',
-              type: 'tf',
-              marks: 2,
-              displayOrder: 2,
-              correctChoice: true,
-            },
-            {
-              id: 'q3',
-              quizId: quizId,
-              questionText: 'Explain polymorphism in OOP.',
-              type: 'essay',
-              marks: 5,
-              displayOrder: 3,
-              answerReference:
-                'Polymorphism allows objects to be treated as instances of their parent class.',
-            },
-          ],
-        }),
-      });
-    });
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await quizAttemptPage.startQuiz(quizTitle);
 
-    await page.goto(`/student/quiz-attempt/${quizId}`);
-
-    await expect(quizAttemptPage.headerTitle).toContainText('Hybrid Graded Quiz');
-    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 3');
-
-    await quizAttemptPage.answerAllQuestions();
-
-    await expect(quizAttemptPage.submitButton).toBeEnabled();
-    await quizAttemptPage.submitButton.click();
+    // Submit directly without answering (solve nothing)
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 1');
+    await quizAttemptPage.submitQuiz();
+    await expect(quizAttemptPage.seeResultsButton).toBeVisible({ timeout: 20000 });
   });
 
-  test('should submit automatically when the quiz countdown times out (Hybrid Quiz)', async ({
-    page,
-  }) => {
-    const quizId = 'quiz-timeout-123';
-    await page.route(`**/quizzes/${quizId}`, async (route) => {
-      const endsAt = new Date();
-      endsAt.setSeconds(endsAt.getSeconds() + 3);
+  test('Scenario 2 - Connection lost / Navigate away and Resume Quiz Attempt', async ({ page }) => {
+    const quizTitle = `E2E Resume Quiz ${Date.now()}`;
+    await createQuizViaUI(page, quizTitle, [
+      {
+        type: 'mcq',
+        text: 'What is Playwright?',
+        marks: '3',
+        choices: ['Testing library', 'Game'],
+        correctChoiceIndex: 0,
+      },
+      { type: 'tf', text: 'Playwright is awesome?', marks: '2', correctTf: true },
+    ]);
 
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          quizId: quizId,
-          title: 'Timeout Hybrid Quiz',
-          courseName: 'Backend Fundamentals',
-          instructorName: 'John Doe',
-          marks: 10,
-          startsAtUtc: new Date().toISOString(),
-          endsAtUtc: endsAt.toISOString(),
-          serverUtc: new Date().toISOString(),
-          state: 'Published',
-          courseId: 'course-111',
-          instructorId: 'instructor-222',
-          questions: [
-            {
-              id: 'q1',
-              quizId: quizId,
-              questionText: 'Is TypeScript type-safe?',
-              type: 'tf',
-              marks: 2,
-              displayOrder: 1,
-              correctChoice: true,
-            },
-            {
-              id: 'q2',
-              quizId: quizId,
-              questionText: 'What is 2 + 2?',
-              type: 'mcq',
-              marks: 3,
-              displayOrder: 2,
-              correctChoiceId: 'c2',
-              choices: [
-                { id: 'c1', questionId: 'q2', text: '3', displayOrder: 1 },
-                { id: 'c2', questionId: 'q2', text: '4', displayOrder: 2 },
-              ],
-            },
-            {
-              id: 'q3',
-              quizId: quizId,
-              questionText: 'Explain polymorphism in OOP.',
-              type: 'essay',
-              marks: 5,
-              displayOrder: 3,
-              answerReference: 'Polymorphism allows OOP objects to take multiple forms.',
-            },
-          ],
-        }),
-      });
-    });
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await quizAttemptPage.startQuiz(quizTitle);
 
-    let autoSubmitCalled = false;
-    await page.route(`**/students/*/quiz-attempts`, async (route) => {
-      autoSubmitCalled = true;
-      await route.fulfill({
-        status: 201,
-        contentType: 'application/json',
-        body: '{}',
-      });
-    });
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 2');
+    await quizAttemptPage.answerCurrentQuestion('mcq');
 
+    // Navigate back to quizzes list (Triggering CanDeactivate)
+    await quizAttemptPage.clickQuizzesTab();
+    const confirmModal = new ConfirmActionModalPage(page);
+    await confirmModal.confirm('leave', 'I understand, leave');
+
+    // Now we are back in Quizzes tab. The button should be "Continue"
+    await expect(page).toHaveURL('/student/quizzes');
+    await quizAttemptPage.continueQuiz(quizTitle);
+
+    // Check we navigated back to attempt page and query param contains attemptId
+    await expect(page).toHaveURL(new RegExp(`/student/quiz-attempt/`));
+    await expect(page.url()).toContain('attemptId=');
+
+    await quizAttemptPage.nextButton.click();
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 1 of 2');
+    await quizAttemptPage.answerCurrentQuestion('tf');
+
+    await quizAttemptPage.submitQuiz();
+    await expect(quizAttemptPage.seeResultsButton).toBeVisible({ timeout: 20000 });
+  });
+
+  test('Scenario 3 - Prevention of double attempts', async ({ page }) => {
+    const quizTitle = `E2E Double Quiz ${Date.now()}`;
+    await createQuizViaUI(page, quizTitle, [
+      {
+        type: 'mcq',
+        text: 'Question 1',
+        marks: '3',
+        choices: ['Choice A', 'Choice B'],
+        correctChoiceIndex: 0,
+      },
+    ]);
+
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await quizAttemptPage.startQuiz(quizTitle);
+
+    // Wait for the quiz attempt page to fully load to prevent CanDeactivate check from evaluating early
+    await expect(quizAttemptPage.headerQuestionCount).toContainText('Question 0 of 1');
+    await page.waitForTimeout(1000);
+
+    const attemptUrl = page.url();
+    const match = attemptUrl.match(/\/student\/quiz-attempt\/([a-fA-F0-9-]+)/);
+    const quizId = match ? match[1] : '';
+
+    await quizAttemptPage.clickQuizzesTab();
+    const confirmModal = new ConfirmActionModalPage(page);
+    await confirmModal.confirm('leave', 'I understand, leave');
+
+    // Try to navigate directly to the quiz attempt page without passing an attemptId
     await page.goto(`/student/quiz-attempt/${quizId}`);
 
-    await page.waitForTimeout(4000);
+    // Verify it fails to start and shows the operation-failed component containing the error message
+    await expect(quizAttemptPage.operationFailed).toBeVisible();
+    await expect(quizAttemptPage.operationFailed).toContainText(/already has an attempt/i);
+  });
 
-    expect(autoSubmitCalled).toBe(true);
+  test('Scenario 4 - Expiration and auto-submission on timeout', async ({ page }) => {
+    const quizTitle = `Expiring Quiz ${Date.now()}`;
+
+    // Create a quiz with a 12-minute duration (starts now, ends in 12 minutes)
+    await createQuizViaUI(
+      page,
+      quizTitle,
+      [
+        {
+          type: 'mcq',
+          text: 'Question 1',
+          marks: '3',
+          choices: ['Choice A', 'Choice B'],
+          correctChoiceIndex: 0,
+        },
+      ],
+      0,
+      12,
+    );
+
+    await loginStudent(page);
+    await page.waitForTimeout(15000);
+    await quizAttemptPage.clickQuizzesTab();
+    await quizAttemptPage.startQuiz(quizTitle);
+
+    await expect(quizAttemptPage.headerTitle).toContainText(quizTitle);
+
+    // Install mock clock after the page is loaded and stable
+    await page.clock.install();
+
+    // Fast forward by 12 minutes and 10 seconds to trigger expiration
+    await page.clock.fastForward(730000);
+
+    // Verify that the submit PUT endpoint was triggered and the save button is disabled
+    await expect(quizAttemptPage.saveAnswerButton).toBeDisabled();
   });
 });

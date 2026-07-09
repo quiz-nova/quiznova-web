@@ -1,10 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
-import { SeededCredentials } from '../../helpers/SeededCredentials';
-
-async function gotoLogin(page: Page): Promise<void> {
-  await page.goto('/auth/login');
-}
+import { SeededCredentials } from '../helpers/SeededCredentials';
+import { LoginPage } from '../pages/login.page';
 
 async function login(
   page: Page,
@@ -12,10 +9,8 @@ async function login(
   password: string,
   role: 'Student' | 'Instructor' | 'Admin',
 ): Promise<void> {
-  await page.getByLabel('Email').fill(email);
-  await page.getByLabel('Password').fill(password);
-  await page.locator(`label.role-box:has-text("${role}")`).click();
-  await page.getByRole('button', { name: 'Sign in' }).click();
+  const loginPage = new LoginPage(page);
+  await loginPage.login(email, password, role);
 }
 
 test.describe('Login flow', () => {
@@ -28,10 +23,11 @@ test.describe('Login flow', () => {
   let passwordRequiredError: Locator;
 
   test.beforeEach(async ({ page }) => {
-    await gotoLogin(page);
-    emailInput = page.getByLabel('Email');
-    passwordInput = page.getByLabel('Password');
-    submitButton = page.getByRole('button', { name: 'Sign in' });
+    const loginPage = new LoginPage(page);
+    await page.goto('/auth/login');
+    emailInput = loginPage.emailInput;
+    passwordInput = loginPage.passwordInput;
+    submitButton = loginPage.submitButton;
     loginError = page.getByRole('alert');
     emailRequiredError = page.getByText('Email is required.');
     emailInvalidError = page.getByText('Please enter a valid email address.');
@@ -70,12 +66,22 @@ test.describe('Login flow', () => {
   });
 
   test('should login successfully as Student', async ({ page }) => {
-    await login(page, SeededCredentials.student.email, SeededCredentials.student.password, 'Student');
+    await login(
+      page,
+      SeededCredentials.student.email,
+      SeededCredentials.student.password,
+      'Student',
+    );
     await expect(page).toHaveURL(/\/student\/dashboard/);
   });
 
   test('should login successfully as Instructor', async ({ page }) => {
-    await login(page, SeededCredentials.instructor.email, SeededCredentials.instructor.password, 'Instructor');
+    await login(
+      page,
+      SeededCredentials.instructor.email,
+      SeededCredentials.instructor.password,
+      'Instructor',
+    );
     await expect(page).toHaveURL(/\/instructor\/dashboard/);
   });
 
@@ -112,16 +118,25 @@ test.describe('Login flow', () => {
 
     test.describe('authenticated as Student', () => {
       test.beforeEach(async ({ page }) => {
-        await login(page, SeededCredentials.student.email, SeededCredentials.student.password, 'Student');
+        await login(
+          page,
+          SeededCredentials.student.email,
+          SeededCredentials.student.password,
+          'Student',
+        );
         await page.waitForURL(/\/student\/dashboard/);
       });
 
-      test('should redirect to student dashboard when navigating to /admin/dashboard', async ({ page }) => {
+      test('should redirect to student dashboard when navigating to /admin/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/admin/dashboard');
         await expect(page).toHaveURL(/\/student\/dashboard/);
       });
 
-      test('should redirect to student dashboard when navigating to /instructor/dashboard', async ({ page }) => {
+      test('should redirect to student dashboard when navigating to /instructor/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/instructor/dashboard');
         await expect(page).toHaveURL(/\/student\/dashboard/);
       });
@@ -129,16 +144,25 @@ test.describe('Login flow', () => {
 
     test.describe('authenticated as Instructor', () => {
       test.beforeEach(async ({ page }) => {
-        await login(page, SeededCredentials.instructor.email, SeededCredentials.instructor.password, 'Instructor');
+        await login(
+          page,
+          SeededCredentials.instructor.email,
+          SeededCredentials.instructor.password,
+          'Instructor',
+        );
         await page.waitForURL(/\/instructor\/dashboard/);
       });
 
-      test('should redirect to instructor dashboard when navigating to /admin/dashboard', async ({ page }) => {
+      test('should redirect to instructor dashboard when navigating to /admin/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/admin/dashboard');
         await expect(page).toHaveURL(/\/instructor\/dashboard/);
       });
 
-      test('should redirect to instructor dashboard when navigating to /student/dashboard', async ({ page }) => {
+      test('should redirect to instructor dashboard when navigating to /student/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/student/dashboard');
         await expect(page).toHaveURL(/\/instructor\/dashboard/);
       });
@@ -150,12 +174,16 @@ test.describe('Login flow', () => {
         await page.waitForURL(/\/admin\/dashboard/);
       });
 
-      test('should redirect to admin dashboard when navigating to /student/dashboard', async ({ page }) => {
+      test('should redirect to admin dashboard when navigating to /student/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/student/dashboard');
         await expect(page).toHaveURL(/\/admin\/dashboard/);
       });
 
-      test('should redirect to admin dashboard when navigating to /instructor/dashboard', async ({ page }) => {
+      test('should redirect to admin dashboard when navigating to /instructor/dashboard', async ({
+        page,
+      }) => {
         await page.goto('/instructor/dashboard');
         await expect(page).toHaveURL(/\/admin\/dashboard/);
       });

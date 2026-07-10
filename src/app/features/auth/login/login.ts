@@ -16,6 +16,7 @@ import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
 import { Button } from '@shared/components/button/button';
+import { DemoCredentials } from '@shared/components/demo-credentials/demo-credentials';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Logo } from '@shared/components/logo/logo';
 import { UserRole } from '@shared/models/users/user-role.model';
@@ -29,7 +30,16 @@ type LoginFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, Logo, FloatLabel, InputText, Password, FieldError, Button],
+  imports: [
+    ReactiveFormsModule,
+    Logo,
+    DemoCredentials,
+    FloatLabel,
+    InputText,
+    Password,
+    FieldError,
+    Button,
+  ],
   template: `
     <section class="auth-page">
       <div class="auth-left-side">
@@ -39,6 +49,8 @@ type LoginFormGroup = FormGroup<{
           <p>
             Access your dashboard, manage quizzes, and track student performance - all in one place.
           </p>
+
+          <app-demo-credentials />
         </div>
       </div>
 

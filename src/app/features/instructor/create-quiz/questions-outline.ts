@@ -247,7 +247,7 @@ export class QuestionsOutline {
 
     document.getElementById(questionId)?.scrollIntoView({
       behavior: 'smooth',
-      block: 'start',
+      block: 'nearest',
     });
   }
 

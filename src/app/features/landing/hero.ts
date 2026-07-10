@@ -14,13 +14,14 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           <div class="icon" [delay]="50" appFadeInOnScroll>
             <i class="fa-solid fa-star"></i>
           </div>
-          <p [delay]="100" appFadeInOnScroll>Complete assessment platform for institutions</p>
+          <p [delay]="100" appFadeInOnScroll>Modern assessment platform for institutions</p>
         </div>
         <h1 [delay]="150" appFadeInOnScroll>
-          Create, manage, and analyze quizzes <span class="accent-word">at scale</span>
+          Assessments made <span class="accent-word">simple</span>
         </h1>
         <p class="system-description" [delay]="200" appFadeInOnScroll>
-          QuizNova is a comprehensive assessment platform for colleges and institutions. From role-based dashboards and a smart quiz builder to real-time quiz taking, auto-grading, and course chat — everything you need to run assessments in one place.
+          QuizNova is a comprehensive platform for colleges and institutions. From smart quiz
+          creation and real-time taking to automated grading and course chat — everything in one place.
         </p>
         <div class="buttons" [delay]="250" appFadeInOnScroll>
           <button appButton variant="green" routerLink="/auth/login">Sign in</button>
@@ -71,7 +72,10 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
     }
 
     .accent-word {
-      color: var(--clr-green-400);
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .system-description {

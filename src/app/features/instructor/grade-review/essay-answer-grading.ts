@@ -8,6 +8,9 @@ import {
   output,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { MessageService } from 'primeng/api';
 
 import { FieldError } from '@shared/components/field-error/field-error';
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
@@ -304,6 +307,8 @@ export class EssayAnswerGrading implements AnswerReviewContract, OnInit {
   readonly graded = output<void>();
 
   private readonly quizAttemptService = inject(QuizAttemptService);
+  private readonly messageService = inject(MessageService);
+  private readonly router = inject(Router);
 
   protected readonly essayAnswer = computed(() => this.answer() as EssayAnswer);
 
@@ -370,10 +375,21 @@ export class EssayAnswerGrading implements AnswerReviewContract, OnInit {
         this.saving = false;
         this.saved = true;
         this.graded.emit();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Grade Saved',
+          detail: 'Essay response graded successfully.',
+        });
+        this.router.navigate(['/instructor/grade']);
       },
       error: () => {
         this.saving = false;
         this.error = 'Failed to save grade. Please try again.';
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Grading Failed',
+          detail: 'Failed to save grade. Please try again.',
+        });
       },
     });
   }

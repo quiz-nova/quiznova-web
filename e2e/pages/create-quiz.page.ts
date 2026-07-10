@@ -93,7 +93,7 @@ export class CreateQuizPage {
   }
 
   async addQuizMetadata(title: string, startsInMinutes = 0, endsInMinutes = 30): Promise<void> {
-    await this.selectCourse('Backend Fundamentals');
+    await this.selectCourse('Data Structures & Algorithms');
     await this.titleInput.fill(title);
     await this.titleInput.blur();
 

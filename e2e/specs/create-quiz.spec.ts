@@ -6,7 +6,7 @@ import { CreateQuizPage } from '../pages/create-quiz.page';
 import { LoginPage } from '../pages/login.page';
 
 async function addQuizContent(createQuizPage: CreateQuizPage) {
-  await createQuizPage.selectCourse('Backend Fundamentals');
+  await createQuizPage.selectCourse('Data Structures & Algorithms');
   await createQuizPage.titleInput.fill('E2E Guard Test Quiz');
   await createQuizPage.titleInput.blur();
 }
@@ -36,14 +36,14 @@ test.describe('Quiz Creation E2E & Validations', () => {
     await expect(createQuizPage.addQuestionBtn).toBeDisabled();
     await expect(createQuizPage.publishBtn).toBeDisabled();
 
-    await createQuizPage.selectCourse('Backend Fundamentals');
+    await createQuizPage.selectCourse('Data Structures & Algorithms');
 
     await expect(createQuizPage.addQuestionBtn).toBeEnabled();
     await expect(createQuizPage.publishBtn).toBeDisabled();
   });
 
   test('should validate Quiz Title and time interval constraints', async ({ page }) => {
-    await createQuizPage.selectCourse('Backend Fundamentals');
+    await createQuizPage.selectCourse('Data Structures & Algorithms');
 
     await createQuizPage.titleInput.fill('ab');
     await createQuizPage.titleInput.blur();
@@ -99,7 +99,7 @@ test.describe('Quiz Creation E2E & Validations', () => {
   });
 
   test('should handle MCQ choice controls, selection of empty choice, and limits', async () => {
-    await createQuizPage.selectCourse('Backend Fundamentals');
+    await createQuizPage.selectCourse('Data Structures & Algorithms');
 
     await createQuizPage.addQuestionBtn.click();
 
@@ -134,7 +134,7 @@ test.describe('Quiz Creation E2E & Validations', () => {
   test('should successfully publish a quiz with MCQ, TF, and Essay questions (Happy Path)', async ({
     page,
   }) => {
-    await createQuizPage.selectCourse('Backend Fundamentals');
+    await createQuizPage.selectCourse('Data Structures & Algorithms');
 
     await createQuizPage.titleInput.fill('E2E Integration Quiz');
     await createQuizPage.titleInput.blur();

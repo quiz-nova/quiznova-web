@@ -7,15 +7,15 @@ export const SeededCredentials = {
     name: 'Admin User',
   },
   instructor: {
-    email: 'instructor1@quiznova.local',
+    email: 'ahmed.nasser@quiznova.local',
     password: 'Instructor123!',
     role: 'Instructor',
-    name: 'Instructor One',
+    name: 'Dr. Ahmed Nasser',
   },
   student: {
-    email: 'student1@quiznova.local',
+    email: 'omar.yasser@quiznova.local',
     password: 'Student123!',
     role: 'Student',
-    name: 'Student One',
+    name: 'Omar Yasser',
   },
 } as const;

@@ -12,6 +12,7 @@ export interface QuizAttempt {
   answeredQuestions: number;
   correctAnswers: number;
   score: number;
+  totalMarks: number;
   status: string;
   gradingState: string;
   questions: Question[];

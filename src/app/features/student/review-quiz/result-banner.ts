@@ -42,7 +42,7 @@ import { ReviewQuizStore } from './review-quiz.store';
       padding: 1rem;
       border-radius: var(--radius-md);
       border: 1px solid var(--clr-blue-400);
-      background: var(--clr-blue-400);
+      background: var(--clr-blue-900);
     }
 
     .result-banner__icon {
@@ -51,8 +51,8 @@ import { ReviewQuizStore } from './review-quiz.store';
       width: 4rem;
       height: 4rem;
       border-radius: var(--radius-sm);
-      background: var(--clr-blue-400);
-      color: var(--clr-white);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--clr-green-300);
       font-size: 1.5rem;
       font-weight: 700;
     }
@@ -71,7 +71,7 @@ import { ReviewQuizStore } from './review-quiz.store';
 
     .result-banner__score {
       margin: 0;
-      color: var(--clr-blue-900);
+      color: var(--clr-white);
       font-size: 2rem;
       font-weight: 800;
       line-height: 1;
@@ -79,7 +79,7 @@ import { ReviewQuizStore } from './review-quiz.store';
 
     .result-banner__badge {
       border-radius: var(--radius-sm);
-      background: var(--clr-blue-000);
+      background: var(--clr-green-400);
       color: var(--clr-white);
       font-size: 0.72rem;
       letter-spacing: 0.02em;
@@ -89,7 +89,7 @@ import { ReviewQuizStore } from './review-quiz.store';
 
     .result-banner__message {
       margin: 0;
-      color: var(--clr-gray-600);
+      color: var(--clr-gray-300);
       font-size: 0.95rem;
       font-weight: 600;
     }
@@ -99,7 +99,7 @@ import { ReviewQuizStore } from './review-quiz.store';
       width: 100%;
       height: 0.38rem;
       border-radius: var(--radius-sm);
-      background: var(--clr-gray-200);
+      background: rgba(255, 255, 255, 0.12);
       overflow: hidden;
     }
 
@@ -107,7 +107,7 @@ import { ReviewQuizStore } from './review-quiz.store';
       display: block;
       height: 100%;
       border-radius: inherit;
-      background: var(--clr-blue-400);
+      background: var(--clr-green-400);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

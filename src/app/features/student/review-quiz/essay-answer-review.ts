@@ -135,17 +135,17 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
       font-size: 0.8rem;
       border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
-      background: var(--clr-gray-800);
+      background: var(--clr-blue-400);
       color: var(--clr-white);
       font-weight: 700;
     }
 
     .review-question__marks--success {
-      background: var(--clr-green-500);
+      background: var(--clr-green-400);
     }
 
     .review-question__marks--pending {
-      background: var(--clr-amber-800);
+      background: var(--clr-amber-600);
       color: var(--clr-white);
     }
 
@@ -174,13 +174,26 @@ import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/questio
     }
 
     .review-answer--reference {
-      border-color: var(--clr-emerald-200);
-      background: var(--clr-emerald-50);
+      border-color: var(--clr-green-100);
+      background: var(--clr-green-50);
+    }
+
+    .review-answer--reference .review-answer__label {
+      color: var(--clr-green-400);
     }
 
     .review-answer--feedback {
       border-color: var(--clr-blue-400);
       background: var(--clr-blue-400);
+      color: var(--clr-white);
+    }
+
+    .review-answer--feedback .review-answer__label {
+      color: var(--clr-green-300);
+    }
+
+    .review-answer--feedback .review-answer__value {
+      color: var(--clr-white);
     }
 
     .review-answer__label {

@@ -67,6 +67,12 @@ import { QuizFinishedMessage } from './quiz-finished-message';
           </app-operation-failed>
         }
 
+        @if (quizAttemptStore.error()('submit-answer'); as submitAnswerErrorMessage) {
+          <app-operation-failed>
+            <p>{{ submitAnswerErrorMessage }}</p>
+          </app-operation-failed>
+        }
+
         @if (quizAttemptStore.error()('start'); as startErrorMessage) {
           <app-operation-failed>
             <p>{{ startErrorMessage }}</p>

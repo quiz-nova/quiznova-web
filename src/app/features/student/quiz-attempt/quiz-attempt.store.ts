@@ -231,6 +231,9 @@ export const QuizAttemptStore = signalStore(
 
         patchState(store, setPending('submit-answer'));
 
+        const previousQuestions = store.quizQuestions();
+        const previousAttempts = store.questionAttempts();
+
         patchState(store, (state) => {
           const exists = state.questionAttempts.some((q) => q.questionId === draft.questionId);
           const updatedAttempts = exists
@@ -256,6 +259,10 @@ export const QuizAttemptStore = signalStore(
             catchError((err) => {
               const errorMessage = getApiErrorMessage(err, 'Error occurred when saving the answer');
               patchState(store, setError('submit-answer', errorMessage));
+              patchState(store, {
+                quizQuestions: previousQuestions,
+                questionAttempts: previousAttempts,
+              });
               return EMPTY;
             }),
           )

@@ -105,13 +105,13 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
       font-size: 0.8rem;
       border-radius: var(--radius-sm);
       padding: 0.18rem 0.48rem;
-      background: var(--clr-red-600);
+      background: var(--clr-blue-400);
       color: var(--clr-white);
       font-weight: 700;
     }
 
     .review-question--correct .review-question__marks {
-      background: var(--clr-green-500);
+      background: var(--clr-green-400);
     }
 
     .review-question__text {
@@ -143,8 +143,8 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
     }
 
     .review-choice--correct {
-      border-color: var(--clr-emerald-200);
-      background: var(--clr-emerald-50);
+      border-color: var(--clr-green-100);
+      background: var(--clr-green-50);
     }
 
     .review-choice__prefix {
@@ -170,8 +170,8 @@ import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-
     }
 
     .review-choice__pill--correct {
-      border-color: var(--clr-emerald-200);
-      color: var(--clr-green-500);
+      border-color: var(--clr-green-100);
+      color: var(--clr-green-400);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

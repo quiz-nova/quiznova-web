@@ -51,8 +51,6 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
               <ng-template #header>
                 <tr>
                   <th>Quiz</th>
-                  <th>Score</th>
-                  <th>Correct</th>
                   <th>Status</th>
                   <th>Submitted</th>
                   <th>Action</th>
@@ -61,8 +59,6 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
               <ng-template #body let-attempt>
                 <tr>
                   <td class="cell-title">{{ attempt.quizTitle }}</td>
-                  <td>{{ attempt.score }} / {{ attempt.totalQuestions }}</td>
-                  <td>{{ attempt.correctAnswers }} / {{ attempt.totalQuestions }}</td>
                   <td>
                     <span class="status-badge" [class.graded]="attempt.gradingState === 'Graded'">
                       {{ attempt.gradingState }}

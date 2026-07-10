@@ -93,7 +93,8 @@ export class ReviewQuizStatusCard {
   private readonly reviewQuizStore = inject(ReviewQuizStore);
 
   protected readonly marksEarned = computed(() => {
-    return `${this.reviewQuizStore.quizAttempt()?.score}/${this.reviewQuizStore.quizAttempt()?.totalQuestions}`;
+    const attempt = this.reviewQuizStore.quizAttempt();
+    return `${attempt?.score ?? 0}/${attempt?.totalMarks ?? 0}`;
   });
 
   protected readonly correctAnswers = this.reviewQuizStore.quizAttempt()?.correctAnswers;

@@ -45,7 +45,9 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                   />
                 </td>
                 <td>
-                  @if (quiz.attemptId) {
+                  @if (quiz.attemptStatus === 'Completed') {
+                    <span class="completed-badge">Completed</span>
+                  } @else if (quiz.attemptId) {
                     <a
                       class="start-btn"
                       [routerLink]="['/student/quiz-attempt', quiz.quizId]"
@@ -121,6 +123,17 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       padding: 0.4rem 0.8rem;
       font-size: var(--fs-300);
       font-weight: 700;
+    }
+
+    .completed-badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-300);
+      font-weight: 700;
+      background: var(--clr-green-000);
+      color: var(--clr-green-800);
+      text-align: center;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

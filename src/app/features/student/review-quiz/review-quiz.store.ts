@@ -150,11 +150,11 @@ export const ReviewQuizStore = signalStore(
     }),
     scorePercentage: computed(() => {
       const attempt = store.quizAttempt();
-      if (!attempt || attempt.totalQuestions <= 0) {
+      if (!attempt || attempt.totalMarks <= 0) {
         return 0;
       }
 
-      return Math.round((attempt.score / attempt.totalQuestions) * 100);
+      return Math.round((attempt.score / attempt.totalMarks) * 100);
     }),
     incorrectAnswers: computed(() => {
       const attempt = store.quizAttempt();

@@ -110,12 +110,20 @@ export class StudentQuizzes {
   protected readonly availableQuizzes = computed(() => {
     return this.quizzesResource
       .value()
-      .quizzes.filter((quiz) => quiz.quizStatus === StudentQuizStatus.AvailableNow);
+      .quizzes.filter(
+        (quiz) =>
+          quiz.quizStatus === StudentQuizStatus.AvailableNow &&
+          quiz.attemptStatus !== 'Completed',
+      );
   });
 
   protected readonly scheduledQuizzes = computed(() => {
     return this.quizzesResource
       .value()
-      .quizzes.filter((quiz) => quiz.quizStatus === StudentQuizStatus.Scheduled);
+      .quizzes.filter(
+        (quiz) =>
+          quiz.quizStatus === StudentQuizStatus.Scheduled &&
+          quiz.attemptStatus !== 'Completed',
+      );
   });
 }

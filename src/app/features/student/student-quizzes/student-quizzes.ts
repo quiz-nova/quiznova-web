@@ -112,8 +112,7 @@ export class StudentQuizzes {
       .value()
       .quizzes.filter(
         (quiz) =>
-          quiz.quizStatus === StudentQuizStatus.AvailableNow &&
-          quiz.attemptStatus !== 'Completed',
+          quiz.quizStatus === StudentQuizStatus.AvailableNow && quiz.attemptStatus !== 'Completed',
       );
   });
 
@@ -122,8 +121,7 @@ export class StudentQuizzes {
       .value()
       .quizzes.filter(
         (quiz) =>
-          quiz.quizStatus === StudentQuizStatus.Scheduled &&
-          quiz.attemptStatus !== 'Completed',
+          quiz.quizStatus === StudentQuizStatus.Scheduled && quiz.attemptStatus !== 'Completed',
       );
   });
 }

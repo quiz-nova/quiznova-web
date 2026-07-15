@@ -21,7 +21,8 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
         </h1>
         <p class="system-description" [delay]="200" appFadeInOnScroll>
           QuizNova is a comprehensive platform for colleges and institutions. From smart quiz
-          creation and real-time taking to automated grading and course chat — everything in one place.
+          creation and real-time taking to automated grading and course chat — everything in one
+          place.
         </p>
         <div class="buttons" [delay]="250" appFadeInOnScroll>
           <button appButton variant="green" routerLink="/auth/login">Sign in</button>

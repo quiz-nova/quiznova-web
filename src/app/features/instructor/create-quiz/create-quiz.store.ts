@@ -1,15 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { AuthService } from '@Features/auth/auth.service';
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withHooks,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
   setError,
@@ -351,13 +343,4 @@ export const CreateQuizStore = signalStore(
       ),
     }),
   ),
-  withHooks({
-    onInit(store) {
-      const authService = inject(AuthService);
-      const currentUser = authService.currentUser();
-      if (currentUser) {
-        store.setInstructorId(currentUser.id);
-      }
-    },
-  }),
 );

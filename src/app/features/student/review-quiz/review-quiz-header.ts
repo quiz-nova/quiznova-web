@@ -15,9 +15,12 @@ import { ReviewQuizStore } from './review-quiz.store';
 
       <div class="review-header__meta">
         <span class="review-header__chip">{{ shortAttemptId() }}</span>
-        <span class="review-header__chip">{{
-          reviewQuizStore.quizAttempt()?.submittedAt | date: 'short'
-        }}</span>
+        <time
+          class="review-header__chip"
+          [attr.datetime]="reviewQuizStore.quizAttempt()?.submittedAt"
+        >
+          {{ reviewQuizStore.quizAttempt()?.submittedAt | date: 'short' }}
+        </time>
       </div>
     </header>
   `,

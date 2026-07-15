@@ -106,8 +106,14 @@ import { QuizService } from '@shared/services/quiz.service';
                 <td>{{ quiz.courseName }}</td>
                 <td>{{ quiz.instructorName }}</td>
                 <td>{{ quiz.marks }}</td>
-                <td>{{ quiz.startsAtUtc | date: 'short' }}</td>
-                <td>{{ quiz.endsAtUtc | date: 'short' }}</td>
+                <td>
+                  <time [attr.datetime]="quiz.startsAtUtc">{{
+                    quiz.startsAtUtc | date: 'short'
+                  }}</time>
+                </td>
+                <td>
+                  <time [attr.datetime]="quiz.endsAtUtc">{{ quiz.endsAtUtc | date: 'short' }}</time>
+                </td>
                 <td>
                   <span class="state" [class]="quiz.state.toLowerCase()">{{ quiz.state }}</span>
                 </td>

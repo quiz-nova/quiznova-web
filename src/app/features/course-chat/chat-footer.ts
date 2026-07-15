@@ -20,7 +20,7 @@ import { CourseChatStore } from './course-chat.store';
             >
             <p class="replying-snippet">{{ reply.content.text }}</p>
           </div>
-          <button class="cancel-reply-btn" (click)="store.cancelReply()">
+          <button class="cancel-reply-btn" (click)="store.cancelReply()" aria-label="Cancel reply">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
@@ -36,7 +36,12 @@ import { CourseChatStore } from './course-chat.store';
           placeholder="Type a message..."
           type="text"
         />
-        <button class="send-btn" [disabled]="messageControl.invalid" (click)="sendMessage()">
+        <button
+          class="send-btn"
+          [disabled]="messageControl.invalid"
+          (click)="sendMessage()"
+          aria-label="Send message"
+        >
           <i class="fa-regular fa-paper-plane"></i>
         </button>
       </div>

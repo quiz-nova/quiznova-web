@@ -64,7 +64,11 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
                       {{ attempt.gradingState }}
                     </span>
                   </td>
-                  <td>{{ attempt.submittedAt | date: 'short' }}</td>
+                  <td>
+                    <time [attr.datetime]="attempt.submittedAt">{{
+                      attempt.submittedAt | date: 'short'
+                    }}</time>
+                  </td>
                   <td>
                     <a
                       [routerLink]="['/student/review-quiz', attempt.quizAttemptId]"

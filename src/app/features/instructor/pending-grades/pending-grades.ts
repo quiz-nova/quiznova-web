@@ -91,7 +91,9 @@ import { PendingGradesStats } from './pending-grades-stats';
 
                 <!-- Submitted At -->
                 <div class="date-cell">
-                  <p>{{ item.submittedAt | date: 'short' }}</p>
+                  <time [attr.datetime]="item.submittedAt">{{
+                    item.submittedAt | date: 'short'
+                  }}</time>
                 </div>
 
                 <!-- Badge -->
@@ -241,7 +243,8 @@ import { PendingGradesStats } from './pending-grades-stats';
       font-size: 0.7rem;
     }
 
-    .date-cell p {
+    .date-cell time {
+      display: block;
       color: var(--clr-gray-800);
       font-weight: 500;
     }

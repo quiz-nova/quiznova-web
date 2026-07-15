@@ -45,7 +45,12 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
                 </div>
               </div>
 
-              <p class="course-id">Enrolled on: {{ course.enrolledOnUtc | date: 'mediumDate' }}</p>
+              <p class="course-id">
+                Enrolled on:
+                <time [attr.datetime]="course.enrolledOnUtc">{{
+                  course.enrolledOnUtc | date: 'mediumDate'
+                }}</time>
+              </p>
 
               <dl class="course-stats">
                 <div>

@@ -106,7 +106,11 @@ import { shortId } from '@shared/utils/utilities';
                 <td>{{ attempt.answeredQuestions }}/{{ attempt.totalQuestions }}</td>
                 <td>{{ attempt.correctAnswers }}</td>
                 <td>{{ attempt.score }}</td>
-                <td>{{ attempt.submittedAt | date: 'short' }}</td>
+                <td>
+                  <time [attr.datetime]="attempt.submittedAt">{{
+                    attempt.submittedAt | date: 'short'
+                  }}</time>
+                </td>
               }
             </tr>
           </ng-template>

@@ -34,7 +34,11 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                 <td>{{ quiz.courseName }}</td>
                 <td>{{ quiz.questionsCount }}</td>
                 <td>{{ durationInMinutes(quiz.startsAtUtc, quiz.endsAtUtc) }} min</td>
-                <td>{{ quiz.startsAtUtc | date: 'short' }}</td>
+                <td>
+                  <time [attr.datetime]="quiz.startsAtUtc">{{
+                    quiz.startsAtUtc | date: 'short'
+                  }}</time>
+                </td>
                 <td><span class="locked-tag">Locked</span></td>
               </tr>
             </ng-template>

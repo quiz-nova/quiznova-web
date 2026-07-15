@@ -42,9 +42,9 @@ import { ReactionList } from './reaction-list';
                   >
                     {{ msg.sender.role }}
                   </span>
-                  <span class="message-time">
+                  <time class="message-time" [attr.datetime]="msg.createdAt">
                     {{ msg.createdAt | date: 'shortTime' }}
-                  </span>
+                  </time>
                 </div>
 
                 @if (msg.replyOnId) {

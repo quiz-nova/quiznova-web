@@ -69,54 +69,7 @@ type QuestionHeaderFormGroup = FormGroup<{
       </div>
     </header>
   `,
-  styles: [
-    `
-      header {
-        padding: 2rem;
-      }
-      .question-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        height: 3rem;
-      }
-      .question-header__actions {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-      .question-header__details {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      h3 {
-        font-size: var(--fs-600);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      form {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-
-      .question-header__marks-field {
-        flex-direction: column;
-        gap: 0.25rem;
-        border: none;
-      }
-
-      input[type='number'] {
-        width: 4rem;
-        padding: 0.25rem;
-        border-radius: var(--radius-sm);
-        font-size: var(--fs-400);
-      }
-    `,
-  ],
+  styleUrl: './question-header.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionHeader implements OnInit {

@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   input,
   output,
@@ -26,7 +27,7 @@ import { Question } from '@shared/models/quiz/question.model';
 import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
-import { QuestionTitle } from './question-title';
+import { QuestionTitle } from '../question-title/question-title';
 
 type TfFormGroup = FormGroup<{
   text: FormControl<string>;
@@ -83,28 +84,7 @@ type TfFormGroup = FormGroup<{
       </form>
     </div>
   `,
-  styles: [
-    `
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .tf-options {
-        display: flex;
-        gap: 1rem;
-      }
-
-      .answer-option {
-        font-size: var(--fs-400);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-      }
-    `,
-  ],
+  styleUrl: './tf-form.css',
 })
 export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
@@ -138,6 +118,12 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
     answer: [null as boolean | null, [Validators.required]],
   });
 
+  constructor() {
+    effect(() => {
+      this.populateForm(this.tf());
+    });
+  }
+
   protected get questionTextControl() {
     return this.tfForm.controls.text;
   }
@@ -156,6 +142,16 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.formDestroyed.emit(this.tfForm);
+  }
+
+  private populateForm(tf: Tf) {
+    this.tfForm.patchValue(
+      {
+        text: tf.questionText,
+        answer: tf.correctChoice,
+      },
+      { emitEvent: false },
+    );
   }
 
   protected onTitleBlur(text: string) {

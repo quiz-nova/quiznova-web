@@ -38,27 +38,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
       }
     </div>
   `,
-  styles: `
-    .question-title {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .question-title__input {
-      width: 100%;
-      font-size: var(--fs-500);
-      padding: 0.5rem;
-      border: 1px solid var(--clr-gray-500);
-      border-radius: var(--radius-md);
-      resize: vertical;
-
-      &:focus {
-        outline: none;
-        border: 3px solid var(--clr-green-400);
-      }
-    }
-  `,
+  styleUrl: './question-title.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionTitle {

@@ -12,8 +12,8 @@ import { SelectModule } from 'primeng/select';
 import { Button } from '@shared/components/button/button';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
-import { CreateQuizStore } from './create-quiz.store';
-import { mapQuestionTypeToQuestion } from './question-type.mapper';
+import { CreateQuizStore } from '../../stores/create-quiz.store';
+import { mapQuestionTypeToQuestion } from '../../utils/question-type.mapper';
 
 type AddQuestionFormGroup = FormGroup<{
   questionType: FormControl<QuestionType>;
@@ -47,54 +47,7 @@ type AddQuestionFormGroup = FormGroup<{
       </button>
     </div>
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-        pointer-events: auto;
-      }
-
-      .add-question {
-        display: flex;
-        align-items: flex-end;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-
-      .question-type-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      :host(.pill-style) .add-question {
-        align-items: center;
-        flex-wrap: nowrap;
-        margin-top: 0;
-        padding: 0.5rem;
-        border: 1px solid var(--clr-gray-200);
-        border-radius: var(--radius-sm);
-        background-color: var(--clr-white);
-        box-shadow: 0 12px 32px rgb(15 23 42 / 16%);
-      }
-
-      :host(.pill-style) .question-type-group label {
-        display: none;
-      }
-
-      :host(.pill-style) .dropdown-field {
-        min-width: 12rem;
-        border-radius: var(--radius-md);
-      }
-
-      :host(.pill-style) .btn {
-        min-height: 3rem;
-        border-radius: var(--radius-sm);
-        padding-inline: 1.25rem;
-      }
-    `,
-  ],
+  styleUrl: './add-question.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddQuestion {

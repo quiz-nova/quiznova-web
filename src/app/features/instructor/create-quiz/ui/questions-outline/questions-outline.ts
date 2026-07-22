@@ -1,0 +1,72 @@
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+
+import { Question } from '@shared/models/quiz/question.model';
+
+import { CreateQuizStore } from '../../stores/create-quiz.store';
+
+@Component({
+  selector: 'app-questions-outline',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <aside class="questions-outline" aria-label="Questions outline">
+      <header class="questions-outline__header">
+        <h2>Questions</h2>
+        <div class="questions-outline__badges">
+          <span class="questions-outline__counter">{{ store.questions().length }}</span>
+          @if (store.effectiveRemainingMarks() !== null) {
+            <span
+              class="questions-outline__remaining"
+              [class.questions-outline__remaining--zero]="store.effectiveRemainingMarks()! <= 0"
+            >
+              {{ store.effectiveRemainingMarks() }} marks left
+            </span>
+          }
+        </div>
+      </header>
+
+      <ol class="questions-outline__list">
+        @for (question of store.questions(); track question.id; let index = $index) {
+          <li>
+            <button
+              class="questions-outline__item"
+              [class.questions-outline__item--active]="question.id === store.activeQuestionId()"
+              [attr.aria-current]="question.id === store.activeQuestionId() ? 'step' : null"
+              (click)="onQuestionSelect(question.id)"
+              type="button"
+            >
+              <span class="questions-outline__number">{{ index + 1 }}</span>
+              <span class="questions-outline__details">
+                <span class="questions-outline__title">{{ getQuestionTitle(question) }}</span>
+                <span class="questions-outline__meta">
+                  <span>{{ question.type }}</span>
+                  <span class="questions-outline__item-marks">• {{ question.marks }} pts</span>
+                </span>
+              </span>
+            </button>
+          </li>
+        }
+      </ol>
+    </aside>
+  `,
+  styleUrl: './questions-outline.css',
+})
+export class QuestionsOutline {
+  protected readonly store = inject(CreateQuizStore);
+
+  readonly questionSelected = output<string>();
+
+  protected onQuestionSelect(questionId: string): void {
+    this.questionSelected.emit(questionId);
+
+    document.getElementById(questionId)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+    });
+  }
+
+  protected getQuestionTitle(question: Question): string {
+    const text = question.questionText.trim();
+    return text.length > 0 ? text : 'Untitled question';
+  }
+}

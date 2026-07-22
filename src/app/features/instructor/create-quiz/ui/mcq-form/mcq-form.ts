@@ -30,7 +30,7 @@ import { Question } from '@shared/models/quiz/question.model';
 import { Choice, isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
-import { QuestionTitle } from './question-title';
+import { QuestionTitle } from '../question-title/question-title';
 
 type McqFormGroup = FormGroup<{
   questionText: FormControl<string>;
@@ -127,57 +127,7 @@ type McqFormGroup = FormGroup<{
       </button>
     </div>
   `,
-  styles: `
-    .mcq-question-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .mcq-question-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .radio-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .radio-item-input {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex: 1;
-
-      input.choice-input {
-        padding: 0.5rem;
-        max-width: 100%;
-        border: 1px solid var(--clr-gray-500);
-        border-radius: var(--radius-md);
-        background-color: var(--clr-white);
-        flex: 1;
-
-        &:focus {
-          outline: none;
-          border: 3px solid var(--clr-green-400);
-        }
-      }
-
-      span {
-        padding: 0.25rem;
-      }
-    }
-  `,
+  styleUrl: './mcq-form.css',
 })
 export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);

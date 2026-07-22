@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import { QuestionType } from '@shared/models/quiz/question.model';
 import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 
 import { McqForm } from './mcq-form';
@@ -18,7 +20,7 @@ const mockMcqQuestion: Mcq = {
     { id: 'choice-a', questionId: 'q-101', text: 'Cairo', displayOrder: 1 },
     { id: 'choice-b', questionId: 'q-101', text: 'Alexandria', displayOrder: 2 },
   ],
-  type: 'mcq',
+  type: QuestionType.Mcq,
 };
 
 describe('McqForm Component', () => {
@@ -32,6 +34,22 @@ describe('McqForm Component', () => {
 
     expect(firstChoiceInput.value).toBe('Cairo');
     expect(secondChoiceInput.value).toBe('Alexandria');
+  });
+
+  it('should throw an error if initialized with non-MCQ question data', async () => {
+    const invalidEssayQuestion = {
+      id: 'q-999',
+      quizId: 'quiz-1',
+      questionText: 'Essay Text',
+      type: QuestionType.Essay,
+      marks: 5,
+    } as any;
+
+    await expect(
+      render(McqForm, {
+        inputs: { initialData: invalidEssayQuestion },
+      }),
+    ).rejects.toThrow();
   });
 
   it('should disable delete buttons initially when choices are <= 2', async () => {

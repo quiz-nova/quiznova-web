@@ -1,6 +1,6 @@
-import { EssayForm } from '@Features/instructor/create-quiz/essay-form';
-import { McqForm } from '@Features/instructor/create-quiz/mcq-form';
-import { TfForm } from '@Features/instructor/create-quiz/tf-form';
+import { EssayForm } from '@Features/instructor/create-quiz/ui/essay-form/essay-form';
+import { McqForm } from '@Features/instructor/create-quiz/ui/mcq-form/mcq-form';
+import { TfForm } from '@Features/instructor/create-quiz/ui/tf-form/tf-form';
 import { EssayAnswerGrading } from '@Features/instructor/grade-review/essay-answer-grading';
 import { McqAnswerReview } from '@Features/instructor/grade-review/mcq-answer-review';
 import { TfAnswerReview } from '@Features/instructor/grade-review/tf-answer-review';

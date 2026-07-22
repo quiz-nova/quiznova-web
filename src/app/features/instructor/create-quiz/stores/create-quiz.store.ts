@@ -17,7 +17,7 @@ import { CoursesService } from '@shared/services/courses.service';
 import { QuizService } from '@shared/services/quiz.service';
 import { getApiErrorMessage } from '@shared/utils/utilities';
 
-import { CreateQuiz } from './create-quiz.model';
+import { CreateQuiz } from '../models/create-quiz.model';
 
 const createInitialQuiz = (): CreateQuiz => ({
   title: '',

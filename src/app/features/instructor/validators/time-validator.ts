@@ -1,6 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-import { QuizHeaderFormGroup } from '@Features/instructor/create-quiz/quiz-metadata-form';
+import { QuizHeaderFormGroup } from '@Features/instructor/create-quiz/ui/quiz-metadata-form/quiz-metadata-form';
 
 export function timeValidator(): ValidatorFn {
   return (group: AbstractControl): ValidationErrors | null => {

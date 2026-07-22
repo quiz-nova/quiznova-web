@@ -30,7 +30,7 @@ import { FieldError } from '@shared/components/field-error/field-error';
 import { CoursesService } from '@shared/services/courses.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
-import { timeValidator } from '../validators/time-validator';
+import { timeValidator } from '../../../validators/time-validator';
 
 export interface QuizMetadataValue {
   title: string;
@@ -201,31 +201,7 @@ export type QuizHeaderFormGroup = FormGroup<{
       />
     }
   `,
-  styles: `
-    .metadata-form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-      gap: 1.5rem;
-      padding: 1.5rem;
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-lg);
-      background: var(--clr-white);
-      min-width: 0;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      min-width: 0;
-    }
-
-    .field-error {
-      min-height: 1rem;
-      color: var(--clr-red-500);
-      font-size: var(--fs-300);
-    }
-  `,
+  styleUrl: './quiz-metadata-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizMetadataForm implements OnInit, OnDestroy {

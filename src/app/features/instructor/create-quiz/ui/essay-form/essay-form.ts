@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   input,
   output,
@@ -24,7 +25,7 @@ import { Question } from '@shared/models/quiz/question.model';
 import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
-import { QuestionTitle } from './question-title';
+import { QuestionTitle } from '../question-title/question-title';
 
 type EssayFormGroup = FormGroup<{
   questionText: FormControl<string>;
@@ -77,54 +78,7 @@ type EssayFormGroup = FormGroup<{
       </form>
     </div>
   `,
-  styles: `
-    .essay-question-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .essay-question-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .field-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .field-label {
-      font-weight: 600;
-      color: var(--clr-gray-700);
-      font-size: 0.9rem;
-    }
-
-    .answer-input {
-      padding: 1rem 1.1rem;
-      border: 1px solid var(--clr-gray-500);
-      border-radius: var(--radius-lg);
-      background: var(--clr-gray-50);
-      color: var(--clr-blue-900);
-      width: 100%;
-      resize: vertical;
-      min-height: 4.75rem;
-
-      &:focus {
-        outline: none;
-        border-color: var(--clr-green-400);
-        background: var(--clr-white);
-      }
-    }
-
-    .field-help-text {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--clr-gray-500);
-    }
-  `,
+  styleUrl: './essay-form.css',
 })
 export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
@@ -161,6 +115,12 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
     ],
   });
 
+  constructor() {
+    effect(() => {
+      this.populateForm(this.essay());
+    });
+  }
+
   protected get questionTextControl() {
     return this.essayForm.controls.questionText;
   }
@@ -179,6 +139,16 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.formDestroyed.emit(this.essayForm);
+  }
+
+  private populateForm(essay: Essay) {
+    this.essayForm.patchValue(
+      {
+        questionText: essay.questionText,
+        answerReference: essay.answerReference,
+      },
+      { emitEvent: false },
+    );
   }
 
   protected onTitleBlur(text: string) {

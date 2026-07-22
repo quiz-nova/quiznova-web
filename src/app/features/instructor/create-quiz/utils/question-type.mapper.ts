@@ -12,7 +12,7 @@ export interface CreateQuestionContext {
 
 type QuestionMapper = (context: CreateQuestionContext) => Question | null;
 
-const DEFAULT_MARKS = 5;
+export const DEFAULT_MARKS = 5;
 
 function createChoice(questionId: string, displayOrder: number): Choice {
   return {

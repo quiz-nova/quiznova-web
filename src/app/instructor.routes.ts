@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { canDeactivateCreateQuiz } from '@Features/instructor/create-quiz/create-quiz.guard';
+import { canDeactivateCreateQuiz } from '@Features/instructor/create-quiz/guards/create-quiz.guard';
 
 export const instructorRoutes: Routes = [
   {

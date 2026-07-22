@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
-import { CreateQuizStore } from './create-quiz.store';
+import { CreateQuizStore } from '../../stores/create-quiz.store';
 
 @Component({
   selector: 'app-quiz-header',
@@ -27,45 +27,7 @@ import { CreateQuizStore } from './create-quiz.store';
       </div>
     </div>
   `,
-  styles: `
-    .quiz-header-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: center;
-    }
-
-    .stat-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1rem;
-      border: 1px solid var(--clr-gray-250);
-      border-radius: var(--radius-sm);
-      background-color: var(--clr-white);
-      color: var(--clr-blue-900);
-      font-size: var(--fs-300);
-      font-weight: 500;
-      line-height: 1;
-      transition:
-        border-color 0.2s ease,
-        background-color 0.2s ease;
-    }
-
-    .stat-pill--warning {
-      border-color: var(--clr-red-200);
-      background-color: var(--clr-red-50);
-      color: var(--clr-red-800);
-    }
-
-    .stat-pill--warning .stat-icon {
-      color: var(--clr-red-800);
-    }
-
-    .stat-icon {
-      color: var(--clr-gray-800);
-    }
-  `,
+  styleUrl: './quiz-header.css',
 })
 export class QuizHeader {
   private readonly store = inject(CreateQuizStore);

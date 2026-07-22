@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { APP_SETTINGS } from '@Core/config/app.settings';
-import { CreateQuiz } from '@Features/instructor/create-quiz/create-quiz.model';
-import { type QuizMetadataValue } from '@Features/instructor/create-quiz/quiz-metadata-form';
+import { CreateQuiz } from '@Features/instructor/create-quiz/models/create-quiz.model';
+import { type QuizMetadataValue } from '@Features/instructor/create-quiz/ui/quiz-metadata-form/quiz-metadata-form';
 import { StudentQuizzesApiResponse } from '@Features/student/student-quizzes/models/student-quizzes.model';
 import { Observable } from 'rxjs';
 

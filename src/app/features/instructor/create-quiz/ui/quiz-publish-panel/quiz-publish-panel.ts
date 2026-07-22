@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, output } from '@angular/cor
 
 import { Button } from '@shared/components/button/button';
 
-import { CreateQuizStore } from './create-quiz.store';
+import { CreateQuizStore } from '../../stores/create-quiz.store';
 
 @Component({
   selector: 'app-quiz-publish-panel',
@@ -24,24 +24,7 @@ import { CreateQuizStore } from './create-quiz.store';
       }
     </div>
   `,
-  styles: `
-    :host {
-      display: block;
-    }
-
-    .publish-group {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.35rem;
-    }
-
-    .publish-hint {
-      font-size: var(--fs-300);
-      color: var(--clr-gray-500);
-      white-space: nowrap;
-    }
-  `,
+  styleUrl: './quiz-publish-panel.css',
 })
 export class QuizPublishPanel {
   readonly store = inject(CreateQuizStore);

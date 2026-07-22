@@ -38,8 +38,6 @@ export interface EssayAnswer extends ManuallyGradedAnswer {
   studentResponse: string;
 }
 
-export type QuestionAnswerType = McqAnswer | TfAnswer | EssayAnswer;
-
 export function isMcqAnswer(answer: QuestionAnswer | null): answer is McqAnswer {
   return (
     !!answer &&
@@ -60,4 +58,12 @@ export function isManuallyGradedAnswer(
   answer: QuestionAnswer | null,
 ): answer is ManuallyGradedAnswer {
   return !!answer && answer.answerType === AnswerType.Manual;
+}
+
+export function isAutoGradedAnswer(answer: QuestionAnswer | null): answer is AutoGradedAnswer {
+  return !!answer && answer.answerType === AnswerType.Auto;
+}
+
+export function isEssayAnswer(answer: QuestionAnswer | null): answer is EssayAnswer {
+  return isManuallyGradedAnswer(answer);
 }

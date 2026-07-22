@@ -15,7 +15,11 @@ import { MessageService } from 'primeng/api';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { QuestionAnswer, EssayAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import {
+  QuestionAnswer,
+  EssayAnswer,
+  isEssayAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
@@ -310,7 +314,16 @@ export class EssayAnswerGrading implements AnswerReviewContract, OnInit {
   private readonly messageService = inject(MessageService);
   private readonly router = inject(Router);
 
-  protected readonly essayAnswer = computed(() => this.answer() as EssayAnswer);
+  protected readonly essayAnswer = computed<EssayAnswer>(() => {
+    const a = this.answer();
+    if (a === null) {
+      throw new Error('[EssayAnswerGrading] Answer input is required but was not provided.');
+    }
+    if (!isEssayAnswer(a)) {
+      throw new Error(`[EssayAnswerGrading] Expected EssayAnswer, but received: ${a.answerType}`);
+    }
+    return a;
+  });
 
   protected form!: FormGroup<{
     score: FormControl<number | null>;

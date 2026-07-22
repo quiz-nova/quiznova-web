@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { QuestionNotAnsweredContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 
 @Component({
   selector: 'app-tf-question-not-answered',
@@ -142,7 +142,13 @@ import { Tf } from '@shared/models/quiz/questions/tf.model';
 })
 export class TfNotAnswered implements QuestionNotAnsweredContract {
   readonly question = input.required<Question>();
-  readonly tf = computed(() => this.question() as Tf);
+  readonly tf = computed<Tf>(() => {
+    const q = this.question();
+    if (!isTf(q)) {
+      throw new Error(`[TfNotAnswered] Expected True/False question, but received: ${q.type}`);
+    }
+    return q;
+  });
   readonly questionNumber = input.required<number>();
 
   protected readonly correctAnswerLabel = computed(() =>

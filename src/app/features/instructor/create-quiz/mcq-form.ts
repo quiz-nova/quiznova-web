@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -26,7 +27,7 @@ import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Choice, Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { Choice, isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
@@ -191,7 +192,13 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly questionTextBlur = output<{ questionId: string; text: string }>();
   readonly deleteChoice = output<{ questionId: string; choiceId: string }>();
 
-  protected readonly mcq = () => this.initialData() as Mcq;
+  protected readonly mcq = computed(() => {
+    const data = this.initialData();
+    if (!isMcq(data)) {
+      throw new Error(`[McqForm] Expected MCQ question data, but received: ${data.type}`);
+    }
+    return data;
+  });
   private choiceIds: string[] = [];
 
   protected readonly mcqForm: McqFormGroup = this.fb.group({

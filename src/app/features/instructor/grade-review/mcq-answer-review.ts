@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import {
   QuestionAnswer,
   McqAnswer,
-  AutoGradedAnswer,
+  isMcqAnswer,
 } from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
@@ -28,9 +28,13 @@ import {
         </span>
       </div>
 
-      <div class="result-badge" [class.is-correct]="isCorrect()" [class.is-wrong]="!isCorrect()">
-        <i [class]="isCorrect() ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"></i>
-        {{ isCorrect() ? '+' + question().marks + ' pts' : '0 pts' }}
+      <div
+        class="result-badge"
+        [class.is-correct]="mcqAnswer().isCorrect"
+        [class.is-wrong]="!mcqAnswer().isCorrect"
+      >
+        <i [class]="mcqAnswer().isCorrect ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"></i>
+        {{ mcqAnswer().isCorrect ? '+' + question().marks + ' pts' : '0 pts' }}
       </div>
     </div>
   `,
@@ -108,10 +112,23 @@ import {
 export class McqAnswerReview implements AnswerReviewContract {
   readonly question = input.required<Question>();
   readonly answer = input<QuestionAnswer | null>(null);
-  protected readonly mcq = computed(() => this.question() as Mcq);
-  protected readonly mcqAnswer = computed(() => this.answer() as McqAnswer);
-  protected readonly autoAnswer = computed(() => this.answer() as AutoGradedAnswer);
-  protected readonly isCorrect = computed(() => this.autoAnswer()?.isCorrect ?? false);
+  protected readonly mcq = computed<Mcq>(() => {
+    const q = this.question();
+    if (!isMcq(q)) {
+      throw new Error(`[McqAnswerReview] Expected MCQ question, but received: ${q.type}`);
+    }
+    return q;
+  });
+  protected readonly mcqAnswer = computed<McqAnswer>(() => {
+    const a = this.answer();
+    if (a === null) {
+      throw new Error('[McqAnswerReview] Answer input is required but was not provided.');
+    }
+    if (!isMcqAnswer(a)) {
+      throw new Error(`[McqAnswerReview] Expected McqAnswer, but received: ${a.answerType}`);
+    }
+    return a;
+  });
 
   protected readonly studentChoiceText = computed(() => {
     const ans = this.mcqAnswer();

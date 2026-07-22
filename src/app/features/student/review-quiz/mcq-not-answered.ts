@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { QuestionNotAnsweredContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 
 @Component({
   selector: 'app-mcq-not-answered',
@@ -149,7 +149,13 @@ import { Mcq } from '@shared/models/quiz/questions/mcq.model';
 })
 export class McqNotAnswered implements QuestionNotAnsweredContract {
   readonly question = input.required<Question>();
-  readonly mcq = computed(() => this.question() as Mcq);
+  readonly mcq = computed<Mcq>(() => {
+    const q = this.question();
+    if (!isMcq(q)) {
+      throw new Error(`[McqNotAnswered] Expected MCQ question, but received: ${q.type}`);
+    }
+    return q;
+  });
   readonly questionNumber = input.required<number>();
 
   protected readonly choices = computed(() => {

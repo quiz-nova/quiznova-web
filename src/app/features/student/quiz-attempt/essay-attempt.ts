@@ -21,7 +21,7 @@ import { distinctUntilChanged, startWith } from 'rxjs';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Essay } from '@shared/models/quiz/questions/essay.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 
 import { SubmitEssayAnswer } from './models/SubmitQuizAttempt.model';
 import { QuizAttemptStore } from './quiz-attempt.store';
@@ -108,8 +108,12 @@ export class EssayAttempt implements QuestionAttemptContract, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly question = input.required<Question>();
-  protected readonly essay = computed(() => {
-    return this.question() as Essay;
+  protected readonly essay = computed<Essay>(() => {
+    const q = this.question();
+    if (!isEssay(q)) {
+      throw new Error(`[EssayAttempt] Expected Essay question, but received: ${q.type}`);
+    }
+    return q;
   });
   private readonly fb = inject(FormBuilder);
 

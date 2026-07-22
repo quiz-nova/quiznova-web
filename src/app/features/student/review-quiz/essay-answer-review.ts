@@ -2,8 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { StudentAnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Essay } from '@shared/models/quiz/questions/essay.model';
-import { EssayAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
+import {
+  EssayAnswer,
+  isEssayAnswer,
+  QuestionAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-student-essay-answer-review',
@@ -226,8 +230,24 @@ export class StudentEssayAnswerReview implements StudentAnswerReviewContract {
   readonly answer = input.required<QuestionAnswer>();
   readonly questionNumber = input.required<number>();
 
-  protected readonly essay = computed(() => this.question() as Essay);
-  protected readonly essayAnswer = computed(() => this.answer() as EssayAnswer);
+  protected readonly essay = computed<Essay>(() => {
+    const q = this.question();
+    if (!isEssay(q)) {
+      throw new Error(
+        `[StudentEssayAnswerReview] Expected Essay question, but received: ${q.type}`,
+      );
+    }
+    return q;
+  });
+  protected readonly essayAnswer = computed<EssayAnswer>(() => {
+    const a = this.answer();
+    if (!isEssayAnswer(a)) {
+      throw new Error(
+        `[StudentEssayAnswerReview] Expected EssayAnswer, but received: ${a.answerType}`,
+      );
+    }
+    return a;
+  });
 
   protected readonly isGraded = computed(
     () => this.essayAnswer().score !== null && this.essayAnswer().score !== undefined,

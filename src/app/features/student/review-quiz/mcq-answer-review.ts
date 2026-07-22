@@ -2,8 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { StudentAnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Mcq } from '@shared/models/quiz/questions/mcq.model';
-import { McqAnswer, QuestionAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
+import {
+  isMcqAnswer,
+  McqAnswer,
+  QuestionAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-mcq-answer-review',
@@ -181,8 +185,20 @@ export class McqAnswerReview implements StudentAnswerReviewContract {
   readonly answer = input.required<QuestionAnswer>();
   readonly questionNumber = input.required<number>();
 
-  protected readonly mcq = computed(() => this.question() as Mcq);
-  protected readonly mcqAnswer = computed(() => this.answer() as McqAnswer);
+  protected readonly mcq = computed<Mcq>(() => {
+    const q = this.question();
+    if (!isMcq(q)) {
+      throw new Error(`[StudentMcqAnswerReview] Expected MCQ question, but received: ${q.type}`);
+    }
+    return q;
+  });
+  protected readonly mcqAnswer = computed<McqAnswer>(() => {
+    const a = this.answer();
+    if (!isMcqAnswer(a)) {
+      throw new Error(`[StudentMcqAnswerReview] Expected McqAnswer, but received: ${a.answerType}`);
+    }
+    return a;
+  });
 
   protected readonly choices = computed(() => {
     return [...this.mcq().choices].sort((a, b) => a.displayOrder - b.displayOrder);

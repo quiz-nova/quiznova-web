@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { QuestionNotAnsweredContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Essay } from '@shared/models/quiz/questions/essay.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 
 @Component({
   selector: 'app-essay-question-not-answered',
@@ -152,5 +152,11 @@ export class EssayNotAnswered implements QuestionNotAnsweredContract {
   readonly question = input.required<Question>();
   readonly questionNumber = input.required<number>();
 
-  protected readonly essay = computed(() => this.question() as Essay);
+  protected readonly essay = computed<Essay>(() => {
+    const q = this.question();
+    if (!isEssay(q)) {
+      throw new Error(`[EssayNotAnswered] Expected Essay question, but received: ${q.type}`);
+    }
+    return q;
+  });
 }

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -22,7 +23,7 @@ import { RadioButton } from 'primeng/radiobutton';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
@@ -117,7 +118,13 @@ export class TfForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly blurEvent = output<Question>();
   readonly questionTextBlur = output<{ questionId: string; text: string }>();
 
-  protected readonly tf = () => this.initialData() as Tf;
+  protected readonly tf = computed(() => {
+    const data = this.initialData();
+    if (!isTf(data)) {
+      throw new Error(`[TfForm] Expected True/False question data, but received: ${data.type}`);
+    }
+    return data;
+  });
 
   protected readonly tfForm: TfFormGroup = this.fb.group({
     text: [

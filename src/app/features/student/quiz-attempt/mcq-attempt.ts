@@ -14,7 +14,7 @@ import { distinctUntilChanged, startWith } from 'rxjs';
 
 import { QuestionAttemptContract } from '@shared/models/quiz/question-component.contracts';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
-import { Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 
 import { SubmitMcqAnswer } from './models/SubmitQuizAttempt.model';
 import { QuizAttemptStore } from './quiz-attempt.store';
@@ -107,8 +107,12 @@ export class McqAttempt implements QuestionAttemptContract, OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly question = input.required<Question>();
-  protected readonly mcq = computed(() => {
-    return this.question() as Mcq;
+  protected readonly mcq = computed<Mcq>(() => {
+    const q = this.question();
+    if (!isMcq(q)) {
+      throw new Error(`[McqAttempt] Expected MCQ question, but received: ${q.type}`);
+    }
+    return q;
   });
   private readonly fb = inject(FormBuilder);
 

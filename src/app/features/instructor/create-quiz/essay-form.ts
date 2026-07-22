@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   input,
@@ -20,7 +21,7 @@ import {
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Essay } from '@shared/models/quiz/questions/essay.model';
+import { Essay, isEssay } from '@shared/models/quiz/questions/essay.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from './question-title';
@@ -137,7 +138,13 @@ export class EssayForm implements QuestionFormContract, OnInit, OnDestroy {
   readonly blurEvent = output<Question>();
   readonly questionTextBlur = output<{ questionId: string; text: string }>();
 
-  protected readonly essay = () => this.initialData() as Essay;
+  protected readonly essay = computed(() => {
+    const data = this.initialData();
+    if (!isEssay(data)) {
+      throw new Error(`[EssayForm] Expected Essay question data, but received: ${data.type}`);
+    }
+    return data;
+  });
 
   protected readonly essayForm: EssayFormGroup = this.fb.group({
     questionText: [

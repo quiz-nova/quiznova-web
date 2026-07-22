@@ -2,8 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { StudentAnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/questions/tf.model';
-import { QuestionAnswer, TfAnswer } from '@shared/models/quiz-attempt/question-answer.model';
+import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
+import {
+  QuestionAnswer,
+  isTfAnswer,
+  TfAnswer,
+} from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
   selector: 'app-tf-answer-review',
@@ -156,8 +160,22 @@ export class TfAnswerReview implements StudentAnswerReviewContract {
   readonly answer = input.required<QuestionAnswer>();
   readonly questionNumber = input.required<number>();
 
-  protected readonly tf = computed(() => this.question() as Tf);
-  protected readonly tfAnswer = computed(() => this.answer() as TfAnswer);
+  protected readonly tf = computed<Tf>(() => {
+    const q = this.question();
+    if (!isTf(q)) {
+      throw new Error(
+        `[StudentTfAnswerReview] Expected True/False question, but received: ${q.type}`,
+      );
+    }
+    return q;
+  });
+  protected readonly tfAnswer = computed<TfAnswer>(() => {
+    const a = this.answer();
+    if (!isTfAnswer(a)) {
+      throw new Error(`[StudentTfAnswerReview] Expected TfAnswer, but received: ${a.answerType}`);
+    }
+    return a;
+  });
 
   protected readonly studentAnswerLabel = computed(() =>
     this.tfAnswer().studentChoice ? 'True' : 'False',

@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Tf } from '@shared/models/quiz/questions/tf.model';
+import { isTf, Tf } from '@shared/models/quiz/questions/tf.model';
 import {
   QuestionAnswer,
   TfAnswer,
-  AutoGradedAnswer,
+  isTfAnswer,
 } from '@shared/models/quiz-attempt/question-answer.model';
 
 @Component({
@@ -25,9 +25,13 @@ import {
         }}</span>
       </div>
 
-      <div class="result-badge" [class.is-correct]="isCorrect()" [class.is-wrong]="!isCorrect()">
-        <i [class]="isCorrect() ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"></i>
-        {{ isCorrect() ? '+' + question().marks + ' pts' : '0 pts' }}
+      <div
+        class="result-badge"
+        [class.is-correct]="tfAnswer().isCorrect"
+        [class.is-wrong]="!tfAnswer().isCorrect"
+      >
+        <i [class]="tfAnswer().isCorrect ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"></i>
+        {{ tfAnswer().isCorrect ? '+' + question().marks + ' pts' : '0 pts' }}
       </div>
     </div>
   `,
@@ -102,8 +106,21 @@ export class TfAnswerReview implements AnswerReviewContract {
   readonly question = input.required<Question>();
   readonly answer = input<QuestionAnswer | null>(null);
 
-  protected readonly tfAnswer = computed(() => this.answer() as TfAnswer);
-  protected readonly tfQuestion = computed(() => this.question() as Tf);
-  protected readonly autoAnswer = computed(() => this.answer() as AutoGradedAnswer);
-  protected readonly isCorrect = computed(() => this.autoAnswer()?.isCorrect ?? false);
+  protected readonly tfAnswer = computed<TfAnswer>(() => {
+    const a = this.answer();
+    if (a === null) {
+      throw new Error('[TfAnswerReview] Answer input is required but was not provided.');
+    }
+    if (!isTfAnswer(a)) {
+      throw new Error(`[TfAnswerReview] Expected TfAnswer, but received: ${a.answerType}`);
+    }
+    return a;
+  });
+  protected readonly tfQuestion = computed<Tf>(() => {
+    const q = this.question();
+    if (!isTf(q)) {
+      throw new Error(`[TfAnswerReview] Expected True/False question, but received: ${q.type}`);
+    }
+    return q;
+  });
 }

@@ -19,8 +19,8 @@ export class AuthService {
   private _currentUser = signal<User | null>(null);
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = computed(() => this._currentUser() !== null);
-  private readonly tokenKey = 'access_token';
-  private readonly userKey = 'current_user';
+  private readonly tokenKey = this.appSettings.storage.accessTokenKey;
+  private readonly userKey = this.appSettings.storage.currentUserKey;
 
   constructor() {
     this.restoreSession();

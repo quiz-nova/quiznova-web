@@ -11,6 +11,7 @@ import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { APP_SETTINGS } from '@Core/config/app.settings';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
@@ -179,6 +180,7 @@ import { ManageCourseModal } from './manage-course-modal';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeCourses {
+  private readonly appSettings = inject(APP_SETTINGS);
   private readonly coursesService = inject(CoursesService);
   private readonly instructorService = inject(InstructorService);
   private readonly router = inject(Router);
@@ -187,7 +189,9 @@ export class CollegeCourses {
 
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
-  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly pageSize = signal(
+    Number(this.route.snapshot.queryParams['size']) || this.appSettings.defaultPageSize,
+  );
   protected readonly tableData = computed<Course[]>(() => {
     if (this.coursesResource.isLoading()) {
       return Array.from<unknown, Course>(
@@ -240,7 +244,7 @@ export class CollegeCourses {
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
       map((value) => value?.trim() || ''),
-      debounceTime(300),
+      debounceTime(this.appSettings.debounceTimeMs),
       distinctUntilChanged(),
     ),
     { initialValue: '' },

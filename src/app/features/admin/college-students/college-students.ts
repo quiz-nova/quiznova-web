@@ -10,6 +10,7 @@ import { toObservable, toSignal, rxResource } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { APP_SETTINGS } from '@Core/config/app.settings';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
 import { Skeleton } from 'primeng/skeleton';
@@ -138,13 +139,16 @@ import { EditStudentModal } from './edit-student-modal';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeStudents {
+  private readonly appSettings = inject(APP_SETTINGS);
   private readonly studentService = inject(StudentService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly searchTerm = signal(this.route.snapshot.queryParams['search'] || '');
   protected readonly pageNumber = signal(Number(this.route.snapshot.queryParams['page']) || 1);
-  protected readonly pageSize = signal(Number(this.route.snapshot.queryParams['size']) || 10);
+  protected readonly pageSize = signal(
+    Number(this.route.snapshot.queryParams['size']) || this.appSettings.defaultPageSize,
+  );
   protected readonly tableData = computed<Student[]>(() => {
     if (this.studentsResource.isLoading()) {
       return Array.from<unknown, Student>(
@@ -185,7 +189,7 @@ export class CollegeStudents {
   private readonly debouncedSearchTerm = toSignal(
     toObservable(this.searchTerm).pipe(
       map((value) => value?.trim() || ''),
-      debounceTime(300),
+      debounceTime(this.appSettings.debounceTimeMs),
       distinctUntilChanged(),
     ),
     { initialValue: '' },

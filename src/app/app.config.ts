@@ -1,8 +1,12 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
 
-import { APP_SETTINGS, appSettings } from '@Core/config/app.settings';
+import { APP_SETTINGS, appSettings, validateSettings } from '@Core/config/app.settings';
 import { authInterceptor } from '@Core/interceptors/auth.interceptor';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
@@ -68,5 +72,6 @@ export const appConfig: ApplicationConfig = {
       provide: APP_SETTINGS,
       useValue: appSettings,
     },
+    provideAppInitializer(() => validateSettings(appSettings)),
   ],
 };

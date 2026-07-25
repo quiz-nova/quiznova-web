@@ -13,6 +13,7 @@ describe('AddQuestion Component', () => {
     canAddMoreQuestions: vi.fn().mockReturnValue(true),
     effectiveRemainingMarks: vi.fn().mockReturnValue(15),
     numberOfQuestions: vi.fn().mockReturnValue(2),
+    questions: vi.fn().mockReturnValue([]),
   };
 
   it('should render question type options and add button', async () => {
@@ -23,7 +24,7 @@ describe('AddQuestion Component', () => {
     const label = screen.getByText('Question Type');
     expect(label).toBeInTheDocument();
 
-    const addButton = screen.getByRole('button', { name: /\+Add Question/i });
+    const addButton = screen.getByRole('button', { name: /Add Question/i });
     expect(addButton).toBeEnabled();
   });
 
@@ -36,7 +37,7 @@ describe('AddQuestion Component', () => {
     });
 
     const user = userEvent.setup();
-    const addButton = screen.getByRole('button', { name: /\+Add Question/i });
+    const addButton = screen.getByRole('button', { name: /Add Question/i });
 
     await user.click(addButton);
 
@@ -56,7 +57,7 @@ describe('AddQuestion Component', () => {
       componentProviders: [{ provide: CreateQuizStore, useValue: disabledStore }],
     });
 
-    const addButton = screen.getByRole('button', { name: /\+Add Question/i });
+    const addButton = screen.getByRole('button', { name: /Add Question/i });
     expect(addButton).toBeDisabled();
   });
 });

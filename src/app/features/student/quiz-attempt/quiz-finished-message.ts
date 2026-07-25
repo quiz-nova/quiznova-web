@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-quiz-finished-message',
@@ -14,15 +14,12 @@ import { Button } from '@shared/components/button/button';
       <p class="quiz-completed-card__message">
         You Have Compelete the Quiz Take a Rest Before you See you results 😉
       </p>
-      <button
-        class="quiz-completed-card__btn"
-        (click)="seeResults.emit()"
-        appButton
-        variant="green"
+      <p-button
+        (onClick)="seeResults.emit()"
+        label="See Results"
+        severity="success"
         type="button"
-      >
-        See Results
-      </button>
+      />
     </div>
   `,
   styles: `
@@ -67,10 +64,6 @@ import { Button } from '@shared/components/button/button';
       line-height: 1.6;
       color: var(--clr-gray-600);
       margin: 0;
-    }
-
-    .quiz-completed-card__btn {
-      min-width: 12rem;
     }
 
     @keyframes fadeInUp {

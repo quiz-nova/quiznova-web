@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
+
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
@@ -19,7 +20,7 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           </p>
         </article>
         <div class="about-cta" appFadeInOnScroll>
-          <button appButton variant="green" type="button">Join QuizNova today</button>
+          <p-button label="Join QuizNova today" severity="success" type="button" />
         </div>
       </div>
     </section>

@@ -52,16 +52,18 @@ describe('QuizMetadataForm Component', () => {
     expect(errorMsg).toBeInTheDocument();
   });
 
-  it('should emit valueChange when inputs are updated', async () => {
+  it('should emit valueChange when form inputs are updated', async () => {
     const valueChangeSpy = vi.fn();
 
-    await render(QuizMetadataForm, {
+    const { fixture } = await render(QuizMetadataForm, {
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: CoursesService, useValue: mockCoursesService },
       ],
       on: { valueChange: valueChangeSpy },
     });
+
+    fixture.componentInstance['quizHeaderForm'].controls.courseId.setValue('c-1');
 
     const user = userEvent.setup();
     const titleInput = screen.getByLabelText(/Quiz Title/i);

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
 
 import { CreateQuizStore } from '../../stores/create-quiz.store';
 
@@ -10,15 +10,14 @@ import { CreateQuizStore } from '../../stores/create-quiz.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="publish-group">
-      <button
+      <p-button
         [disabled]="!store.isEntireQuizValid()"
-        (click)="publish.emit()"
-        appButton
-        variant="green"
+        (onClick)="publish.emit()"
+        icon="pi pi-check-circle"
+        label="Publish Quiz"
+        severity="success"
         type="button"
-      >
-        Publish Quiz
-      </button>
+      />
       @if (!store.isEntireQuizValid()) {
         <span class="publish-hint">{{ store.publishDisabledReason() }}</span>
       }

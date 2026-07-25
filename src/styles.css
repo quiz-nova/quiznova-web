@@ -1,4 +1,5 @@
 @layer reset, base, utilities;
+@import url('primeicons/primeicons.css');
 @import url('./app/shared/styles/primeng-shared.css');
 
 @layer reset {

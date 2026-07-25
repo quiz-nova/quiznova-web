@@ -1,20 +1,23 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 
-import { Button } from '@shared/components/button/button';
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
 
 @Component({
   selector: 'app-delete-student-modal',
-  imports: [DialogModule, DeleteButton, Button],
+  imports: [Dialog, Button],
   template: `
-    <app-delete-button
-      (deleteButtonClicked)="openDialog()"
+    <p-button
+      [rounded]="true"
+      [text]="true"
+      (onClick)="openDialog()"
       ariaLabel="Delete student"
-    ></app-delete-button>
+      icon="pi pi-trash"
+      severity="danger"
+    />
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -34,16 +37,20 @@ import { StudentService } from '@shared/services/student.service';
       }
 
       <div class="actions">
-        <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
-        <button
-          [loading]="isSubmitting()"
-          (click)="onDelete()"
-          appButton
-          variant="red"
+        <p-button
+          [text]="true"
+          (onClick)="closeDialog()"
+          label="Cancel"
+          severity="secondary"
           type="button"
-        >
-          {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
-        </button>
+        />
+        <p-button
+          [loading]="isSubmitting()"
+          (onClick)="onDelete()"
+          label="Delete"
+          severity="danger"
+          type="button"
+        />
       </div>
     </p-dialog>
   `,

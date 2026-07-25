@@ -69,7 +69,7 @@ describe('McqForm Component', () => {
     });
     const user = userEvent.setup();
 
-    const addChoiceButton = screen.getByRole('button', { name: /\+Add Choice/i });
+    const addChoiceButton = screen.getByRole('button', { name: /Add Choice/i });
 
     await user.click(addChoiceButton);
     await user.click(addChoiceButton);
@@ -120,7 +120,7 @@ describe('McqForm Component', () => {
     });
     const user = userEvent.setup();
 
-    const addChoiceButton = screen.getByRole('button', { name: /\+Add Choice/i });
+    const addChoiceButton = screen.getByRole('button', { name: /Add Choice/i });
     await user.click(addChoiceButton);
 
     const deleteButtons = screen.getAllByRole('button', { name: /Delete choice/i });

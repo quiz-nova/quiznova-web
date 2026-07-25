@@ -1,30 +1,27 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-navigation-buttons',
   imports: [Button],
   template: `
     <nav class="nav-actions" [attr.aria-label]="ariaLabel()">
-      <button
+      <p-button
         [disabled]="!canGoPrevious()"
-        (click)="previousButtonClicked.emit()"
-        appButton
-        variant="gray"
+        [label]="previousLabel()"
+        [outlined]="true"
+        (onClick)="previousButtonClicked.emit()"
+        severity="secondary"
         type="button"
-      >
-        {{ previousLabel() }}
-      </button>
-      <button
+      />
+      <p-button
         [disabled]="!canGoNext()"
-        (click)="nextButtonClicked.emit()"
-        appButton
-        variant="green"
+        [label]="nextLabel()"
+        (onClick)="nextButtonClicked.emit()"
+        severity="success"
         type="button"
-      >
-        {{ nextLabel() }}
-      </button>
+      />
     </nav>
   `,
   styles: `
@@ -41,12 +38,6 @@ import { Button } from '@shared/components/button/button';
       justify-content: space-between;
       gap: 0.75rem;
       flex-wrap: wrap;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      pointer-events: none;
-      opacity: 0.5;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

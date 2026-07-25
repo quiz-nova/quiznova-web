@@ -4,11 +4,11 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
+import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { TableModule } from 'primeng/table';
 import { of } from 'rxjs';
 
-import { Button } from '@shared/components/button/button';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/role-dashboard-header';
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
@@ -70,13 +70,13 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
                     }}</time>
                   </td>
                   <td>
-                    <a
+                    <p-button
+                      [outlined]="true"
                       [routerLink]="['/student/review-quiz', attempt.quizAttemptId]"
-                      appButton
-                      variant="gray"
-                    >
-                      Review
-                    </a>
+                      label="Review"
+                      severity="secondary"
+                      type="button"
+                    />
                   </td>
                 </tr>
               </ng-template>

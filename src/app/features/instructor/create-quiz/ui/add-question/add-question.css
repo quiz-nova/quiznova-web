@@ -36,9 +36,3 @@
   min-width: 12rem;
   border-radius: var(--radius-md);
 }
-
-:host(.pill-style) .btn {
-  min-height: 3rem;
-  padding-inline: 1.25rem;
-  border-radius: var(--radius-sm);
-}

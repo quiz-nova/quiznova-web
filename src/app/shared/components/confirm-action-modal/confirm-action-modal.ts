@@ -1,100 +1,71 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-confirm-action-modal',
-  imports: [FormsModule, Button],
+  imports: [FormsModule, Dialog, Button, InputText],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      class="modal-backdrop"
-      (click)="onCancel()"
-      (keyup.escape)="onCancel()"
-      tabindex="-1"
-      role="presentation"
+    <p-dialog
+      [visible]="true"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [closable]="false"
+      (onHide)="onCancel()"
+      styleClass="confirm-dialog"
     >
-      <div
-        class="modal-dialog"
-        (click)="$event.stopPropagation()"
-        (keyup.escape)="onCancel()"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="confirm-modal-title"
-      >
+      <ng-template pTemplate="header">
         <div class="modal-header">
           <i [class]="headerIconClass()" aria-hidden="true"></i>
           <h3 id="confirm-modal-title">{{ title() }}</h3>
         </div>
-        <div class="modal-body">
-          <p [class]="'modal-warning-text ' + variant()">
-            <i [class]="bodyIconClass()" aria-hidden="true"></i>
-            {{ warningMessage() }}
-          </p>
-          <p class="modal-instruction">
-            To confirm, type <strong>{{ confirmationPhrase() }}</strong> below:
-          </p>
-          <input
-            class="modal-confirm-input focus-green-ring"
-            id="confirm-action-input"
-            [(ngModel)]="confirmationInput"
-            type="text"
-            placeholder="Type the phrase to confirm"
-            autocomplete="off"
+      </ng-template>
+
+      <div class="modal-body">
+        <p [class]="'modal-warning-text ' + variant()">
+          <i [class]="bodyIconClass()" aria-hidden="true"></i>
+          {{ warningMessage() }}
+        </p>
+        <p class="modal-instruction">
+          To confirm, type <strong>{{ confirmationPhrase() }}</strong> below:
+        </p>
+        <input
+          class="modal-confirm-input"
+          id="confirm-action-input"
+          [(ngModel)]="confirmationInput"
+          pInputText
+          type="text"
+          placeholder="Type the phrase to confirm"
+          autocomplete="off"
+        />
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="modal-actions">
+          <p-button
+            [text]="true"
+            (onClick)="onCancel()"
+            label="Cancel"
+            severity="secondary"
+            type="button"
+          />
+          <p-button
+            [disabled]="confirmationInput !== confirmationPhrase()"
+            [label]="confirmButtonText()"
+            [severity]="confirmButtonSeverity()"
+            (onClick)="onConfirm()"
+            type="button"
           />
         </div>
-        <div class="modal-actions">
-          <button (click)="onCancel()" appButton variant="gray" type="button">Cancel</button>
-          <button
-            [variant]="confirmButtonVariant()"
-            [disabled]="confirmationInput !== confirmationPhrase()"
-            (click)="onConfirm()"
-            appButton
-            type="button"
-          >
-            {{ confirmButtonText() }}
-          </button>
-        </div>
-      </div>
-    </div>
+      </ng-template>
+    </p-dialog>
   `,
   styles: `
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: grid;
-      place-items: center;
-      background: rgb(0 0 0 / 50%);
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-dialog {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      max-width: 28rem;
-      width: 90%;
-      padding: 1.75rem;
-      border-radius: var(--radius-lg);
-      background: var(--clr-white);
-      box-shadow: 0 20px 60px rgb(0 0 0 / 25%);
-      animation: modal-enter 0.2s ease-out;
-    }
-
-    @keyframes modal-enter {
-      from {
-        opacity: 0;
-        transform: scale(0.95) translateY(0.5rem);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
     .modal-header {
       display: flex;
       align-items: center;
@@ -170,10 +141,6 @@ import { Button } from '@shared/components/button/button';
 
     .modal-confirm-input {
       width: 100%;
-      padding: 0.65rem 0.85rem;
-      border: 1px solid var(--clr-gray-300);
-      border-radius: var(--radius-sm);
-      font-size: var(--fs-400);
     }
 
     .modal-actions {
@@ -219,14 +186,15 @@ export class ConfirmActionModal {
     }
   });
 
-  protected readonly confirmButtonVariant = computed(() => {
+  protected readonly confirmButtonSeverity = computed(() => {
     switch (this.variant()) {
       case 'danger':
-        return 'red';
+        return 'danger';
       case 'info':
+        return 'info';
       case 'success':
       default:
-        return 'green';
+        return 'success';
     }
   });
 

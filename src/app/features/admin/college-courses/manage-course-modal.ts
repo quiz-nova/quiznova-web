@@ -10,12 +10,11 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { ProgressSpinner } from 'primeng/progressspinner';
-import { SelectModule } from 'primeng/select';
+import { Select } from 'primeng/select';
 
-import { Button } from '@shared/components/button/button';
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { Course } from '@shared/models/course/course.model';
 import { shortId } from '@shared/utils/utilities';
 
@@ -23,18 +22,16 @@ import { ManageCourseStore } from './manage-course.store';
 
 @Component({
   selector: 'app-manage-course-modal',
-  imports: [DeleteButton, DialogModule, FormsModule, ProgressSpinner, SelectModule, Button],
+  imports: [Dialog, FormsModule, ProgressSpinner, Select, Button],
   providers: [ManageCourseStore],
   template: `
-    <button
+    <p-button
       [attr.aria-label]="'Manage ' + course().courseName"
-      (click)="openDialog()"
-      appButton
-      variant="gray"
+      (onClick)="openDialog()"
+      label="Manage"
+      severity="secondary"
       type="button"
-    >
-      Manage
-    </button>
+    />
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -72,15 +69,13 @@ import { ManageCourseStore } from './manage-course.store';
                 placeholder="No instructor"
                 appendTo="body"
               ></p-select>
-              <button
+              <p-button
                 [disabled]="!hasInstructorChange()"
-                (click)="onUpdateInstructor()"
-                appButton
-                variant="green"
+                (onClick)="onUpdateInstructor()"
+                label="Save"
+                severity="success"
                 type="button"
-              >
-                Save
-              </button>
+              />
             </div>
           </div>
 
@@ -99,20 +94,14 @@ import { ManageCourseStore } from './manage-course.store';
                 placeholder="Select a student"
                 appendTo="body"
               ></p-select>
-              <button
+              <p-button
                 [loading]="store.isPending()('enrollStudent')"
                 [disabled]="!selectedStudentId()"
-                (click)="onEnrollStudent()"
-                appButton
-                variant="green"
+                [label]="store.isPending()('enrollStudent') ? 'Enrolling...' : 'Enroll'"
+                (onClick)="onEnrollStudent()"
+                severity="success"
                 type="button"
-              >
-                @if (store.isPending()('enrollStudent')) {
-                  Enrolling...
-                } @else {
-                  Enroll
-                }
-              </button>
+              />
             </div>
           </div>
 
@@ -123,9 +112,13 @@ import { ManageCourseStore } from './manage-course.store';
                 <div class="student-row">
                   <span>{{ student.personalInformation.name }}</span>
                   <span class="student-id">{{ shortId(student.id) }}</span>
-                  <app-delete-button
-                    (deleteButtonClicked)="onRemoveStudent(student.id)"
+                  <p-button
+                    [rounded]="true"
+                    [text]="true"
+                    (onClick)="onRemoveStudent(student.id)"
                     ariaLabel="Remove student from course"
+                    icon="pi pi-trash"
+                    severity="danger"
                   />
                 </div>
               }

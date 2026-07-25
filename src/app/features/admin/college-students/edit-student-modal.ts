@@ -7,12 +7,11 @@ import {
   type FormGroup,
 } from '@angular/forms';
 
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 
-import { Button } from '@shared/components/button/button';
-import { EditButton } from '@shared/components/edit-button/edit-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
@@ -26,17 +25,16 @@ type EditStudentFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-edit-student-modal',
-  imports: [
-    ReactiveFormsModule,
-    DialogModule,
-    FloatLabel,
-    InputText,
-    EditButton,
-    FieldError,
-    Button,
-  ],
+  imports: [ReactiveFormsModule, Dialog, FloatLabel, InputText, FieldError, Button],
   template: `
-    <app-edit-button (editButtonClicked)="openDialog()" ariaLabel="Edit student"></app-edit-button>
+    <p-button
+      [rounded]="true"
+      [text]="true"
+      (onClick)="openDialog()"
+      ariaLabel="Edit student"
+      icon="pi pi-pencil"
+      severity="secondary"
+    />
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -135,10 +133,19 @@ type EditStudentFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
-          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
-            {{ isSubmitting() ? 'Saving...' : 'Save Changes' }}
-          </button>
+          <p-button
+            [text]="true"
+            (onClick)="closeDialog()"
+            label="Cancel"
+            severity="secondary"
+            type="button"
+          />
+          <p-button
+            [loading]="isSubmitting()"
+            label="Save Changes"
+            severity="success"
+            type="submit"
+          />
         </div>
       </form>
     </p-dialog>

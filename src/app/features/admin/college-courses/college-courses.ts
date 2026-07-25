@@ -13,8 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Select } from 'primeng/select';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
@@ -38,11 +38,11 @@ import { ManageCourseModal } from './manage-course-modal';
     DeleteCourseModal,
     ManageCourseModal,
     TableModule,
-    SkeletonModule,
+    Skeleton,
     FormsModule,
     InputText,
     InputNumber,
-    SelectModule,
+    Select,
     RoleDashboardHeader,
   ],
   template: `

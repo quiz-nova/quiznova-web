@@ -19,6 +19,8 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { Textarea } from 'primeng/textarea';
+
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
@@ -34,7 +36,7 @@ type EssayFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-essay-form',
-  imports: [ReactiveFormsModule, QuestionTitle, FieldError],
+  imports: [ReactiveFormsModule, QuestionTitle, FieldError, Textarea],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="essay-question-container">
@@ -54,8 +56,10 @@ type EssayFormGroup = FormGroup<{
             [attr.aria-invalid]="
               answerReferenceControl.invalid && answerReferenceControl.touched ? 'true' : null
             "
+            [autoResize]="true"
             [formControl]="answerReferenceControl"
             (blur)="onBlur()"
+            pTextarea
             placeholder="Enter the expected answer or keywords for grading..."
             rows="4"
             aria-describedby="answer-reference-minlength-error answer-reference-maxlength-error"

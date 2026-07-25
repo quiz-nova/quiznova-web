@@ -3,12 +3,12 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   input,
   output,
   OnDestroy,
   OnInit,
-  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -20,31 +20,31 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { Button } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
 import { RadioButton } from 'primeng/radiobutton';
 
-import { Button } from '@shared/components/button/button';
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { QuestionFormContract } from '@shared/models/quiz/question-component.contracts';
 import { Question } from '@shared/models/quiz/question.model';
-import { Choice, isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
+import { isMcq, Mcq } from '@shared/models/quiz/questions/mcq.model';
 import { CustomValidators } from '@shared/validators/custom-validators';
 
 import { QuestionTitle } from '../question-title/question-title';
 
 type McqFormGroup = FormGroup<{
   questionText: FormControl<string>;
-  choices: FormArray<FormControl<string>>;
   correctChoiceId: FormControl<string | null>;
+  choices: FormArray<FormControl<string>>;
 }>;
 
 @Component({
   selector: 'app-mcq-form',
-  imports: [ReactiveFormsModule, QuestionTitle, DeleteButton, FieldError, RadioButton, Button],
+  imports: [ReactiveFormsModule, QuestionTitle, RadioButton, FieldError, Button, InputText],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="mcq-question-container">
-      <form class="mcq-question-form" [formGroup]="mcqForm">
+    <div class="mcq-container">
+      <form class="mcq-form" [formGroup]="mcqForm">
         <app-question-title
           [control]="questionTextControl"
           (titleBlur)="onTitleBlur($event)"
@@ -75,16 +75,21 @@ type McqFormGroup = FormGroup<{
                   "
                   [attr.aria-label]="'Text for choice ' + (index + 1)"
                   (blur)="onBlur()"
+                  pInputText
                   type="text"
                   placeholder="Enter choice text..."
                   aria-describedby="choice-text-is-required-error choice-text-minlength-error choice-text-maxlength-error"
                 />
               </div>
 
-              <app-delete-button
-                [isDisabled]="choicesArray.length <= 2"
-                (deleteButtonClicked)="onDeleteChoice(index)"
+              <p-button
+                [disabled]="choicesArray.length <= 2"
+                [rounded]="true"
+                [text]="true"
+                (onClick)="onDeleteChoice(index)"
                 ariaLabel="Delete choice"
+                icon="pi pi-trash"
+                severity="danger"
               />
             </div>
 
@@ -116,15 +121,15 @@ type McqFormGroup = FormGroup<{
           }
         }
       </form>
-      <button
+      <p-button
         [disabled]="choicesArray.length >= 5"
-        (click)="onAddChoice()"
-        appButton
-        variant="gray"
+        [outlined]="true"
+        (onClick)="onAddChoice()"
+        icon="pi pi-plus"
+        label="Add Choice"
+        severity="secondary"
         type="button"
-      >
-        +Add Choice
-      </button>
+      />
     </div>
   `,
   styleUrl: './mcq-form.css',
@@ -149,7 +154,6 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     }
     return data;
   });
-  private choiceIds: string[] = [];
 
   protected readonly mcqForm: McqFormGroup = this.fb.group({
     questionText: [
@@ -160,8 +164,8 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
         CustomValidators.trimMaxLength(1000),
       ],
     ],
-    choices: this.fb.array<FormControl<string>>([]),
     correctChoiceId: [null as string | null, [Validators.required]],
+    choices: this.fb.array<FormControl<string>>([]),
   });
 
   constructor() {
@@ -200,69 +204,33 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     const currentChoices = this.choicesArray.controls.map((c) => c.value);
     const incomingChoices = mcq.choices.map((c) => c.text);
     const choicesMatch = currentChoices.every((val, i) => val === incomingChoices[i]);
-    const idsMatch = this.choiceIds.every((id, i) => id === mcq.choices[i].id);
 
     if (
       currentQuestionText === mcq.questionText &&
       currentCorrectChoiceId === mcq.correctChoiceId &&
-      choicesMatch &&
-      idsMatch
+      currentChoices.length === incomingChoices.length &&
+      choicesMatch
     ) {
       return;
     }
 
-    this.mcqForm.patchValue(
-      {
-        questionText: mcq.questionText,
-        correctChoiceId: mcq.correctChoiceId,
-      },
-      { emitEvent: false },
-    );
+    this.questionTextControl.setValue(mcq.questionText, { emitEvent: false });
+    this.correctChoiceControl.setValue(mcq.correctChoiceId, { emitEvent: false });
 
     this.choicesArray.clear({ emitEvent: false });
-    this.choiceIds = [];
-
-    mcq.choices.forEach((choice: Choice) => {
-      this.choiceIds.push(choice.id);
-      this.choicesArray.push(
-        this.fb.control(choice.text, [
-          Validators.required,
-          CustomValidators.trimMinLength(3),
-          CustomValidators.trimMaxLength(100),
-        ]),
-        { emitEvent: false },
-      );
+    mcq.choices.forEach((choice) => {
+      const control = this.fb.control(choice.text, [
+        Validators.required,
+        CustomValidators.trimMinLength(3),
+        CustomValidators.trimMaxLength(100),
+      ]);
+      this.choicesArray.push(control, { emitEvent: false });
     });
   }
 
   protected getChoiceId(index: number): string {
-    return this.choiceIds[index];
-  }
-
-  protected onAddChoice() {
-    const newId = crypto.randomUUID();
-    this.choiceIds.push(newId);
-    this.choicesArray.push(
-      this.fb.control('', [
-        Validators.required,
-        CustomValidators.trimMinLength(3),
-        CustomValidators.trimMaxLength(100),
-      ]),
-    );
-    this.onBlur();
-  }
-
-  protected onDeleteChoice(index: number) {
-    const choiceId = this.choiceIds[index];
-    const currentCorrectId = this.correctChoiceControl.value;
-
-    this.choiceIds.splice(index, 1);
-    this.choicesArray.removeAt(index);
-
-    if (choiceId === currentCorrectId) {
-      this.correctChoiceControl.setValue(null);
-    }
-    this.deleteChoice.emit({ questionId: this.initialData().id, choiceId });
+    const choices = this.mcq().choices;
+    return choices[index]?.id ?? `choice-${index + 1}`;
   }
 
   protected onTitleBlur(text: string) {
@@ -276,21 +244,52 @@ export class McqForm implements QuestionFormContract, OnInit, OnDestroy {
     }
   }
 
+  protected onAddChoice() {
+    if (this.choicesArray.length >= 5) return;
+
+    const control = this.fb.control('', [
+      Validators.required,
+      CustomValidators.trimMinLength(3),
+      CustomValidators.trimMaxLength(100),
+    ]);
+    this.choicesArray.push(control);
+    this.valueChange.emit(this.getLatestMcqData());
+  }
+
+  protected onDeleteChoice(index: number) {
+    if (this.choicesArray.length <= 2) return;
+
+    const deletedChoiceId = this.getChoiceId(index);
+    this.choicesArray.removeAt(index);
+
+    if (this.correctChoiceControl.value === deletedChoiceId) {
+      this.correctChoiceControl.setValue(null);
+    }
+
+    this.deleteChoice.emit({ questionId: this.initialData().id, choiceId: deletedChoiceId });
+    this.valueChange.emit(this.getLatestMcqData());
+  }
+
   private getLatestMcqData(): Mcq {
     const formValue = this.mcqForm.getRawValue();
     const originalMcq = this.mcq();
+
+    const updatedChoices = formValue.choices.map((text, i) => {
+      const existingChoice = originalMcq.choices[i];
+      return {
+        id: existingChoice?.id ?? `choice-${i + 1}`,
+        questionId: originalMcq.id,
+        text,
+        displayOrder: i + 1,
+      };
+    });
 
     return {
       ...originalMcq,
       questionText: formValue.questionText,
       correctChoiceId: formValue.correctChoiceId ?? '',
-      numberOfChoices: this.choicesArray.length,
-      choices: formValue.choices.map((text, index) => ({
-        id: this.choiceIds[index],
-        questionId: originalMcq.id,
-        text: text,
-        displayOrder: index + 1,
-      })),
+      choices: updatedChoices,
+      numberOfChoices: updatedChoices.length,
     };
   }
 }

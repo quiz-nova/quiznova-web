@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
@@ -26,7 +26,7 @@ import { shortId } from '@shared/utils/utilities';
   selector: 'app-college-quizzes-attempts',
   imports: [
     TableModule,
-    SkeletonModule,
+    Skeleton,
     FormsModule,
     InputText,
     InputNumber,

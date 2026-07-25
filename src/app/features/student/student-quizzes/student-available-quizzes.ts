@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 
-import { Button } from '@shared/components/button/button';
 import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { QuizCountdownTag } from '@shared/components/quiz-countdown-tag/quiz-countdown-tag';
 import { durationInMinutes } from '@shared/utils/utilities';
@@ -48,25 +48,21 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
                   @if (quiz.attemptStatus === 'Completed') {
                     <span class="completed-badge">Completed</span>
                   } @else if (quiz.attemptId) {
-                    <a
-                      class="start-btn"
+                    <p-button
                       [routerLink]="['/student/quiz-attempt', quiz.quizId]"
                       [queryParams]="{ attemptId: quiz.attemptId }"
-                      appButton
-                      variant="green"
-                      >Continue</a
-                    >
-                  } @else {
-                    <button
-                      class="start-btn"
-                      [disabled]="isQuizExpired(quiz.quizId)"
-                      (click)="startQuiz(quiz)"
-                      appButton
-                      variant="green"
+                      label="Continue"
+                      severity="success"
                       type="button"
-                    >
-                      Start Quiz
-                    </button>
+                    />
+                  } @else {
+                    <p-button
+                      [disabled]="isQuizExpired(quiz.quizId)"
+                      (onClick)="startQuiz(quiz)"
+                      label="Start Quiz"
+                      severity="success"
+                      type="button"
+                    />
                   }
                 </td>
               </tr>
@@ -116,13 +112,6 @@ import { StudentQuizApiDto } from './models/student-quizzes.model';
       border-radius: var(--radius-md);
       color: var(--clr-gray-600);
       background-color: var(--clr-gray-50);
-    }
-
-    .start-btn {
-      min-height: 2.15rem;
-      padding: 0.4rem 0.8rem;
-      font-size: var(--fs-300);
-      font-weight: 700;
     }
 
     .completed-badge {

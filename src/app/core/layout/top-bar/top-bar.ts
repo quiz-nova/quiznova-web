@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output } from '@angu
 import { Router } from '@angular/router';
 
 import { AuthService } from '@Features/auth/auth.service';
-
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-top-bar',
@@ -21,17 +20,15 @@ import { Button } from '@shared/components/button/button';
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       </button>
 
-      <button
-        class="dashboard-top-bar__logout focus-green-ring"
-        (click)="onLogout()"
-        appButton
-        variant="gray"
-        type="button"
+      <p-button
+        [outlined]="true"
+        (onClick)="onLogout()"
         aria-label="Logout"
-      >
-        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-        <span>Logout</span>
-      </button>
+        icon="fa-solid fa-right-from-bracket"
+        label="Logout"
+        severity="secondary"
+        type="button"
+      />
     </header>
   `,
   styles: `
@@ -68,11 +65,6 @@ import { Button } from '@shared/components/button/button';
         background-color: var(--clr-violet-500);
         color: var(--clr-white);
       }
-    }
-
-    .dashboard-top-bar__logout {
-      min-width: 7.5rem;
-      font-weight: 600;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -6,10 +6,9 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
-import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
+import { Button } from 'primeng/button';
+import { Select } from 'primeng/select';
 
-import { Button } from '@shared/components/button/button';
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
 import { CreateQuizStore } from '../../stores/create-quiz.store';
@@ -21,7 +20,7 @@ type AddQuestionFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-add-question',
-  imports: [ReactiveFormsModule, SelectModule, ButtonModule, Button],
+  imports: [ReactiveFormsModule, Select, Button],
   template: `
     <div class="add-question">
       <div class="question-type-group">
@@ -36,15 +35,14 @@ type AddQuestionFormGroup = FormGroup<{
           appendTo="body"
         />
       </div>
-      <button
+      <p-button
         [disabled]="!store.canAddMoreQuestions()"
-        (click)="onAddQuestion()"
-        appButton
-        variant="green"
+        (onClick)="onAddQuestion()"
+        icon="pi pi-plus"
+        label="Add Question"
+        severity="success"
         type="button"
-      >
-        +Add Question
-      </button>
+      />
     </div>
   `,
   styleUrl: './add-question.css',
@@ -58,7 +56,7 @@ export class AddQuestion {
 
   protected readonly questionTypeOptions: { label: string; value: QuestionType }[] = [
     { label: 'Multiple Choice', value: QuestionType.Mcq },
-    { label: 'True/False', value: QuestionType.Tf },
+    { label: 'True / False', value: QuestionType.Tf },
     { label: 'Essay', value: QuestionType.Essay },
   ];
 
@@ -70,13 +68,18 @@ export class AddQuestion {
     return this.addQuestionForm.controls.questionType;
   }
 
-  onAddQuestion(): void {
-    const question = mapQuestionTypeToQuestion(this.questionTypeControl.value, {
-      remainingMarks: this.store.effectiveRemainingMarks() ?? 0,
-      displayOrder: this.store.numberOfQuestions(),
+  protected onAddQuestion(): void {
+    const selectedType = this.questionTypeControl.value;
+    const remainingMarks = this.store.effectiveRemainingMarks() ?? 0;
+    const displayOrder = this.store.questions().length + 1;
+
+    const newQuestion = mapQuestionTypeToQuestion(selectedType, {
+      remainingMarks,
+      displayOrder,
     });
-    if (question) {
-      this.questionAdded.emit(question);
+
+    if (newQuestion) {
+      this.questionAdded.emit(newQuestion);
     }
   }
 }

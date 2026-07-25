@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
@@ -28,7 +28,7 @@ import { EditStudentModal } from './edit-student-modal';
   selector: 'app-college-students',
   imports: [
     TableModule,
-    SkeletonModule,
+    Skeleton,
     AddStudentModal,
     EditStudentModal,
     DeleteStudentModal,

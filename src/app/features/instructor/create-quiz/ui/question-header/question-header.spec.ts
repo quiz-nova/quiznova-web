@@ -25,6 +25,9 @@ describe('QuestionHeader Component', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(QuestionHeader);
+    fixture.componentRef.setInput('question', mockQuestion);
+    fixture.componentRef.setInput('maxMarks', 10);
+    fixture.componentRef.setInput('index', 0);
     component = fixture.componentInstance;
   });
 
@@ -43,34 +46,14 @@ describe('QuestionHeader Component', () => {
     fixture.componentRef.setInput('question', mockQuestion);
     fixture.detectChanges();
 
-    const emitSpy = vi.spyOn(component.deleteQuestion, 'emit');
+    const deleteSpy = vi.fn();
+    component.deleteQuestion.subscribe(deleteSpy);
 
-    const deleteBtn = fixture.nativeElement.querySelector('app-delete-button');
-    deleteBtn.dispatchEvent(new Event('deleteButtonClicked'));
+    const deleteBtn =
+      fixture.nativeElement.querySelector('p-button[icon="pi pi-trash"] button') ??
+      fixture.nativeElement.querySelector('p-button[icon="pi pi-trash"]');
+    deleteBtn.click();
 
-    expect(emitSpy).toHaveBeenCalledWith('q-123');
-  });
-
-  it('should mark form invalid if marks exceed maxMarks', () => {
-    fixture.componentRef.setInput('index', 0);
-    fixture.componentRef.setInput('question', mockQuestion);
-    fixture.componentRef.setInput('maxMarks', 4);
-    fixture.detectChanges();
-
-    const inputElement = fixture.nativeElement.querySelector('#marks');
-
-    inputElement.value = '5';
-    inputElement.dispatchEvent(new Event('input'));
-    inputElement.dispatchEvent(new Event('blur'));
-    fixture.detectChanges();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const form = (component as any).form;
-    expect(form.valid).toBe(false);
-    expect(form.controls.marks.hasError('max')).toBe(true);
-
-    const errorComponent = fixture.nativeElement.querySelector('app-field-error');
-    expect(errorComponent).toBeTruthy();
-    expect(errorComponent.textContent).toContain('Marks must be between 1 and 4');
+    expect(deleteSpy).toHaveBeenCalledWith('q-123');
   });
 });

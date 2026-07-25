@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
+
 import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.directive';
 
 @Component({
@@ -25,8 +26,14 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
           place.
         </p>
         <div class="buttons" [delay]="250" appFadeInOnScroll>
-          <button appButton variant="green" routerLink="/auth/login">Sign in</button>
-          <a href="#features" appButton variant="gray">Explore features</a>
+          <p-button label="Sign in" routerLink="/auth/login" severity="success" type="button" />
+          <p-button
+            [outlined]="true"
+            (onClick)="scrollToFeatures()"
+            label="Explore features"
+            severity="secondary"
+            type="button"
+          />
         </div>
       </main>
     </div>
@@ -102,4 +109,9 @@ import { FadeInOnScrollDirective } from '@shared/directives/fade-in-on-scroll.di
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Hero {}
+export class Hero {
+  protected scrollToFeatures(): void {
+    const el = document.getElementById('features');
+    el?.scrollIntoView({ behavior: 'smooth' });
+  }
+}

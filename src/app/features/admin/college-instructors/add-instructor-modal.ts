@@ -7,12 +7,12 @@ import {
   type FormGroup,
 } from '@angular/forms';
 
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
-import { Button } from '@shared/components/button/button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { UserRole } from '@shared/models/users/user-role.model';
 import { InstructorService } from '@shared/services/instructor.service';
@@ -28,9 +28,9 @@ type AddInstructorFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-add-instructor-modal',
-  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, DialogModule, FieldError, Button],
+  imports: [ReactiveFormsModule, FloatLabel, InputText, Password, Dialog, FieldError, Button],
   template: `
-    <button (click)="openDialog()" appButton variant="green" type="button">Add Instructor</button>
+    <p-button (onClick)="openDialog()" label="Add Instructor" severity="success" type="button" />
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -168,10 +168,19 @@ type AddInstructorFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
-          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
-            {{ isSubmitting() ? 'Saving...' : 'Save Instructor' }}
-          </button>
+          <p-button
+            [text]="true"
+            (onClick)="closeDialog()"
+            label="Cancel"
+            severity="secondary"
+            type="button"
+          />
+          <p-button
+            [loading]="isSubmitting()"
+            label="Save Instructor"
+            severity="success"
+            type="submit"
+          />
         </div>
       </form>
     </p-dialog>

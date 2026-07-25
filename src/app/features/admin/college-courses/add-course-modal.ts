@@ -7,13 +7,13 @@ import {
   type FormGroup,
 } from '@angular/forms';
 
-import { DialogModule } from 'primeng/dialog';
+import { Button } from 'primeng/button';
+import { Dialog } from 'primeng/dialog';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
+import { Select } from 'primeng/select';
 
-import { Button } from '@shared/components/button/button';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Instructor } from '@shared/models/users/instructor.model';
 import { CoursesService } from '@shared/services/courses.service';
@@ -30,17 +30,17 @@ type AddCourseFormGroup = FormGroup<{
 @Component({
   selector: 'app-add-course-modal',
   imports: [
-    DialogModule,
+    Dialog,
     FieldError,
     FloatLabel,
     InputNumber,
     InputText,
     ReactiveFormsModule,
-    SelectModule,
+    Select,
     Button,
   ],
   template: `
-    <button (click)="openDialog()" appButton variant="green" type="button">Add Course</button>
+    <p-button (onClick)="openDialog()" label="Add Course" severity="success" type="button" />
 
     <p-dialog
       [visible]="isDialogOpen()"
@@ -147,10 +147,19 @@ type AddCourseFormGroup = FormGroup<{
         }
 
         <div class="form-actions">
-          <button (click)="closeDialog()" appButton variant="gray" type="button">Cancel</button>
-          <button [loading]="isSubmitting()" appButton variant="green" type="submit">
-            {{ isSubmitting() ? 'Saving...' : 'Save Course' }}
-          </button>
+          <p-button
+            [text]="true"
+            (onClick)="closeDialog()"
+            label="Cancel"
+            severity="secondary"
+            type="button"
+          />
+          <p-button
+            [loading]="isSubmitting()"
+            label="Save Course"
+            severity="success"
+            type="submit"
+          />
         </div>
       </form>
     </p-dialog>

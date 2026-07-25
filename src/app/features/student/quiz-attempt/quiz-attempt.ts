@@ -11,10 +11,10 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { map } from 'rxjs';
 
-import { Button } from '@shared/components/button/button';
 import { ConfirmActionModal } from '@shared/components/confirm-action-modal/confirm-action-modal';
 import { NavigationButtons } from '@shared/components/navigation-buttons/navigation-buttons';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
@@ -105,35 +105,27 @@ import { QuizFinishedMessage } from './quiz-finished-message';
               ariaLabel="Question navigation"
             />
 
-            <button
-              [loading]="quizAttemptStore.isPending()('submit-answer')"
+            <p-button
               [disabled]="!quizAttemptStore.currentAnswerDraft() || quizAttemptStore.quizTimeOut()"
-              (click)="quizAttemptStore.saveCurrentAnswer()"
-              appButton
-              variant="green"
+              [loading]="quizAttemptStore.isPending()('submit-answer')"
+              [label]="savedLabel() ?? 'Save Answer'"
+              (onClick)="quizAttemptStore.saveCurrentAnswer()"
+              severity="success"
               type="button"
-            >
-              @if (savedLabel(); as label) {
-                {{ label }}
-              } @else {
-                Save Answer
-              }
-            </button>
+            />
           </div>
 
           <aside class="sidebar-column" aria-label="Quiz tools">
             <app-questions-navigator />
             <app-questions-progress-bar />
-            <button
+            <p-button
+              [fluid]="true"
               [loading]="quizAttemptStore.isPending()('submit')"
-              (click)="onSubmitQuiz()"
-              appButton
-              variant="red"
-              style="width: 100%"
+              (onClick)="onSubmitQuiz()"
+              label="Submit Quiz"
+              severity="danger"
               type="button"
-            >
-              Submit Quiz
-            </button>
+            />
           </aside>
         </div>
       }

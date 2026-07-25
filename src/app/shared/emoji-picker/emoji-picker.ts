@@ -7,16 +7,14 @@ import {
   output,
 } from '@angular/core';
 
-import { InputTextModule } from 'primeng/inputtext';
-import { OverlayModule, Overlay } from 'primeng/overlay';
+import { Button } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
+import { Overlay } from 'primeng/overlay';
 import 'emoji-picker-element';
-
-import { Button } from '@shared/components/button/button';
 
 @Component({
   selector: 'app-emoji-picker',
-  standalone: true,
-  imports: [InputTextModule, OverlayModule, Button],
+  imports: [InputText, Overlay, Button],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <div class="picker-wrapper">
@@ -29,9 +27,13 @@ import { Button } from '@shared/components/button/button';
         type="text"
         pInputText
       />
-      <button (click)="showEmojiPicker($event)" appButton variant="gray" type="button">
-        <i class="fa-regular fa-face-smile"></i>
-      </button>
+      <p-button
+        [text]="true"
+        (onClick)="showEmojiPicker($event)"
+        icon="fa-regular fa-face-smile"
+        severity="secondary"
+        type="button"
+      />
       <p-overlay #emojiOverlay>
         <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
       </p-overlay>

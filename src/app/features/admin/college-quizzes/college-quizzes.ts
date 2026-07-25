@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputText } from 'primeng/inputtext';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
@@ -25,7 +25,7 @@ import { QuizService } from '@shared/services/quiz.service';
   selector: 'app-college-quizzes',
   imports: [
     TableModule,
-    SkeletonModule,
+    Skeleton,
     FormsModule,
     InputText,
     InputNumber,

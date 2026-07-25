@@ -199,4 +199,105 @@
       transform: rotate(450deg);
     }
   }
+
+  /* PrimeNG Button Global Design System Alignment */
+  .p-button {
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-family: var(--ff-body), sans-serif;
+    transition:
+      background-color 0.2s var(--ease-standard),
+      color 0.2s var(--ease-standard),
+      border-color 0.2s var(--ease-standard),
+      transform 0.15s var(--ease-standard),
+      box-shadow 0.2s var(--ease-standard);
+  }
+
+  /* Success Button Brand Overrides */
+  .p-button-success {
+    border-color: var(--clr-green-400);
+    background-color: var(--clr-green-400);
+    color: var(--clr-white);
+  }
+
+  .p-button-success:not(:disabled):hover {
+    border-color: var(--clr-green-600);
+    background-color: var(--clr-green-600);
+    color: var(--clr-white);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(18 165 136 / 20%);
+  }
+
+  .p-button-success:not(:disabled):active {
+    border-color: var(--clr-green-800);
+    background-color: var(--clr-green-800);
+    transform: translateY(1px);
+  }
+
+  .p-button-outlined.p-button-success {
+    border-color: var(--clr-green-400);
+    background-color: transparent;
+    color: var(--clr-green-400);
+  }
+
+  .p-button-outlined.p-button-success:not(:disabled):hover {
+    border-color: var(--clr-green-600);
+    background-color: var(--clr-green-50);
+    color: var(--clr-green-600);
+  }
+
+  /* Danger / Delete Button Brand Overrides */
+  .p-button-danger {
+    border-color: var(--clr-red-500);
+    background-color: var(--clr-red-500);
+    color: var(--clr-white);
+  }
+
+  .p-button-danger:not(:disabled):hover {
+    border-color: var(--clr-red-600);
+    background-color: var(--clr-red-600);
+    color: var(--clr-white);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(239 68 68 / 25%);
+  }
+
+  .p-button-danger:not(:disabled):active {
+    border-color: var(--clr-red-700);
+    background-color: var(--clr-red-700);
+    transform: translateY(1px);
+  }
+
+  .p-button-text.p-button-danger,
+  .p-button-outlined.p-button-danger {
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--clr-red-500);
+  }
+
+  .p-button-text.p-button-danger:not(:disabled):hover,
+  .p-button-outlined.p-button-danger:not(:disabled):hover {
+    border-color: transparent;
+    background-color: var(--clr-red-50);
+    color: var(--clr-red-600);
+  }
+
+  /* Secondary / Gray Button Brand Overrides */
+  .p-button-secondary {
+    border-color: var(--clr-gray-500);
+    background-color: var(--clr-gray-50);
+    color: var(--clr-blue-900);
+  }
+
+  .p-button-secondary:not(:disabled):hover {
+    border-color: var(--clr-violet-500);
+    background-color: var(--clr-gray-100);
+    color: var(--clr-violet-700);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgb(130 84 211 / 10%);
+  }
+
+  .p-button-secondary:not(:disabled):active {
+    background-color: var(--clr-gray-200);
+    transform: translateY(1px);
+  }
 }

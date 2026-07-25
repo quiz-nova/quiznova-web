@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { InputText } from 'primeng/inputtext';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule, TablePageEvent } from 'primeng/table';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 
@@ -23,14 +23,7 @@ import { AddAdminModal } from './add-admin-modal';
 
 @Component({
   selector: 'app-college-admins',
-  imports: [
-    TableModule,
-    SkeletonModule,
-    AddAdminModal,
-    FormsModule,
-    InputText,
-    RoleDashboardHeader,
-  ],
+  imports: [TableModule, Skeleton, AddAdminModal, FormsModule, InputText, RoleDashboardHeader],
   template: `
     <section class="page">
       <header class="page-header">

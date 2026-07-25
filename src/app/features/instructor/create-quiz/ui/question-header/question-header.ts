@@ -17,7 +17,8 @@ import {
   Validators,
 } from '@angular/forms';
 
-import { DeleteButton } from '@shared/components/delete-button/delete-button';
+import { Button } from 'primeng/button';
+
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Question } from '@shared/models/quiz/question.model';
 
@@ -27,7 +28,7 @@ type QuestionHeaderFormGroup = FormGroup<{
 
 @Component({
   selector: 'app-question-header',
-  imports: [ReactiveFormsModule, DeleteButton, FieldError],
+  imports: [ReactiveFormsModule, Button, FieldError],
   template: `
     <header class="question-header">
       <div class="question-header__details">
@@ -53,17 +54,22 @@ type QuestionHeaderFormGroup = FormGroup<{
             />
           </div>
         </form>
-        <app-delete-button
-          (deleteButtonClicked)="deleteQuestion.emit(question().id)"
+        <p-button
+          [rounded]="true"
+          [text]="true"
+          (onClick)="deleteQuestion.emit(question().id)"
           ariaLabel="Delete question"
+          icon="pi pi-trash"
+          severity="danger"
         />
         @if (marksControl.invalid && marksControl.touched) {
           @if (marksControl.hasError('required')) {
-            <app-field-error id="marks-is-required-error">Marks is required.</app-field-error>
-          } @else if (marksControl.hasError('min') || marksControl.hasError('max')) {
-            <app-field-error id="marks-must-be-between-1-and-max-error"
-              >Marks must be between 1 and {{ maxMarks() }}.</app-field-error
-            >
+            <app-field-error id="marks-is-required-error">Marks field is required.</app-field-error>
+          }
+          @if (marksControl.hasError('min') || marksControl.hasError('max')) {
+            <app-field-error id="marks-must-be-between-1-and-max-error">
+              Marks must be between 1 and {{ maxMarks() }}.
+            </app-field-error>
           }
         }
       </div>
@@ -73,30 +79,46 @@ type QuestionHeaderFormGroup = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuestionHeader implements OnInit {
-  readonly index = input.required<number>();
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly question = input.required<Question>();
-  readonly maxMarks = input<number>(5);
+  readonly maxMarks = input.required<number>();
+  readonly index = input.required<number>();
 
   readonly deleteQuestion = output<string>();
   readonly marksChange = output<{ questionId: string; marks: number }>();
-  readonly blurEvent = output<{ questionId: string; marks: number }>();
 
-  private readonly destroyRef = inject(DestroyRef);
-
-  private readonly fb = inject(NonNullableFormBuilder);
   protected readonly form: QuestionHeaderFormGroup = this.fb.group({
-    marks: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    marks: [1, [Validators.required, Validators.min(1)]],
   });
 
   constructor() {
     effect(() => {
-      const max = this.maxMarks();
+      const currentQuestion = this.question();
+      const currentMaxMarks = this.maxMarks();
+
       this.marksControl.setValidators([
         Validators.required,
         Validators.min(1),
-        Validators.max(max),
+        Validators.max(currentMaxMarks),
       ]);
-      this.marksControl.updateValueAndValidity();
+      this.marksControl.updateValueAndValidity({ emitEvent: false });
+
+      if (this.marksControl.value !== currentQuestion.marks) {
+        this.marksControl.setValue(currentQuestion.marks, { emitEvent: false });
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.marksControl.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.form.valid) {
+        this.marksChange.emit({
+          questionId: this.question().id,
+          marks: this.marksControl.value,
+        });
+      }
     });
   }
 
@@ -104,22 +126,12 @@ export class QuestionHeader implements OnInit {
     return this.form.controls.marks;
   }
 
-  ngOnInit(): void {
-    this.marksControl.setValue(this.question().marks);
-    this.marksControl.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((newValue) => {
-        if (this.marksControl.invalid) {
-          return;
-        }
-
-        this.marksChange.emit({ questionId: this.question().id, marks: newValue });
-      });
-  }
-
   protected onBlur() {
     if (this.form.valid) {
-      this.blurEvent.emit({ questionId: this.question().id, marks: this.marksControl.value });
+      this.marksChange.emit({
+        questionId: this.question().id,
+        marks: this.marksControl.value,
+      });
     }
   }
 }

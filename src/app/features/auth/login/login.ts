@@ -11,11 +11,11 @@ import { Router } from '@angular/router';
 import { DEFAULT_USER_ROUTE, ROLES } from '@Core/config/role.config';
 import { AuthService } from '@Features/auth/auth.service';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputText } from 'primeng/inputtext';
 import { Password } from 'primeng/password';
 
-import { Button } from '@shared/components/button/button';
 import { DemoCredentials } from '@shared/components/demo-credentials/demo-credentials';
 import { FieldError } from '@shared/components/field-error/field-error';
 import { Logo } from '@shared/components/logo/logo';
@@ -123,16 +123,14 @@ type LoginFormGroup = FormGroup<{
               }
             </div>
           </fieldset>
-          <button
-            class="auth-submit"
-            [loading]="isLogging()"
+          <p-button
             [disabled]="loginForm.invalid"
-            appButton
-            variant="green"
+            [loading]="isLogging()"
+            [label]="isLogging() ? 'Signing in...' : 'Sign in'"
+            severity="success"
+            styleClass="auth-submit"
             type="submit"
-          >
-            <span>{{ isLogging() ? 'Signing in...' : 'Sign in' }}</span>
-          </button>
+          />
         </form>
       </div>
     </section>
@@ -295,7 +293,7 @@ type LoginFormGroup = FormGroup<{
       }
     }
 
-    .auth-submit {
+    ::ng-deep .auth-submit {
       width: 100%;
       min-height: 3.5rem; /* Ensure enough height for the spinner */
       min-width: 10rem;

@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { Button } from '@shared/components/button/button';
+import { Button } from 'primeng/button';
+
 import { Logo } from '@shared/components/logo/logo';
 
 export interface HeaderLink {
@@ -50,7 +51,13 @@ export const headerLinks: HeaderLink[] = [
           class="buttons header__panel"
           [class.menu-open]="activateBurgerIcon() && menuClicked()"
         >
-          <button appButton variant="gray" type="button" routerLink="/auth/login">Log in</button>
+          <p-button
+            [outlined]="true"
+            label="Log in"
+            routerLink="/auth/login"
+            severity="secondary"
+            type="button"
+          />
         </div>
       </header>
     </div>

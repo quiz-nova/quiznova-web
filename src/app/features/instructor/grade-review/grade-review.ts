@@ -10,9 +10,9 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
-import { Button } from '@shared/components/button/button';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { AnswerReviewContract } from '@shared/models/quiz/question-component.contracts';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
@@ -35,17 +35,15 @@ import { NoAnswer } from './no-answer';
     <section class="page">
       <!-- ── Back nav ── -->
       <nav class="back-nav" aria-label="Breadcrumb">
-        <button
-          class="back-to-inbox-btn"
-          (click)="goBack()"
-          appButton
-          variant="gray"
-          type="button"
+        <p-button
+          [outlined]="true"
+          (onClick)="goBack()"
           aria-label="Back to Inbox"
-        >
-          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
-          Back to Inbox
-        </button>
+          icon="fa-solid fa-arrow-left"
+          label="Back to Inbox"
+          severity="secondary"
+          type="button"
+        />
       </nav>
 
       @if (attemptResource.isLoading()) {
@@ -262,12 +260,6 @@ import { NoAnswer } from './no-answer';
       display: grid;
       place-items: center;
       min-height: 14rem;
-    }
-
-    .back-to-inbox-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

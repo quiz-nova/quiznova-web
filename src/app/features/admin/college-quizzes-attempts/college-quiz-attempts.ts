@@ -132,7 +132,7 @@ import { shortId } from '@shared/utils/utilities';
       </div>
     </section>
   `,
-  styleUrl: '../shared/college-tables-shared.css',
+  styleUrl: './college-quiz-attempts.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeQuizzesAttempts {

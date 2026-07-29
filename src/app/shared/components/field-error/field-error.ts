@@ -8,13 +8,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       <ng-content></ng-content>
     </div>
   `,
-  styles: `
-    .field-error {
-      min-height: 1.25rem;
-      color: var(--clr-red-500);
-      font-size: var(--fs-300);
-    }
-  `,
+  styleUrl: './field-error.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FieldError {

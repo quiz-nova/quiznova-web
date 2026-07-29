@@ -21,9 +21,9 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { Instructor } from '@shared/models/users/instructor.model';
 import { InstructorService } from '@shared/services/instructor.service';
 
-import { AddInstructorModal } from './add-instructor-modal';
-import { DeleteInstructorModal } from './delete-instructor-modal';
-import { EditInstructorModal } from './edit-instructor-modal';
+import { AddInstructorModal } from './ui/add-instructor-modal/add-instructor-modal';
+import { DeleteInstructorModal } from './ui/delete-instructor-modal/delete-instructor-modal';
+import { EditInstructorModal } from './ui/edit-instructor-modal/edit-instructor-modal';
 
 @Component({
   selector: 'app-college-instructors',
@@ -150,7 +150,7 @@ import { EditInstructorModal } from './edit-instructor-modal';
       </div>
     </section>
   `,
-  styleUrl: '../shared/college-tables-shared.css',
+  styleUrl: './college-instructors.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeInstructors {

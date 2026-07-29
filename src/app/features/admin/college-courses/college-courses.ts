@@ -28,9 +28,9 @@ import { CoursesService } from '@shared/services/courses.service';
 import { InstructorService } from '@shared/services/instructor.service';
 import { shortId } from '@shared/utils/utilities';
 
-import { AddCourseModal } from './add-course-modal';
-import { DeleteCourseModal } from './delete-course-modal';
-import { ManageCourseModal } from './manage-course-modal';
+import { AddCourseModal } from './ui/add-course-modal/add-course-modal';
+import { DeleteCourseModal } from './ui/delete-course-modal/delete-course-modal';
+import { ManageCourseModal } from './ui/manage-course-modal/manage-course-modal';
 
 @Component({
   selector: 'app-college-courses',

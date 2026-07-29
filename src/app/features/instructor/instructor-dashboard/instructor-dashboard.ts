@@ -13,7 +13,7 @@ import { Course } from '@shared/models/course/course.model';
 import { CoursesService } from '@shared/services/courses.service';
 import { QuizService } from '@shared/services/quiz.service';
 
-import { InstructorDashboardCharts } from './instructor-dashboard-charts';
+import { InstructorDashboardCharts } from './ui/instructor-dashboard-charts/instructor-dashboard-charts';
 
 @Component({
   selector: 'app-instructor-dashboard',
@@ -62,44 +62,7 @@ import { InstructorDashboardCharts } from './instructor-dashboard-charts';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      background-color: var(--clr-gray-50);
-    }
-
-    .dashboard {
-      display: grid;
-      gap: 1.5rem;
-      width: 100%;
-      padding: 1.5rem;
-    }
-
-    .dashboard-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .status-container {
-      display: grid;
-      min-height: 12rem;
-      place-items: center;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-    }
-
-    @media (width < 768px) {
-      .charts-section {
-        display: none;
-      }
-    }
-  `,
+  styleUrl: './instructor-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InstructorDashboard {

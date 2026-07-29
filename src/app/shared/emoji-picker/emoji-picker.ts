@@ -39,18 +39,7 @@ import 'emoji-picker-element';
       </p-overlay>
     </div>
   `,
-  styles: `
-    .picker-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      width: 100%;
-    }
-
-    input {
-      flex: 1;
-    }
-  `,
+  styleUrl: './emoji-picker.css',
 })
 export class EmojiPicker {
   readonly value = input('');

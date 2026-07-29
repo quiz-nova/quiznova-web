@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 
-import { AdminDashboardCharts } from '@Features/admin/admin-dashboard/admin-dashboard-charts';
 import { AuthService } from '@Features/auth/auth.service';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
@@ -11,6 +10,8 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { CourseEnrollmentCount } from '@shared/models/enrollment/course-enrollment-count.model';
 import { CollegeService } from '@shared/services/college.service';
 import { EnrollmentService } from '@shared/services/enrollment.service';
+
+import { AdminDashboardCharts } from './ui/admin-dashboard-charts/admin-dashboard-charts';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -60,32 +61,7 @@ import { EnrollmentService } from '@shared/services/enrollment.service';
       }
     </section>
   `,
-  styles: `
-    .page {
-      display: grid;
-      gap: 1.5rem;
-      padding: 2rem;
-    }
-
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      align-items: start;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-    }
-
-    @media (width < 768px) {
-      .charts-section {
-        display: none;
-      }
-    }
-  `,
+  styleUrl: './admin-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDashboard {

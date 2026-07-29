@@ -6,10 +6,10 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
-import { ResultBanner } from './result-banner';
-import { ReviewQuizHeader } from './review-quiz-header';
-import { ReviewQuizStatusCard } from './review-quiz-status-card';
 import { ReviewQuizStore } from './review-quiz.store';
+import { ResultBanner } from './ui/result-banner/result-banner';
+import { ReviewQuizHeader } from './ui/review-quiz-header/review-quiz-header';
+import { ReviewQuizStatusCard } from './ui/review-quiz-status-card/review-quiz-status-card';
 
 @Component({
   selector: 'app-review-quiz',
@@ -75,42 +75,7 @@ import { ReviewQuizStore } from './review-quiz.store';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      background-color: var(--clr-gray-50);
-    }
-
-    .review-page {
-      width: min(100%, 76rem);
-      margin: 0 auto;
-      display: grid;
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .review-questions {
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    .review-questions__title {
-      margin: 0;
-      font-size: 1.1rem;
-      color: var(--clr-blue-900);
-    }
-
-    .review-questions__list {
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    @media (width <= 40rem) {
-      .review-page {
-        padding: 0.75rem;
-      }
-    }
-  `,
+  styleUrl: './review-quiz.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewQuiz implements OnInit {

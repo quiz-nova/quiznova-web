@@ -10,8 +10,8 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { QuizService } from '@shared/services/quiz.service';
 
 import { StudentQuizzesApiResponse, StudentQuizStatus } from './models/student-quizzes.model';
-import { StudentAvailableQuizzes } from './student-available-quizzes';
-import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
+import { StudentAvailableQuizzes } from './ui/student-available-quizzes/student-available-quizzes';
+import { StudentScheduledQuizzes } from './ui/student-scheduled-quizzes/student-scheduled-quizzes';
 
 @Component({
   selector: 'app-student-quizzes',
@@ -50,33 +50,7 @@ import { StudentScheduledQuizzes } from './student-scheduled-quizzes';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      background-color: var(--clr-gray-50);
-    }
-
-    .quizzes-page {
-      display: grid;
-      gap: 1.5rem;
-      width: 100%;
-      padding: 1.5rem;
-    }
-
-    .empty-state {
-      padding: 2rem;
-      border: 1px dashed var(--clr-gray-300);
-      border-radius: var(--radius-lg);
-      color: var(--clr-gray-600);
-      text-align: center;
-    }
-
-    @media (width <= 60rem) {
-      .quizzes-page {
-        padding: 1rem;
-      }
-    }
-  `,
+  styleUrl: './student-quizzes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentQuizzes {

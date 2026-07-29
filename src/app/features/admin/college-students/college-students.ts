@@ -21,9 +21,9 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { Student } from '@shared/models/users/student.model';
 import { StudentService } from '@shared/services/student.service';
 
-import { AddStudentModal } from './add-student-modal';
-import { DeleteStudentModal } from './delete-student-modal';
-import { EditStudentModal } from './edit-student-modal';
+import { AddStudentModal } from './ui/add-student-modal/add-student-modal';
+import { DeleteStudentModal } from './ui/delete-student-modal/delete-student-modal';
+import { EditStudentModal } from './ui/edit-student-modal/edit-student-modal';
 
 @Component({
   selector: 'app-college-students',
@@ -135,7 +135,7 @@ import { EditStudentModal } from './edit-student-modal';
       </div>
     </section>
   `,
-  styleUrl: '../shared/college-tables-shared.css',
+  styleUrl: './college-students.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeStudents {

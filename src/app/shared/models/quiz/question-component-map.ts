@@ -1,22 +1,22 @@
 import { EssayForm } from '@Features/instructor/create-quiz/ui/essay-form/essay-form';
 import { McqForm } from '@Features/instructor/create-quiz/ui/mcq-form/mcq-form';
 import { TfForm } from '@Features/instructor/create-quiz/ui/tf-form/tf-form';
-import { EssayAnswerGrading } from '@Features/instructor/grade-review/essay-answer-grading';
-import { McqAnswerReview } from '@Features/instructor/grade-review/mcq-answer-review';
-import { TfAnswerReview } from '@Features/instructor/grade-review/tf-answer-review';
-import { EssayAttempt } from '@Features/student/quiz-attempt/essay-attempt';
-import { McqAttempt } from '@Features/student/quiz-attempt/mcq-attempt';
-import { TfAttempt } from '@Features/student/quiz-attempt/tf-attempt';
-import { StudentEssayAnswerReview } from '@Features/student/review-quiz/essay-answer-review';
-import { EssayNotAnswered } from '@Features/student/review-quiz/essay-not-answered';
-import { McqAnswerReview as StudentMcqAnswerReview } from '@Features/student/review-quiz/mcq-answer-review';
-import { McqNotAnswered } from '@Features/student/review-quiz/mcq-not-answered';
-import { TfAnswerReview as StudentTfAnswerReview } from '@Features/student/review-quiz/tf-answer-review';
-import { TfNotAnswered } from '@Features/student/review-quiz/tf-not-answered';
+import { EssayAnswerGrading } from '@Features/instructor/grade-review/ui/essay-answer-grading/essay-answer-grading';
+import { McqAnswerReview } from '@Features/instructor/grade-review/ui/mcq-answer-review/mcq-answer-review';
+import { TfAnswerReview } from '@Features/instructor/grade-review/ui/tf-answer-review/tf-answer-review';
+import { EssayAttempt } from '@Features/student/quiz-attempt/ui/essay-attempt/essay-attempt';
+import { McqAttempt } from '@Features/student/quiz-attempt/ui/mcq-attempt/mcq-attempt';
+import { TfAttempt } from '@Features/student/quiz-attempt/ui/tf-attempt/tf-attempt';
+import { StudentEssayAnswerReview } from '@Features/student/review-quiz/ui/essay-answer-review/essay-answer-review';
+import { EssayNotAnswered } from '@Features/student/review-quiz/ui/essay-not-answered/essay-not-answered';
+import { McqAnswerReview as StudentMcqAnswerReview } from '@Features/student/review-quiz/ui/mcq-answer-review/mcq-answer-review';
+import { McqNotAnswered } from '@Features/student/review-quiz/ui/mcq-not-answered/mcq-not-answered';
+import { TfAnswerReview as StudentTfAnswerReview } from '@Features/student/review-quiz/ui/tf-answer-review/tf-answer-review';
+import { TfNotAnswered } from '@Features/student/review-quiz/ui/tf-not-answered/tf-not-answered';
 
-import { EssayTag } from '@shared/components/questions-tags/essay-tag';
-import { McqTag } from '@shared/components/questions-tags/mcq-tag';
-import { TfTag } from '@shared/components/questions-tags/tf-tag';
+import { EssayTag } from '@shared/components/questions-tags/essay-tag/essay-tag';
+import { McqTag } from '@shared/components/questions-tags/mcq-tag/mcq-tag';
+import { TfTag } from '@shared/components/questions-tags/tf-tag/tf-tag';
 import {
   QuestionFormMap,
   QuestionAttemptMap,

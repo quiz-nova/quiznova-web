@@ -20,7 +20,7 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { User } from '@shared/models/users/user.model';
 import { AdminService } from '@shared/services/admin.service';
 
-import { AddAdminModal } from './add-admin-modal';
+import { AddAdminModal } from './ui/add-admin-modal/add-admin-modal';
 
 @Component({
   selector: 'app-college-admins',
@@ -96,7 +96,7 @@ import { AddAdminModal } from './add-admin-modal';
       </div>
     </section>
   `,
-  styleUrl: '../shared/college-tables-shared.css',
+  styleUrl: './college-admins.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollegeAdmins {

@@ -6,7 +6,6 @@ import { BaseLayout } from '@Core/layout/base-layout/base-layout';
   selector: 'app-instructor',
   imports: [BaseLayout],
   template: ` <app-base-layout></app-base-layout> `,
-  styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Instructor {}

@@ -20,12 +20,12 @@ import { NavigationButtons } from '@shared/components/navigation-buttons/navigat
 import { OperationFailed } from '@shared/components/operation-failed/operation-failed';
 import { QuestionComponentMapperService } from '@shared/services/question-component-mapper.service';
 
-import { QuestionAttemptHeader } from './question-attempt-header';
-import { QuestionsNavigator } from './questions-navigator';
-import { QuestionsProgressBar } from './questions-progress-bar';
-import { QuizAttemptHeader } from './quiz-attempt-header';
 import { QuizAttemptStore } from './quiz-attempt.store';
-import { QuizFinishedMessage } from './quiz-finished-message';
+import { QuestionAttemptHeader } from './ui/question-attempt-header/question-attempt-header';
+import { QuestionsNavigator } from './ui/questions-navigator/questions-navigator';
+import { QuestionsProgressBar } from './ui/questions-progress-bar/questions-progress-bar';
+import { QuizAttemptHeader } from './ui/quiz-attempt-header/quiz-attempt-header';
+import { QuizFinishedMessage } from './ui/quiz-finished-message/quiz-finished-message';
 
 @Component({
   selector: 'app-quiz-attempt',
@@ -155,45 +155,7 @@ import { QuizFinishedMessage } from './quiz-finished-message';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      padding: 1rem;
-    }
-
-    .attempt-layout {
-      display: grid;
-      gap: 1rem;
-      width: min(100%, 70rem);
-      margin: 0 auto;
-    }
-
-    .attempt-main {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 2fr 1fr;
-      align-items: start;
-    }
-
-    .question-column,
-    .sidebar-column {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .spinner-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 20rem;
-    }
-
-    @media (width <= 64rem) {
-      .attempt-main {
-        grid-template-columns: 1fr;
-      }
-    }
-  `,
+  styleUrl: './quiz-attempt.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuizAttempt implements OnInit {

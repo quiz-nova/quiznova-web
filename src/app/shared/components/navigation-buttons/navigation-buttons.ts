@@ -24,22 +24,7 @@ import { Button } from 'primeng/button';
       />
     </nav>
   `,
-  styles: `
-    :host {
-      display: block;
-      padding: 1rem;
-      border: 1px solid var(--clr-gray-300);
-      border-radius: var(--radius-md);
-      background: var(--clr-white);
-    }
-
-    .nav-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-  `,
+  styleUrl: './navigation-buttons.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavigationButtons {

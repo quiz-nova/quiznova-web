@@ -2,11 +2,11 @@ import { Component, effect, inject, input } from '@angular/core';
 
 import { YourCourses } from '@shared/components/your-courses/your-courses';
 
-import { ChatFooter } from './chat-footer';
-import { ChatHeader } from './chat-header';
 import { CourseChatStore } from './course-chat.store';
-import { MessageWindow } from './message-window';
-import { NoCourseChatSelectedPlaceholder } from './no-course-chat-selected-placeholder';
+import { ChatFooter } from './ui/chat-footer/chat-footer';
+import { ChatHeader } from './ui/chat-header/chat-header';
+import { MessageWindow } from './ui/message-window/message-window';
+import { NoCourseChatSelectedPlaceholder } from './ui/no-course-chat-selected-placeholder/no-course-chat-selected-placeholder';
 
 @Component({
   selector: 'app-course-chat',
@@ -34,43 +34,7 @@ import { NoCourseChatSelectedPlaceholder } from './no-course-chat-selected-place
       </main>
     </div>
   `,
-  styles: `
-    .chat-layout {
-      display: flex;
-      height: calc(100vh - 4.5rem);
-      background: var(--clr-white);
-      overflow: hidden;
-    }
-
-    .sidebar-aside {
-      width: 320px;
-      flex-shrink: 0;
-      height: 100%;
-      border-right: 1px solid var(--clr-gray-200);
-
-      @media (width < 768px) {
-        width: 100%;
-        max-width: 320px;
-      }
-    }
-
-    .chat-viewport {
-      flex: 1;
-      height: 100%;
-      position: relative;
-      min-width: 0;
-
-      @media (width < 768px) {
-        width: 100%;
-      }
-    }
-
-    .chat-room-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-  `,
+  styleUrl: './course-chat.css',
 })
 export class CourseChat {
   readonly store = inject(CourseChatStore);

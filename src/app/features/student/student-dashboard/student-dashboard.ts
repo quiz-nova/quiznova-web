@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { rxResource } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '@Features/auth/auth.service';
-import { StudentDashboardCharts } from '@Features/student/student-dashboard/student-dashboard-charts';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { forkJoin, of } from 'rxjs';
 
@@ -12,6 +11,8 @@ import { RoleDashboardHeader } from '@shared/components/role-dashboard-header/ro
 import { QuizAttempt } from '@shared/models/quiz-attempt/quiz-attempt.model';
 import { EnrollmentService } from '@shared/services/enrollment.service';
 import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
+
+import { StudentDashboardCharts } from './ui/student-dashboard-charts/student-dashboard-charts';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -57,44 +58,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      background-color: var(--clr-gray-50);
-    }
-
-    .dashboard {
-      display: grid;
-      gap: 1.5rem;
-      width: 100%;
-      padding: 1.5rem;
-    }
-
-    .dashboard-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .status-container {
-      display: grid;
-      min-height: 12rem;
-      place-items: center;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-    }
-
-    @media (width < 768px) {
-      .charts-section {
-        display: none;
-      }
-    }
-  `,
+  styleUrl: './student-dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentDashboard {

@@ -86,67 +86,7 @@ import { QuizAttemptService } from '@shared/services/quiz-attempt.service';
       }
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-      background-color: var(--clr-gray-50);
-    }
-
-    .page {
-      display: grid;
-      gap: 1.5rem;
-      width: 100%;
-      padding: 1.5rem;
-    }
-
-    .status-container {
-      display: grid;
-      min-height: 12rem;
-      place-items: center;
-    }
-
-    .card {
-      border: 1px solid var(--clr-gray-200);
-      border-radius: var(--radius-md);
-      background: var(--clr-white);
-    }
-
-    .empty-state {
-      padding: 2rem;
-      text-align: center;
-      color: var(--clr-gray-600);
-    }
-
-    .table-shell {
-      overflow: auto;
-    }
-
-    .cell-title {
-      font-weight: 600;
-      color: var(--clr-blue-900);
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-      background: var(--clr-gray-100);
-      color: var(--clr-gray-700);
-    }
-
-    .status-badge.graded {
-      background: var(--clr-green-000);
-      color: var(--clr-green-800);
-    }
-
-    @media (width <= 60rem) {
-      .page {
-        padding: 1rem;
-      }
-    }
-  `,
+  styleUrl: './student-results.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentResults {

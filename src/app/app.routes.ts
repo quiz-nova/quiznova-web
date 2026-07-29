@@ -6,7 +6,7 @@ import { Landing } from '@Features/landing/landing';
 
 import { UserRole } from '@shared/models/users/user-role.model';
 
-import { NotFoundPage } from './not-found-page';
+import { NotFoundPage } from './not-found-page/not-found-page';
 
 export const routes: Routes = [
   {

@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { SharedModule } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-confirm-action-modal',
-  imports: [FormsModule, Dialog, Button, InputText],
+  imports: [FormsModule, Dialog, Button, InputText, SharedModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <p-dialog
@@ -15,7 +16,7 @@ import { InputText } from 'primeng/inputtext';
       [modal]="true"
       [draggable]="false"
       [resizable]="false"
-      [closable]="false"
+      [closable]="true"
       (onHide)="onCancel()"
       styleClass="confirm-dialog"
     >
@@ -55,9 +56,9 @@ import { InputText } from 'primeng/inputtext';
             type="button"
           />
           <p-button
-            [disabled]="confirmationInput !== confirmationPhrase()"
             [label]="confirmButtonText()"
             [severity]="confirmButtonSeverity()"
+            [disabled]="confirmationInput !== confirmationPhrase()"
             (onClick)="onConfirm()"
             type="button"
           />

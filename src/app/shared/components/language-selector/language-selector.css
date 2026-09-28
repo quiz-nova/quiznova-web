@@ -1,0 +1,22 @@
+:host {
+  display: inline-block;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.lang-option__icon {
+  color: var(--clr-green-400);
+  font-size: 0.95rem;
+}
+
+.lang-option__code {
+  margin-inline-start: auto;
+  color: var(--clr-gray-500);
+  font-size: 0.75rem;
+  font-weight: 600;
+}

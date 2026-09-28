@@ -1,0 +1,9 @@
+# GitHub Configuration
+github_token    = "your-github-personal-access-token"
+github_owner    = "quiz-nova"
+repository_name = "quiznova-web"
+custom_domain   = "quiznova.dev"
+
+# Name.com DNS Configuration
+namedotcom_username = "your-namedotcom-username"
+namedotcom_token    = "your-namedotcom-api-token"

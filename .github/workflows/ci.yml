@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    name: Frontend Build, Test & Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint TypeScript & Templates
+        run: npm run lint
+
+      - name: Check Formatting
+        run: npm run format:check
+
+      - name: Lint CSS
+        run: npm run lint:css
+
+      - name: Build
+        run: npm run build
+
+      - name: Test with Coverage
+        run: npm run test:coverage
+
+      - name: Generate Coverage Report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
+        if: always()
+        with:
+          reports: "coverage/lcov.info"
+          targetdir: "coverage/Report"
+          reporttypes: "MarkdownSummaryGithub"
+          title: "Frontend Coverage"
+
+      - name: Publish Coverage to GitHub Step Summary
+        if: always()
+        run: |
+          REPORT="coverage/Report/SummaryGithub.md"
+          if [ -f "$REPORT" ]; then
+            cat "$REPORT" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/lcov.info
+          flags: frontend
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false

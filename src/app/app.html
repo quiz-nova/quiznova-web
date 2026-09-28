@@ -1,2 +1,14 @@
 <p-toast />
 <router-outlet></router-outlet>
+
+@if (!isProduction) {
+<div style="position: fixed; bottom: 1rem; right: 1rem; z-index: 9999">
+  <p-button
+    label="Test Sentry"
+    icon="pi pi-bolt"
+    severity="danger"
+    size="small"
+    (onClick)="throwTestError()"
+  />
+</div>
+}

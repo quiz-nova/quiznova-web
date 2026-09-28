@@ -32,8 +32,7 @@ export default defineConfig({
   ...(!process.env['CI']
     ? {
         webServer: {
-          command:
-            'bash -c "trap \\"docker compose --project-directory ../../ down -v\\" EXIT; docker compose --project-directory ../../ up --build --abort-on-container-exit db api client"',
+          command: 'npm start',
           url: 'http://localhost:4200',
           reuseExistingServer: true,
           timeout: 120 * 1000,

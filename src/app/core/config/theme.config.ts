@@ -1,33 +1,7 @@
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import {
-  APP_INITIALIZER,
-  ApplicationConfig,
-  ErrorHandler,
-  inject,
-  provideAppInitializer,
-  provideBrowserGlobalErrorListeners,
-} from '@angular/core';
-import {
-  provideRouter,
-  Router,
-  withComponentInputBinding,
-  withViewTransitions,
-} from '@angular/router';
-
-import { APP_SETTINGS, appSettings, validateSettings } from '@Core/config/app.settings';
-import { authInterceptor } from '@Core/interceptors/auth.interceptor';
-import { LanguageService } from '@Core/services/language.service';
-import { provideTranslateService } from '@ngx-translate/core';
-import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
-import * as Sentry from '@sentry/angular';
-import { MessageService } from 'primeng/api';
-import { providePrimeNG } from 'primeng/config';
 
-import { routes } from './app.routes';
-
-const QuizNovaPreset = definePreset(Aura, {
+export const QuizNovaPreset = definePreset(Aura, {
   primitive: {
     fontFamily: "'Inter', sans-serif",
     borderRadius: {
@@ -106,48 +80,3 @@ const QuizNovaPreset = definePreset(Aura, {
     },
   },
 });
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    providePrimeNG({
-      theme: {
-        preset: QuizNovaPreset,
-        options: {
-          darkModeSelector: false,
-          cssLayer: false,
-        },
-      },
-    }),
-    MessageService,
-    {
-      provide: APP_SETTINGS,
-      useValue: appSettings,
-    },
-    provideAppInitializer(() => validateSettings(appSettings)),
-    provideAppInitializer(() => inject(LanguageService).initLanguage()),
-    provideTranslateService({
-      lang: 'en',
-      loader: provideTranslateHttpLoader({
-        prefix: './assets/i18n/',
-        suffix: '.json',
-      }),
-    }),
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
-  ],
-};

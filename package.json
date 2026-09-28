@@ -1,6 +1,6 @@
 {
-  "name": "test",
-  "version": "0.0.0",
+  "name": "quiznova-web",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",
@@ -46,6 +46,7 @@
     "@ngx-translate/core": "^18.0.0",
     "@ngx-translate/http-loader": "^18.0.0",
     "@primeuix/themes": "^2.0.3",
+    "@sentry/angular": "^11.0.0",
     "chart.js": "^4.4.8",
     "emoji-picker-element": "^1.29.1",
     "js-cookie": "^3.0.8",

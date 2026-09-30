@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate Coverage Report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
-        if: always()
+        if: always() && hashFiles('coverage/lcov.info') != ''
         with:
           reports: "coverage/lcov.info"
           targetdir: "coverage/Report"
@@ -48,7 +48,7 @@ jobs:
           title: "Frontend Coverage"
 
       - name: Publish Coverage to GitHub Step Summary
-        if: always()
+        if: always() && hashFiles('coverage/Report/SummaryGithub.md') != ''
         run: |
           REPORT="coverage/Report/SummaryGithub.md"
           if [ -f "$REPORT" ]; then
@@ -57,6 +57,7 @@ jobs:
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v5
+        if: hashFiles('coverage/lcov.info') != ''
         with:
           files: coverage/lcov.info
           flags: frontend

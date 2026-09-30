@@ -3,7 +3,10 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ],
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -84,7 +87,8 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "setupFiles": ["./test-setup.ts"]
+            "setupFiles": ["./test-setup.ts"],
+            "coverageReporters": ["text", "json-summary", "lcov", "html"]
           }
         },
         "lint": {

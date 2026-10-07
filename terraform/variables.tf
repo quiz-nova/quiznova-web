@@ -35,3 +35,9 @@ variable "namedotcom_token" {
   sensitive   = true
   default     = null
 }
+
+variable "azure_subscription_id" {
+  type        = string
+  description = "The Azure subscription ID"
+  default     = "83ab56f5-88ee-436d-87a5-994d3185bf00"
+}

@@ -1,8 +1,19 @@
-name: Deploy to GitHub Pages
+name: Deploy Web Client
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "develop", "staging"]
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Target environment to deploy to"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
 
 permissions:
   contents: write
@@ -10,6 +21,8 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || (github.ref == 'refs/heads/main' && 'production' || (github.ref == 'refs/heads/staging' && 'staging' || 'development')) }}
 
     steps:
       - name: Checkout Repository
@@ -25,13 +38,21 @@ jobs:
         run: npm ci
 
       - name: Build Angular Client
-        run: npm run build -- --base-href /
+        run: |
+          TARGET="${{ github.event_name == 'workflow_dispatch' && inputs.target_env || (github.ref == 'refs/heads/main' && 'production' || (github.ref == 'refs/heads/staging' && 'staging' || 'development')) }}"
+          if [ "$TARGET" == "production" ]; then
+            npm run build -- --base-href /
+          elif [ "$TARGET" == "staging" ]; then
+            npm run build:staging -- --base-href /
+          else
+            npm run build:dev -- --base-href /
+          fi
 
       - name: SPA Routing Fix (Create 404.html)
-        run: cp dist/quiz-nova-client/browser/index.html dist/quiz-nova-client/browser/404.html
+        run: cp dist/quiznova-web/browser/index.html dist/quiznova-web/browser/404.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/quiz-nova-client/browser
+          folder: dist/quiznova-web/browser
           branch: gh-pages

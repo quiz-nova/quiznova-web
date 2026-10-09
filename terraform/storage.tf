@@ -1,7 +1,12 @@
+data "azurerm_storage_account" "state" {
+  name                = "stquiznova"
+  resource_group_name = "quiznova-rg"
+}
+
 # Dedicated blob container for quiznova-web Terraform state
 resource "azurerm_storage_container" "web_tfstate" {
   name                  = "quiznova-web-tfstate"
-  storage_account_name  = "stquiznova"
+  storage_account_id    = data.azurerm_storage_account.state.id
   container_access_type = "private"
 
   lifecycle {

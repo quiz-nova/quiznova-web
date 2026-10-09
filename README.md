@@ -2,23 +2,29 @@
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-quiznova.dev-00b4d8?style=for-the-badge&logo=googlechrome&logoColor=white)](https://quiznova.dev)
 
-> **Live Application:** [https://quiznova.dev](https://quiznova.dev) *(GitHub Pages: [https://moamenelbarqy.github.io/quiz-nova/](https://moamenelbarqy.github.io/quiz-nova/))*
+> **Live Application:** [https://quiznova.dev](https://quiznova.dev) _(GitHub
+> Pages:
+> [https://moamenelbarqy.github.io/quiz-nova/](https://moamenelbarqy.github.io/quiz-nova/))_
 
-The modern, responsive web application for the **QuizNova** platform, built with **Angular 21**, **PrimeNG**, and **Vite**.
+The modern, responsive web application for the **QuizNova** platform, built with
+**Angular 21**, **PrimeNG**, and **Vite**.
 
 ---
 
 ## Tech Stack
 
-* **Framework:** Angular 21 (Standalone Components, Signals, Reactive Forms, Control Flow)
-* **State Management:** `@ngrx/signals`
-* **UI Components & Styling:** PrimeNG 21, PrimeIcons, CSS Logical Properties (LTR / RTL support)
-* **Real-time Communication:** `@microsoft/signalr`
-* **Internationalization:** `@ngx-translate/core`
-* **Unit Testing:** Vitest & `@testing-library/angular` with V8 Code Coverage
-* **E2E & Accessibility Testing:** Playwright & `@axe-core/playwright`
-* **Linting & Formatting:** ESLint (angular-eslint), Stylelint, Prettier, Husky + lint-staged
-* **Containerization & Hosting:** Docker, Nginx, GitHub Pages
+- **Framework:** Angular 21 (Standalone Components, Signals, Reactive Forms,
+  Control Flow)
+- **State Management:** `@ngrx/signals`
+- **UI Components & Styling:** PrimeNG 21, PrimeIcons, CSS Logical Properties
+  (LTR / RTL support)
+- **Real-time Communication:** `@microsoft/signalr`
+- **Internationalization:** `@ngx-translate/core`
+- **Unit Testing:** Vitest & `@testing-library/angular` with V8 Code Coverage
+- **E2E & Accessibility Testing:** Playwright & `@axe-core/playwright`
+- **Linting & Formatting:** ESLint (angular-eslint), Stylelint, Prettier,
+  Husky + lint-staged
+- **Containerization & Hosting:** Docker, Nginx, GitHub Pages
 
 ---
 
@@ -54,8 +60,8 @@ quiznova-web/
 
 ### Prerequisites
 
-* **Node.js**: `v22.x` or later
-* **npm**: `v10.x` or later
+- **Node.js**: `v22.x` or later
+- **npm**: `v10.x` or later
 
 ### Installation
 
@@ -71,26 +77,26 @@ Run the development server with proxying enabled:
 npm start
 ```
 
-Navigate to `http://localhost:4200/`. The app will automatically reload when you modify any source files.
-API requests to `/api/*` and WebSocket connections to `/chat` will be proxied to the backend at `http://localhost:8080` (configured in `proxy.conf.json`).
+Navigate to `http://localhost:4200/`. The app will automatically reload when you
+modify any source files. API requests to `/api/*` and WebSocket connections to
+`/chat` will be proxied to the backend at `http://localhost:8080` (configured in
+`proxy.conf.json`).
 
 ---
 
 ## Scripts & Quality Checks
 
-| Command | Description |
-| :--- | :--- |
-| `npm start` | Runs the Angular development server on `http://localhost:4200` |
-| `npm run build` | Compiles the production build into `dist/quiz-nova-client/browser` |
-| `npm run test` | Runs unit tests using Vitest |
-| `npm run test:coverage` | Runs unit tests and outputs code coverage report |
-| `npm run test:e2e` | Runs end-to-end tests with Playwright (Chromium) |
-| `npm run test:a11y` | Runs automated accessibility audits with Playwright & Axe-Core |
-| `npm run lint` | Runs ESLint on TypeScript and HTML templates |
-| `npm run lint:fix` | Automatically fixes autofixable ESLint errors |
-| `npm run lint:css` | Lints stylesheets with Stylelint |
-| `npm run format:check` | Checks code formatting with Prettier |
-| `npm run format` | Formats all files with Prettier |
+- `npm start`: Runs dev server on `http://localhost:4200`
+- `npm run build`: Compiles production build to `dist/quiznova-web/browser`
+- `npm run test`: Runs unit tests using Vitest
+- `npm run test:coverage`: Runs unit tests with code coverage report
+- `npm run test:e2e`: Runs E2E tests with Playwright (Chromium)
+- `npm run test:a11y`: Runs automated accessibility audits with Axe-Core
+- `npm run lint`: Runs ESLint on TypeScript and HTML templates
+- `npm run lint:fix`: Fixes autofixable ESLint errors
+- `npm run lint:css`: Lints stylesheets with Stylelint
+- `npm run format:check`: Checks code formatting with Prettier
+- `npm run format`: Formats all files with Prettier
 
 ---
 
@@ -115,7 +121,8 @@ docker run -d -p 4200:4200 quiznova-web:latest
 
 ## Infrastructure as Code (Terraform)
 
-The `terraform/` directory manages GitHub Pages and domain binding (`quiznova.dev`):
+The `terraform/` directory manages GitHub Pages and domain binding
+(`quiznova.dev`):
 
 ```bash
 cd terraform
@@ -130,5 +137,5 @@ terraform apply
 
 ## Related Repositories
 
-* **Backend API:** [quiznova-api](https://github.com/quiz-nova/quiznova-api) (.NET 10 Clean Architecture API)
-
+- **Backend API:** [quiznova-api](https://github.com/quiz-nova/quiznova-api)
+  (.NET 10 Clean Architecture API)

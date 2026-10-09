@@ -39,3 +39,20 @@ resource "namedotcom_record" "www" {
   record_type = "CNAME"
   answer      = "${var.github_owner}.github.io."
 }
+
+# CNAME record for dev subdomain
+resource "namedotcom_record" "dev" {
+  domain_name = var.custom_domain
+  host        = "dev"
+  record_type = "CNAME"
+  answer      = "${var.github_owner}.github.io."
+}
+
+# CNAME record for staging subdomain
+resource "namedotcom_record" "staging" {
+  domain_name = var.custom_domain
+  host        = "staging"
+  record_type = "CNAME"
+  answer      = "${var.github_owner}.github.io."
+}
+

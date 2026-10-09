@@ -1,0 +1,113 @@
+name: Deploy Preview Web (Azure Container Apps)
+
+on:
+  push:
+    branches: ["develop", "staging"]
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Target environment to deploy to"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - staging
+
+jobs:
+  build-and-push:
+    name: Build & Push Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+      deploy_env: ${{ steps.env_calc.outputs.deploy_env }}
+      angular_config: ${{ steps.env_calc.outputs.angular_config }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Calculate Target Environment
+        id: env_calc
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            ENV="${{ inputs.target_env }}"
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            ENV="staging"
+          else
+            ENV="development"
+          fi
+          echo "deploy_env=$ENV" >> $GITHUB_OUTPUT
+          if [ "$ENV" == "staging" ]; then
+            echo "angular_config=staging" >> $GITHUB_OUTPUT
+          else
+            echo "angular_config=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Downcase Repo Name
+        run: echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Set Tag Output
+        id: meta
+        run: echo "tag=${{ steps.env_calc.outputs.deploy_env }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          build-args: |
+            CONFIGURATION=${{ steps.env_calc.outputs.angular_config }}
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.env_calc.outputs.deploy_env }}-latest
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.env_calc.outputs.deploy_env }}-${{ github.sha }}
+
+  deploy:
+    name: Deploy to Container Apps
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.build-and-push.outputs.deploy_env }}
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Set Environment Variables
+        run: |
+          ENV_NAME="${{ needs.build-and-push.outputs.deploy_env }}"
+          if [ "$ENV_NAME" == "staging" ]; then
+            echo "CONTAINER_APP_NAME=quiznova-web-stg" >> $GITHUB_ENV
+          else
+            echo "CONTAINER_APP_NAME=quiznova-web-dev" >> $GITHUB_ENV
+          fi
+
+      - name: Downcase Repo Name
+        run: echo "IMAGE_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Log in to Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ env.CONTAINER_APP_NAME }}
+          resourceGroup: quiznova-rg
+          imageToDeploy: ghcr.io/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
+          acrRegistry: ghcr.io
+          acrUsername: ${{ github.actor }}
+          acrPassword: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,7 @@
 export const environment = {
   appName: 'QuizNova (Staging)',
   isProduction: false,
-  apiUrl: 'https://staging-api.quiznova.dev/',
+  apiUrl: 'https://quiznova-api-stg.icymeadow-759f73fb.swedencentral.azurecontainerapps.io/',
   enableDevTools: true,
   defaultPageSize: 10,
   debounceTimeMs: 300,

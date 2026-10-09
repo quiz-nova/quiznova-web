@@ -1,28 +1,19 @@
-name: Deploy Web Client
+name: Deploy Production Web (GitHub Pages)
 
 on:
   push:
-    branches: ["main", "develop", "staging"]
+    branches: ["main"]
   workflow_dispatch:
-    inputs:
-      target_env:
-        description: "Target environment to deploy to"
-        required: true
-        default: "development"
-        type: choice
-        options:
-          - development
-          - staging
-          - production
 
 permissions:
   contents: write
 
 jobs:
   deploy:
+    name: Deploy to GitHub Pages (Production)
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event_name == 'workflow_dispatch' && inputs.target_env || (github.ref == 'refs/heads/main' && 'production' || (github.ref == 'refs/heads/staging' && 'staging' || 'development')) }}
+      name: production
 
     steps:
       - name: Checkout Repository
@@ -37,16 +28,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Angular Client
-        run: |
-          TARGET="${{ github.event_name == 'workflow_dispatch' && inputs.target_env || (github.ref == 'refs/heads/main' && 'production' || (github.ref == 'refs/heads/staging' && 'staging' || 'development')) }}"
-          if [ "$TARGET" == "production" ]; then
-            npm run build -- --base-href /
-          elif [ "$TARGET" == "staging" ]; then
-            npm run build:staging -- --base-href /
-          else
-            npm run build:dev -- --base-href /
-          fi
+      - name: Build Angular Client (Production)
+        run: npm run build -- --base-href /
 
       - name: SPA Routing Fix (Create 404.html)
         run: cp dist/quiznova-web/browser/index.html dist/quiznova-web/browser/404.html
@@ -56,3 +39,4 @@ jobs:
         with:
           folder: dist/quiznova-web/browser
           branch: gh-pages
+

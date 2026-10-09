@@ -1,6 +1,6 @@
 data "azurerm_storage_account" "state" {
-  name                = "stquiznova"
-  resource_group_name = "quiznova-rg"
+  name                = var.storage_account_name
+  resource_group_name = var.resource_group_name
 }
 
 # Dedicated blob container for quiznova-web Terraform state

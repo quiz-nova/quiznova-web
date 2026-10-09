@@ -14,6 +14,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.0"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 2.47"
+    }
     github = {
       source  = "integrations/github"
       version = "~> 6.0"
@@ -30,6 +34,8 @@ provider "azurerm" {
   resource_provider_registrations = "none"
   features {}
 }
+
+provider "azuread" {}
 
 provider "github" {
   token = var.github_token

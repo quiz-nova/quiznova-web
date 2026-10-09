@@ -41,3 +41,45 @@ variable "azure_subscription_id" {
   description = "The Azure subscription ID"
   default     = "83ab56f5-88ee-436d-87a5-994d3185bf00"
 }
+
+variable "resource_group_name" {
+  type        = string
+  description = "The name of the Azure resource group"
+  default     = "quiznova-rg"
+}
+
+variable "storage_account_name" {
+  type        = string
+  description = "The name of the platform storage account"
+  default     = "stquiznova"
+}
+
+variable "container_cpu" {
+  type        = number
+  description = "CPU core allocation for the frontend container apps"
+  default     = 0.25
+}
+
+variable "container_memory" {
+  type        = string
+  description = "Memory allocation for the frontend container apps"
+  default     = "0.5Gi"
+}
+
+variable "container_image" {
+  type        = string
+  description = "Default initial container image for the frontend container apps"
+  default     = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+}
+
+variable "min_replicas" {
+  type        = number
+  description = "Minimum replicas for preview container apps (0 enables scale-to-zero at $0 idle cost)"
+  default     = 0
+}
+
+variable "max_replicas" {
+  type        = number
+  description = "Maximum replicas for preview container apps"
+  default     = 2
+}

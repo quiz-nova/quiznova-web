@@ -1,7 +1,7 @@
 export const environment = {
   appName: 'QuizNova',
   isProduction: false,
-  apiUrl: 'http://localhost:8080/',
+  apiUrl: 'https://quiznova-api-dev.graytree-4fe2efb9.swedencentral.azurecontainerapps.io/',
   enableDevTools: true,
   defaultPageSize: 10,
   debounceTimeMs: 300,

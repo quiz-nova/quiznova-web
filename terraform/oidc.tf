@@ -12,13 +12,18 @@ resource "azuread_service_principal" "web_dev" {
   client_id = azuread_application.web_dev.client_id
 }
 
+locals {
+  # GitHub Actions immutable subject format: repo:<OWNER>@<OWNER-ID>/<REPO>@<REPO-ID>
+  github_repo_subject = "repo:${var.github_owner}@${var.github_owner_id}/${var.repository_name}@${var.github_repository_id}"
+}
+
 resource "azuread_application_federated_identity_credential" "web_dev_env" {
   application_id = azuread_application.web_dev.id
   display_name   = "github-actions-quiznova-web-dev-env"
   description    = "Federated credential for QuizNova Web development environment"
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_owner}/${var.repository_name}:environment:development"
+  subject        = "${local.github_repo_subject}:environment:development"
 }
 
 resource "azuread_application_federated_identity_credential" "web_dev_branch" {
@@ -27,7 +32,16 @@ resource "azuread_application_federated_identity_credential" "web_dev_branch" {
   description    = "Federated credential for QuizNova Web develop branch"
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_owner}/${var.repository_name}:ref:refs/heads/develop"
+  subject        = "${local.github_repo_subject}:ref:refs/heads/develop"
+}
+
+resource "azuread_application_federated_identity_credential" "web_dev_main" {
+  application_id = azuread_application.web_dev.id
+  display_name   = "github-actions-quiznova-web-dev-main"
+  description    = "Federated credential for QuizNova Web main branch manual dispatch"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "${local.github_repo_subject}:ref:refs/heads/main"
 }
 
 resource "azurerm_role_assignment" "web_dev_contributor" {
@@ -75,7 +89,7 @@ resource "azuread_application_federated_identity_credential" "web_stg_env" {
   description    = "Federated credential for QuizNova Web staging environment"
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_owner}/${var.repository_name}:environment:staging"
+  subject        = "${local.github_repo_subject}:environment:staging"
 }
 
 resource "azuread_application_federated_identity_credential" "web_stg_branch" {
@@ -84,7 +98,16 @@ resource "azuread_application_federated_identity_credential" "web_stg_branch" {
   description    = "Federated credential for QuizNova Web staging branch"
   audiences      = ["api://AzureADTokenExchange"]
   issuer         = "https://token.actions.githubusercontent.com"
-  subject        = "repo:${var.github_owner}/${var.repository_name}:ref:refs/heads/staging"
+  subject        = "${local.github_repo_subject}:ref:refs/heads/staging"
+}
+
+resource "azuread_application_federated_identity_credential" "web_stg_main" {
+  application_id = azuread_application.web_stg.id
+  display_name   = "github-actions-quiznova-web-stg-main"
+  description    = "Federated credential for QuizNova Web main branch manual dispatch"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "${local.github_repo_subject}:ref:refs/heads/main"
 }
 
 resource "azurerm_role_assignment" "web_stg_contributor" {

@@ -17,6 +17,18 @@ variable "repository_name" {
   default     = "quiznova-web"
 }
 
+variable "github_owner_id" {
+  type        = string
+  description = "GitHub organization numeric ID for immutable OIDC subject claims"
+  default     = "325215040"
+}
+
+variable "github_repository_id" {
+  type        = string
+  description = "GitHub repository numeric ID for immutable OIDC subject claims"
+  default     = "1392648820"
+}
+
 variable "custom_domain" {
   type        = string
   description = "Custom domain for GitHub Pages and DNS records"

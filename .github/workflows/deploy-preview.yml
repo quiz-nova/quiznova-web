@@ -108,6 +108,6 @@ jobs:
           containerAppName: ${{ env.CONTAINER_APP_NAME }}
           resourceGroup: quiznova-rg
           imageToDeploy: ghcr.io/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
-          acrRegistry: ghcr.io
-          acrUsername: ${{ github.actor }}
-          acrPassword: ${{ secrets.GITHUB_TOKEN }}
+          registryUrl: ghcr.io
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}

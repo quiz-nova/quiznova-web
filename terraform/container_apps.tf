@@ -12,6 +12,26 @@ data "azurerm_container_app_environment" "env_stg" {
   resource_group_name = var.resource_group_name
 }
 
+data "azurerm_key_vault" "kv_dev" {
+  name                = "quiznova-kv-dev"
+  resource_group_name = var.resource_group_name
+}
+
+data "azurerm_key_vault_secret" "ghcr_token_dev" {
+  name         = "ghcr-token"
+  key_vault_id = data.azurerm_key_vault.kv_dev.id
+}
+
+data "azurerm_key_vault" "kv_stg" {
+  name                = "quiznova-kv-stg"
+  resource_group_name = var.resource_group_name
+}
+
+data "azurerm_key_vault_secret" "ghcr_token_stg" {
+  name         = "ghcr-token"
+  key_vault_id = data.azurerm_key_vault.kv_stg.id
+}
+
 # ==============================================================================
 # Development Web Client Container App (Scale to 0 = $0 Cost)
 # ==============================================================================
@@ -21,6 +41,17 @@ resource "azurerm_container_app" "web_dev" {
   container_app_environment_id = data.azurerm_container_app_environment.env_dev.id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
+
+  secret {
+    name  = "ghcr-token"
+    value = data.azurerm_key_vault_secret.ghcr_token_dev.value
+  }
+
+  registry {
+    server               = "ghcr.io"
+    username             = var.github_owner
+    password_secret_name = "ghcr-token"
+  }
 
   ingress {
     external_enabled = true
@@ -66,8 +97,7 @@ resource "azurerm_container_app" "web_dev" {
       template[0].container[0].image,
       template[0].container[0].liveness_probe,
       template[0].container[0].readiness_probe,
-      ingress[0].traffic_weight,
-      registry
+      ingress[0].traffic_weight
     ]
   }
 }
@@ -82,6 +112,17 @@ resource "azurerm_container_app" "web_stg" {
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
 
+  secret {
+    name  = "ghcr-token"
+    value = data.azurerm_key_vault_secret.ghcr_token_stg.value
+  }
+
+  registry {
+    server               = "ghcr.io"
+    username             = var.github_owner
+    password_secret_name = "ghcr-token"
+  }
+
   ingress {
     external_enabled = true
     target_port      = 80
@@ -126,8 +167,7 @@ resource "azurerm_container_app" "web_stg" {
       template[0].container[0].image,
       template[0].container[0].liveness_probe,
       template[0].container[0].readiness_probe,
-      ingress[0].traffic_weight,
-      registry
+      ingress[0].traffic_weight
     ]
   }
 }

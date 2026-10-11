@@ -1,23 +1,29 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 
-import * as Sentry from '@sentry/angular';
+import { datadogRum } from '@datadog/browser-rum';
 
 import { App } from './app/app';
 import { appConfig } from './app/app.config';
+import { environment } from './environments/environment';
 
-Sentry.init({
-  dsn: 'https://cac32201850ee1f01c12f5a2599679ff@o4512163593453568.ingest.de.sentry.io/4512163623731280',
-  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
-  // Tracing
-  tracesSampleRate: 1.0, // Capture 100% of traces. Adjust this value in production.
-  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: [
-    'localhost',
-    /^https:\/\/quiznova-api\.purpleforest-454b82e9\.swedencentral\.azurecontainerapps\.io/,
+datadogRum.init({
+  applicationId: '1cc68f18-4ca4-4e61-97e8-a2a339475abc',
+  clientToken: 'pub8a57176ddc46d9e85b17a627ba11d3dd',
+  site: 'us5.datadoghq.com',
+  service: 'quiznova-web',
+  env: environment.isProduction ? 'prd' : 'dev',
+  version: '1.0.0',
+  sessionSampleRate: 100,
+  sessionReplaySampleRate: 20,
+  trackUserInteractions: true,
+  trackResources: true,
+  trackLongTasks: true,
+  defaultPrivacyLevel: 'mask-user-input',
+  allowedTracingUrls: [
+    'http://localhost:8080',
+    (url: string) => url.includes('.azurecontainerapps.io'),
+    (url: string) => url.includes('quiznova'),
   ],
-  // Session Replay
-  replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
 });
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));

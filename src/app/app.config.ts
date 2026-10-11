@@ -1,18 +1,11 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
-  APP_INITIALIZER,
   ApplicationConfig,
-  ErrorHandler,
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import {
-  provideRouter,
-  Router,
-  withComponentInputBinding,
-  withViewTransitions,
-} from '@angular/router';
+import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
 
 import { APP_SETTINGS, appSettings, validateSettings } from '@Core/config/app.settings';
 import { authInterceptor } from '@Core/interceptors/auth.interceptor';
@@ -21,7 +14,6 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
-import * as Sentry from '@sentry/angular';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 
@@ -135,19 +127,5 @@ export const appConfig: ApplicationConfig = {
         suffix: '.json',
       }),
     }),
-    {
-      provide: ErrorHandler,
-      useValue: Sentry.createErrorHandler(),
-    },
-    {
-      provide: Sentry.TraceService,
-      deps: [Router],
-    },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => () => {},
-      deps: [Sentry.TraceService],
-      multi: true,
-    },
   ],
 };

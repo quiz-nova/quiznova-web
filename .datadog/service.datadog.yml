@@ -1,0 +1,25 @@
+schema-version: v2.2
+dd-service: quiznova-web
+application: quiznova
+tier: frontend
+type: web
+lifecycle: production
+description: QuizNova SPA (Angular 21, PrimeNG, Datadog RUM)
+languages:
+  - typescript
+  - html
+  - css
+contacts:
+  - type: email
+    contact: moamen.elbarky@gmail.com
+links:
+  - name: GitHub Repository
+    type: repo
+    url: https://github.com/quiz-nova/quiznova-web
+  - name: Production Website
+    type: app
+    url: https://quiznova.dev
+tags:
+  - env:prd
+  - project:quiznova
+  - framework:angular

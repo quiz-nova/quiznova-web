@@ -95,3 +95,20 @@ variable "max_replicas" {
   description = "Maximum replicas for preview container apps"
   default     = 2
 }
+
+# ==============================================================================
+# Metadata & Governance Tags
+# ==============================================================================
+
+variable "common_tags" {
+  type        = map(string)
+  description = "Baseline metadata tags applied to all web cloud resources"
+  default = {
+    Project    = "quiznova"
+    Service    = "quiznova-web"
+    Tier       = "frontend"
+    ManagedBy  = "terraform"
+    Repository = "quiznova-web"
+    Owner      = "moamenelbarky"
+  }
+}

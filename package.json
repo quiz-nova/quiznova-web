@@ -1,6 +1,24 @@
 {
   "name": "quiznova-web",
   "version": "1.0.0",
+  "description": "QuizNova Single Page Application built with Angular 21 and PrimeNG",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quiz-nova/quiznova-web.git"
+  },
+  "homepage": "https://quiznova.dev",
+  "bugs": {
+    "url": "https://github.com/quiz-nova/quiznova-web/issues"
+  },
+  "keywords": [
+    "quiznova",
+    "angular",
+    "primeng",
+    "examination-platform",
+    "datadog-rum"
+  ],
+  "author": "Moamen Elbarky <moamen.elbarky@gmail.com>",
+  "license": "UNLICENSED",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200",

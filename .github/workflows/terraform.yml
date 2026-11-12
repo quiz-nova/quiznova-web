@@ -37,7 +37,7 @@ jobs:
         working-directory: terraform
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -61,7 +61,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Checkov IaC Scan
         uses: bridgecrewio/checkov-action@master
@@ -94,7 +94,7 @@ jobs:
         working-directory: terraform
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Log in to Azure (OIDC)
         uses: azure/login@v2
@@ -149,7 +149,7 @@ jobs:
         working-directory: terraform
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Log in to Azure (OIDC)
         uses: azure/login@v2

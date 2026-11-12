@@ -67,7 +67,7 @@
     "@ngx-translate/core": "^18.0.0",
     "@ngx-translate/http-loader": "^18.0.0",
     "@primeuix/themes": "^2.0.3",
-    "chart.js": "^4.4.8",
+    "chart.js": "^4.6.1",
     "emoji-picker-element": "^1.29.1",
     "js-cookie": "^3.0.8",
     "primeicons": "^7.0.0",

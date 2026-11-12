@@ -16,6 +16,13 @@ RUN npx ng build --configuration ${CONFIGURATION}
 # Stage 2: Serve with Nginx Alpine
 FROM nginx:alpine
 
+LABEL org.opencontainers.image.title="quiznova-web" \
+  org.opencontainers.image.description="QuizNova Single Page Application" \
+  org.opencontainers.image.url="https://quiznova.dev" \
+  org.opencontainers.image.source="https://github.com/quiz-nova/quiznova-web" \
+  org.opencontainers.image.vendor="QuizNova" \
+  org.opencontainers.image.licenses="All rights reserved"
+
 # Replace default Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

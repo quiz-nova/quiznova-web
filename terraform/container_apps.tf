@@ -42,6 +42,11 @@ resource "azurerm_container_app" "web_dev" {
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
 
+  tags = merge(var.common_tags, {
+    Environment = "dev"
+    Component   = "web"
+  })
+
   secret {
     name  = "ghcr-token"
     value = data.azurerm_key_vault_secret.ghcr_token_dev.value
@@ -111,6 +116,11 @@ resource "azurerm_container_app" "web_stg" {
   container_app_environment_id = data.azurerm_container_app_environment.env_stg.id
   resource_group_name          = var.resource_group_name
   revision_mode                = "Single"
+
+  tags = merge(var.common_tags, {
+    Environment = "stg"
+    Component   = "web"
+  })
 
   secret {
     name  = "ghcr-token"

@@ -3,12 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        CONFIGURATION: development
     container_name: quiznova-web
     restart: unless-stopped
     ports:
-      - '4200:4200'
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      NODE_ENV: development
+      - '4200:80'

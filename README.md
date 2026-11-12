@@ -2,29 +2,81 @@
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-quiznova.dev-00b4d8?style=for-the-badge&logo=googlechrome&logoColor=white)](https://quiznova.dev)
 
-> **Live Application:** [https://quiznova.dev](https://quiznova.dev) _(GitHub
-> Pages:
-> [https://moamenelbarqy.github.io/quiz-nova/](https://moamenelbarqy.github.io/quiz-nova/))_
+**Live Application:** [quiznova.dev](https://quiznova.dev) _(Fallback mirror:
+[GitHub Pages](https://moamenelbarqy.github.io/quiz-nova/))_
 
-The modern, responsive web application for the **QuizNova** platform, built with
-**Angular 21**, **PrimeNG**, and **Vite**.
+Frontend Single Page Application (SPA) for the **QuizNova** assessment platform,
+built by [Moamen Elbarky](https://github.com/moamenelbarky) with **Angular 21**,
+**PrimeNG**, and **NgRx Signals**.
+
+> [!NOTE] **Live Demo & Cold-Start Notice:** This application is hosted for
+> demonstration and learning purposes. While the frontend is served statically,
+> the backend API runs on Azure Container Apps with **scale-to-zero** enabled,
+> so the initial request after inactivity may take **10–15 seconds** to
+> cold-start. Live demo availability is also subject to monthly free-tier cloud
+> credit quotas.
 
 ---
 
 ## Tech Stack
 
-- **Framework:** Angular 21 (Standalone Components, Signals, Reactive Forms,
-  Control Flow)
-- **State Management:** `@ngrx/signals`
-- **UI Components & Styling:** PrimeNG 21, PrimeIcons, CSS Logical Properties
-  (LTR / RTL support)
-- **Real-time Communication:** `@microsoft/signalr`
-- **Internationalization:** `@ngx-translate/core`
-- **Unit Testing:** Vitest & `@testing-library/angular` with V8 Code Coverage
-- **E2E & Accessibility Testing:** Playwright & `@axe-core/playwright`
-- **Linting & Formatting:** ESLint (angular-eslint), Stylelint, Prettier,
-  Husky + lint-staged
-- **Containerization & Hosting:** Docker, Nginx, GitHub Pages
+- **Framework:** Angular 21 (Standalone Components, Signals, Reactive Forms)
+- **State Management:** `@ngrx/signals` with custom store features
+  (`withRequestStatus`)
+- **UI & Styling:** PrimeNG 21, PrimeIcons, CSS Logical Properties (LTR / RTL
+  support)
+- **Real-Time Communication:** `@microsoft/signalr` (Course Chat)
+- **Internationalization:** `@ngx-translate/core` (`public/assets/i18n/`)
+- **Observability:** Datadog Browser RUM (`@datadog/browser-rum`)
+- **Testing:** Vitest & `@testing-library/angular` (unit), Playwright &
+  `@axe-core/playwright` (E2E & accessibility)
+- **Containerization & Hosting:** Docker, Nginx, GitHub Pages (Production),
+  Azure Container Apps (Dev & Staging Previews)
+
+---
+
+## Architecture Overview
+
+### Frontend Component & State Flow
+
+```mermaid
+flowchart TD
+    subgraph UI["Presentation Layer (Angular 21 + PrimeNG)"]
+        Features["Feature Pages (Student, Instructor, Admin, Auth, Chat)"]
+        Shared["Shared UI Components"]
+    end
+
+    subgraph State["State Layer (@ngrx/signals)"]
+        Stores["Signal Stores (QuizAttempt, CreateQuiz, CourseChat, ManageCourse)"]
+        Status["Custom Store Features (withRequestStatus)"]
+    end
+
+    subgraph Core["Core Services & Interceptors"]
+        Auth["AuthService & AuthInterceptor (JWT + Silent Refresh)"]
+        I18n["LanguageService (LTR / RTL)"]
+        RUM["Datadog Browser RUM"]
+    end
+
+    UI --> State
+    UI --> Core
+    State --> Core
+    Auth -->|HTTPS / SignalR| API["quiznova-api (.NET 10 Backend)"]
+```
+
+### Multi-Stage Docker Build & Nginx Runtime
+
+```mermaid
+flowchart LR
+    subgraph Build["Stage 1: Build (node:24-alpine)"]
+        B1["npm ci"] --> B2["ng build --configuration=${CONFIGURATION}"]
+    end
+
+    subgraph Runtime["Stage 2: Runtime (nginx:alpine)"]
+        R1["Copy dist/quiznova-web/browser"] --> R2["Expose Port 80 (nginx.conf)"]
+    end
+
+    B2 -->|Static Bundle| R1
+```
 
 ---
 
@@ -34,24 +86,24 @@ The modern, responsive web application for the **QuizNova** platform, built with
 quiznova-web/
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml                 # Build, Lint, Test & Coverage Quality Gates
-│       └── deploy-gh-pages.yml    # Continuous Deployment to GitHub Pages
+│       ├── ci.yml                 # Lint, Unit Test, Coverage & Build Gates
+│       ├── deploy-gh-pages.yml    # Production Deployment to GitHub Pages
+│       └── deploy-preview.yml     # Dev & Staging Deployment to Azure Container Apps
 ├── e2e/                           # Playwright E2E and Accessibility tests
-├── nginx/                         # Nginx production configuration
-├── public/                        # Static public assets
+├── public/                        # Static assets and i18n translation files
 ├── src/
-│   ├── app/                       # Angular components, services, and state
-│   ├── assets/                    # Application icons, images, translations
-│   ├── environments/              # Environment configurations (dev/prod)
-│   ├── main.ts                    # Application bootstrap
-│   └── styles.css                 # Global styles and theme overrides
+│   ├── app/                       # Angular features, core services, and shared UI
+│   ├── environments/              # Environment configs (dev, staging, prod)
+│   ├── store-features/            # Reusable NgRx Signal Store extensions
+│   ├── main.ts                    # Application bootstrap & Datadog RUM init
+│   └── styles.css                 # Global styles
+├── terraform/                     # Terraform for GitHub Pages, DNS & ACA previews
 ├── angular.json                   # Angular workspace configuration
-├── Dockerfile                     # Multi-stage production build (Node -> Nginx)
-├── Dockerfile.dev                 # Local containerized development
-├── compose.yaml                   # Docker Compose setup
+├── compose.yaml                   # Local Docker Compose setup
+├── Dockerfile                     # Multi-stage build (Node 24 -> Nginx Alpine)
+├── nginx.conf                     # Nginx SPA routing, caching & /healthz endpoint
 ├── package.json                   # Dependencies and scripts
-├── proxy.conf.json                # API proxy for local development
-└── vitest.config.ts               # Vitest test runner configuration
+└── vitest.config.ts               # Vitest configuration
 ```
 
 ---
@@ -61,81 +113,62 @@ quiznova-web/
 ### Prerequisites
 
 - **Node.js**: `v22.x` or later
-- **npm**: `v10.x` or later
+- **npm**: `v11.x` or later
 
-### Installation
+### Local Development
 
 ```bash
+git clone https://github.com/quiz-nova/quiznova-web.git
+cd quiznova-web
 npm install
-```
-
-### Local Development Server
-
-Run the development server with proxying enabled:
-
-```bash
 npm start
 ```
 
-Navigate to `http://localhost:4200/`. The app will automatically reload when you
-modify any source files. API requests to `/api/*` and WebSocket connections to
-`/chat` will be proxied to the backend at `http://localhost:8080` (configured in
-`proxy.conf.json`).
-
----
-
-## Scripts & Quality Checks
-
-- `npm start`: Runs dev server on `http://localhost:4200`
-- `npm run build`: Compiles production build to `dist/quiznova-web/browser`
-- `npm run test`: Runs unit tests using Vitest
-- `npm run test:coverage`: Runs unit tests with code coverage report
-- `npm run test:e2e`: Runs E2E tests with Playwright (Chromium)
-- `npm run test:a11y`: Runs automated accessibility audits with Axe-Core
-- `npm run lint`: Runs ESLint on TypeScript and HTML templates
-- `npm run lint:fix`: Fixes autofixable ESLint errors
-- `npm run lint:css`: Lints stylesheets with Stylelint
-- `npm run format:check`: Checks code formatting with Prettier
-- `npm run format`: Formats all files with Prettier
+Open `http://localhost:4200/` in your browser.
 
 ---
 
 ## Docker Support
 
+The `Dockerfile` compiles the Angular bundle and serves it via **Nginx** on
+container port `80`.
+
 ### Run with Docker Compose
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
-Access the app at `http://localhost:4200`.
-
-### Production Image Build
+### Build & Run Manually
 
 ```bash
 docker build -t quiznova-web:latest .
-docker run -d -p 4200:4200 quiznova-web:latest
+docker run -d --name quiznova-web -p 4200:80 quiznova-web:latest
 ```
+
+Access the containerized app at `http://localhost:4200`.
 
 ---
 
-## Infrastructure as Code (Terraform)
+## Infrastructure & Deployments
 
-The `terraform/` directory manages GitHub Pages and domain binding
-(`quiznova.dev`):
-
-```bash
-cd terraform
-cp terraform.tfvars.example terraform.tfvars
-# Provide your github_token in terraform.tfvars
-terraform init
-terraform plan
-terraform apply
-```
+- **Production**: Deployed to **GitHub Pages** (`quiznova.dev`) via
+  `deploy-gh-pages.yml` on pushes to `main`.
+- **Preview Environments**: Pushes to `develop` and `staging` trigger
+  `deploy-preview.yml`, building a container image in GHCR and deploying to
+  **Azure Container Apps** (`quiznova-web-dev` and `quiznova-web-stg`) using
+  passwordless Azure OIDC.
+- **Terraform (`terraform/`)**: Manages custom domain DNS, GitHub Pages binding,
+  Azure Container Apps preview environments, and OIDC credentials with secrets
+  injected via **Doppler**.
 
 ---
 
-## Related Repositories
+## Related Repositories & Author
 
-- **Backend API:** [quiznova-api](https://github.com/quiz-nova/quiznova-api)
-  (.NET 10 Clean Architecture API)
+- **Backend API:** [`quiznova-api`](https://github.com/quiz-nova/quiznova-api)
+- **Platform Infrastructure:**
+  [`quiznova-infra`](https://github.com/quiz-nova/quiznova-infra)
+- **Project Wiki & Notes:**
+  [`quiznova-api.wiki`](https://github.com/quiz-nova/quiznova-api/wiki)
+- **Author:** [Moamen Elbarky](https://github.com/moamenelbarky)

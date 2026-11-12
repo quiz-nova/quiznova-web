@@ -57,7 +57,7 @@ jobs:
           fi
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         if: hashFiles('coverage/**/lcov.info') != ''
         with:
           files: coverage/**/lcov.info

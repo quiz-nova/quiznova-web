@@ -27,7 +27,7 @@ jobs:
       angular_config: ${{ steps.env_calc.outputs.angular_config }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Calculate Target Environment
         id: env_calc

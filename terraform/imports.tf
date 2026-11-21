@@ -4,11 +4,6 @@ import {
 }
 
 import {
-  to = azurerm_role_assignment.web_stg_state_blob
-  id = "/subscriptions/83ab56f5-88ee-436d-87a5-994d3185bf00/resourceGroups/quiznova-rg/providers/Microsoft.Storage/storageAccounts/stquiznova/providers/Microsoft.Authorization/roleAssignments/7db941c7-c4e0-42e1-ad5e-5ebed783b6bc"
-}
-
-import {
   to = azuread_application.web_prd
   id = "/applications/80137933-3889-4e77-976f-5a812e1812b6"
 }

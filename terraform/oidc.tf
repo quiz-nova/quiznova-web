@@ -122,12 +122,6 @@ resource "azurerm_role_assignment" "web_stg_contributor" {
   principal_id         = azuread_service_principal.web_stg.object_id
 }
 
-resource "azurerm_role_assignment" "web_stg_state_blob" {
-  scope                = data.azurerm_storage_account.state.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azuread_service_principal.web_stg.object_id
-}
-
 resource "github_actions_environment_secret" "web_stg_client_id" {
   repository  = var.repository_name
   environment = "staging"

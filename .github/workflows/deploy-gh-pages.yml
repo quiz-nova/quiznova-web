@@ -11,7 +11,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy to GitHub Pages (Production)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment:
       name: production
 

@@ -40,7 +40,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Generate Coverage Report
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5.6.0
         if: always() && hashFiles('coverage/**/lcov.info') != ''
         with:
           reports: "coverage/**/lcov.info"

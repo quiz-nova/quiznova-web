@@ -15,17 +15,17 @@ import {
 
 import {
   to = azuread_service_principal.web_prd
-  id = "/servicePrincipals/67512edd-7835-4b8f-9ab8-3095b2723158"
+  id = "67512edd-7835-4b8f-9ab8-3095b2723158"
 }
 
 import {
   to = azuread_application_federated_identity_credential.web_prd_env
-  id = "80137933-3889-4e77-976f-5a812e1812b6/federatedIdentityCredentials/e690b7bc-2df4-41c4-a694-9ad6f391a661"
+  id = "80137933-3889-4e77-976f-5a812e1812b6/federatedIdentityCredential/e690b7bc-2df4-41c4-a694-9ad6f391a661"
 }
 
 import {
   to = azuread_application_federated_identity_credential.web_prd_main
-  id = "80137933-3889-4e77-976f-5a812e1812b6/federatedIdentityCredentials/f0cd0623-31d6-4010-a561-d007d65e3eed"
+  id = "80137933-3889-4e77-976f-5a812e1812b6/federatedIdentityCredential/f0cd0623-31d6-4010-a561-d007d65e3eed"
 }
 
 import {

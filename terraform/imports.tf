@@ -1,3 +1,11 @@
+removed {
+  from = azurerm_role_assignment.web_stg_state_blob
+
+  lifecycle {
+    destroy = false
+  }
+}
+
 import {
   to = azurerm_role_assignment.web_dev_state_blob
   id = "/subscriptions/83ab56f5-88ee-436d-87a5-994d3185bf00/resourceGroups/quiznova-rg/providers/Microsoft.Storage/storageAccounts/stquiznova/providers/Microsoft.Authorization/roleAssignments/9e027d90-0244-4c15-9b70-bf572ce34838"

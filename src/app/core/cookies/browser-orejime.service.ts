@@ -3,11 +3,11 @@ import { inject, Injectable, InjectionToken, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
+import { AuthService } from '../../features/auth/auth.service';
+import { WindowService } from '../services/window.service';
 import { CookieService } from './cookie.service';
 import { ANONYMOUS_STORAGE_NAME_OREJIME, getOrejimeConfiguration } from './orejime-configuration';
 import { OrejimeService } from './orejime.service';
-import { AuthService } from '../../features/auth/auth.service';
-import { WindowService } from '../services/window.service';
 
 /**
  * Metadata key for cookie preferences

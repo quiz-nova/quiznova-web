@@ -8,8 +8,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Question, QuestionType } from '@shared/models/quiz/question.model';
 
-import { QuestionsOutline } from './questions-outline';
 import { CreateQuizStore } from '../../stores/create-quiz.store';
+import { QuestionsOutline } from './questions-outline';
 
 describe('QuestionsOutline Component', () => {
   const mockQuestions: Question[] = [

@@ -50,6 +50,12 @@ resource "azurerm_role_assignment" "web_dev_contributor" {
   principal_id         = azuread_service_principal.web_dev.object_id
 }
 
+resource "azurerm_role_assignment" "web_dev_state_blob" {
+  scope                = data.azurerm_storage_account.state.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azuread_service_principal.web_dev.object_id
+}
+
 resource "github_actions_environment_secret" "web_dev_client_id" {
   repository  = var.repository_name
   environment = "development"
@@ -116,6 +122,12 @@ resource "azurerm_role_assignment" "web_stg_contributor" {
   principal_id         = azuread_service_principal.web_stg.object_id
 }
 
+resource "azurerm_role_assignment" "web_stg_state_blob" {
+  scope                = data.azurerm_storage_account.state.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azuread_service_principal.web_stg.object_id
+}
+
 resource "github_actions_environment_secret" "web_stg_client_id" {
   repository  = var.repository_name
   environment = "staging"
@@ -133,6 +145,69 @@ resource "github_actions_environment_secret" "web_stg_tenant_id" {
 resource "github_actions_environment_secret" "web_stg_subscription_id" {
   repository  = var.repository_name
   environment = "staging"
+  secret_name = "AZURE_SUBSCRIPTION_ID"
+  value       = var.azure_subscription_id
+}
+
+# ==============================================================================
+# Production OIDC & GitHub Actions Credentials
+# ==============================================================================
+
+resource "azuread_application" "web_prd" {
+  display_name = "github-actions-quiznova-web-prd"
+}
+
+resource "azuread_service_principal" "web_prd" {
+  client_id = azuread_application.web_prd.client_id
+}
+
+resource "azuread_application_federated_identity_credential" "web_prd_env" {
+  application_id = azuread_application.web_prd.id
+  display_name   = "github-actions-quiznova-web-prd-env"
+  description    = "Federated credential for QuizNova Web production environment"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "${local.github_repo_subject}:environment:production"
+}
+
+resource "azuread_application_federated_identity_credential" "web_prd_main" {
+  application_id = azuread_application.web_prd.id
+  display_name   = "github-actions-quiznova-web-prd-main"
+  description    = "Federated credential for QuizNova Web main branch deployment"
+  audiences      = ["api://AzureADTokenExchange"]
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "${local.github_repo_subject}:ref:refs/heads/main"
+}
+
+resource "azurerm_role_assignment" "web_prd_contributor" {
+  scope                = "/subscriptions/${var.azure_subscription_id}/resourceGroups/${var.resource_group_name}"
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.web_prd.object_id
+}
+
+resource "azurerm_role_assignment" "web_prd_state_blob" {
+  scope                = data.azurerm_storage_account.state.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azuread_service_principal.web_prd.object_id
+}
+
+resource "github_actions_environment_secret" "web_prd_client_id" {
+  repository  = var.repository_name
+  environment = "production"
+  secret_name = "AZURE_CLIENT_ID"
+  value       = azuread_application.web_prd.client_id
+}
+
+resource "github_actions_environment_secret" "web_prd_tenant_id" {
+  repository  = var.repository_name
+  environment = "production"
+  secret_name = "AZURE_TENANT_ID"
+  value       = data.azurerm_client_config.current.tenant_id
+}
+
+resource "github_actions_environment_secret" "web_prd_subscription_id" {
+  repository  = var.repository_name
+  environment = "production"
   secret_name = "AZURE_SUBSCRIPTION_ID"
   value       = var.azure_subscription_id
 }

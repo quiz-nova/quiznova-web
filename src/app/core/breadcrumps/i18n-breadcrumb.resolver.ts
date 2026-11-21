@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
 
+import { currentPathFromSnapshot } from '../router/utils/route.utils';
 import { I18nBreadcrumbsService } from './i18n-breadcrumbs.service';
 import { BreadcrumbConfig } from './models/breadcrumb-config.model';
-import { currentPathFromSnapshot } from '../router/utils/route.utils';
 
 /**
  * Method for resolving an I18n breadcrumb configuration object

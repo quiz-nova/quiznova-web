@@ -1,7 +1,7 @@
 import { inject, Injectable, InjectionToken } from '@angular/core';
 
-import { HardRedirectService } from './hard-redirect.service';
 import { environment } from '../../../environments/environment';
+import { HardRedirectService } from './hard-redirect.service';
 
 export const LocationToken = new InjectionToken<Location>('Location', {
   providedIn: 'root',

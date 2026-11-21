@@ -5,11 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { UUIDService } from '@shared/services/uuid.service';
 
-import { CorrelationIdService } from './correlation-id.service';
 import { CookieService } from '../cookies/cookie.service';
 import { CORRELATION_ID_COOKIE } from '../cookies/orejime-configuration';
 import { OrejimeService } from '../cookies/orejime.service';
 import { WindowService } from '../services/window.service';
+import { CorrelationIdService } from './correlation-id.service';
 
 describe('CorrelationIdService', () => {
   let service: CorrelationIdService;

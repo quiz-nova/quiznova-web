@@ -3,8 +3,8 @@ import { signal } from '@angular/core';
 import { render, screen } from '@testing-library/angular';
 import { describe, expect, it } from 'vitest';
 
-import { QuizHeader } from './quiz-header';
 import { CreateQuizStore } from '../../stores/create-quiz.store';
+import { QuizHeader } from './quiz-header';
 
 describe('QuizHeader Component', () => {
   it('should render stat pills for question count, total marks, and remaining marks', async () => {

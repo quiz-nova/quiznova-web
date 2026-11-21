@@ -3,10 +3,10 @@ import { DOCUMENT, inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { URLCombiner } from '../url-combiner/url-combiner';
 import { HardRedirectService } from './hard-redirect.service';
 import { ReferrerService } from './referrer.service';
 import { RouteService } from './route.service';
-import { URLCombiner } from '../url-combiner/url-combiner';
 
 /**
  * A service to determine the referrer

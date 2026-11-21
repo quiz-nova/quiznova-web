@@ -11,10 +11,10 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LogInterceptor } from './log.interceptor';
 import { CORRELATION_ID_OREJIME_KEY } from '../cookies/orejime-configuration';
 import { OrejimeService } from '../cookies/orejime.service';
 import { CorrelationIdService } from '../correlation-id/correlation-id.service';
+import { LogInterceptor } from './log.interceptor';
 
 describe('LogInterceptor', () => {
   let httpClient: HttpClient;

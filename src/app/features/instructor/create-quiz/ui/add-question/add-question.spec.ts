@@ -6,9 +6,9 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { QuestionType } from '@shared/models/quiz/question.model';
 
-import { AddQuestion } from './add-question';
 import { CreateQuizStore } from '../../stores/create-quiz.store';
 import { DEFAULT_MARKS } from '../../utils/question-type.mapper';
+import { AddQuestion } from './add-question';
 
 describe('AddQuestion Component', () => {
   const mockStore = {

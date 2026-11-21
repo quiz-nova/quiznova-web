@@ -31,8 +31,7 @@ import { CoursesService } from '@shared/services/courses.service';
     >
       <p class="message">
         {{ tokens.ADMIN.DELETE_COURSE_CONFIRM | translate }}
-        <strong>{{ course().courseName }}</strong
-        >?
+        <strong>{{ course().courseName }}</strong>?
       </p>
 
       @if (submitError()) {

@@ -4,8 +4,8 @@ import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { QuizPublishPanel } from './quiz-publish-panel';
 import { CreateQuizStore } from '../../stores/create-quiz.store';
+import { QuizPublishPanel } from './quiz-publish-panel';
 
 describe('QuizPublishPanel Component', () => {
   it('should render disabled publish button and hint text when quiz is invalid', async () => {
